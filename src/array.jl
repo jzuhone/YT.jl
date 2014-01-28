@@ -64,11 +64,43 @@ function convert(::Type{Real}, q::YTQuantity)
     q.quantity
 end
 
-# Indexing
+# Indexing, ranges (slicing)
+
+function pyslice(idxs::Range1{Int})
+    ib = idxs.start-1
+    ie = idxs.start+idxs.len-1
+    pyeval("slice(ib,ie)", ib=ib, ie=ie)
+end
+function pyslice(idxs::Range{Int})
+    ib = idxs.start-1
+    ie = idxs.start+idxs.step*idxs.len-1
+    st = idxs.step
+    pyeval("slice(ib,ie,st)", ib=ib, ie=ie, st=st)
+end
 
 function getindex(a::YTArray, i::Int)
     YTQuantity(a.array[i], a.units)
 end
+function getindex(a::YTArray, idxs::Range1{Int})
+    pycall(a.ytarray["__getitem__"], YTArray,
+           pyslice(idxs))
+end
+function getindex(a::YTArray, idxs::Range{Int})
+    pycall(a.ytarray["__getitem__"], YTArray,
+           pyslice(idxs))
+end
+
+function setindex!(a::YTArray, x::Real, i::Int)
+    a.array[i] = x
+end
+function setindex!(a::YTArray, idxs::Range1{Int})
+    a.ytarray[:__setitem__](pyslice(idxs))
+end
+function setindex!(a::YTArray, idxs::Range{Int})
+    a.ytarray[:__setitem__](pyslice(idxs))
+end
+
+# For grids
 function getindex(a::YTArray, i::Int, j::Int, k::Int)
     YTQuantity(getindex(a.array, i, j, k), a.units)
 end

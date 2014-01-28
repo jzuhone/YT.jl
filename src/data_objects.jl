@@ -3,8 +3,6 @@ using PyCall
 @pyimport yt
 import Base.show
 
-include("array.jl")
-
 # Dataset
 
 type DataSet
@@ -20,6 +18,16 @@ end
 # Data containers
 
 abstract DataContainer
+
+# All Data
+
+type AllData <: DataContainer
+    cont::PyObject
+    ds::DataSet
+    function AllData(ds::DataSet)
+        new(ds.h[:all_data]())
+    end
+end
 
 # Sphere
 

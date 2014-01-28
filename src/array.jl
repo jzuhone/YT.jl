@@ -1,10 +1,10 @@
-using PyCall
-@pyimport yt.mods as ytmods
-@pyimport yt
 import Base.show
 import Base.convert
 import Base.sqrt
 using SymPy
+using PyCall
+@pyimport yt.mods as ytmods
+@pyimport yt
 
 # Grab the classes for creating YTArrays and YTQuantities
 
@@ -232,13 +232,13 @@ end
 /(q::YTArray, p::YTQuantity) = *(q, 1.0/p)
 /(q::YTQuantity, p::YTArray) = *(q, 1.0/p)
 
-function ^(q::YTQuantity, p::Real)
+function ^(q::YTQuantity, p::Integer)
     r = q.quantity^p
     units = q.units^p
     return YTQuantity(r, units)
 end
 
-function ^(q::YTQuantity, p::Int)
+function ^(q::YTQuantity, p::Real)
     r = q.quantity^p
     units = q.units^p
     return YTQuantity(r, units)

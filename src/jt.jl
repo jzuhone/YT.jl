@@ -10,11 +10,16 @@ using PyCall
 @pyimport yt.mods as ytmods
 @pyimport yt
 
+include("utils.jl")
 include("array.jl")
 include("data_objects.jl")
 include("physical_constants.jl")
 include("units.jl")
 include("plots.jl")
+
+import .yt_array: YTArray, YTQuantity, in_units, in_cgs
+import .data_objects: DataSet, Grids, Sphere, AllData
+import .plots: SlicePlot, show, annotate_grids, set_width, zoom, set_log
 
 function load(fn::String; args...)
     ds = ytmods.load(fn; args...)

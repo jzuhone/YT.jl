@@ -1,6 +1,6 @@
 module physical_constants
 
-include("array.jl")
+import ..yt_array: YTQuantity
 
 using PyCall
 

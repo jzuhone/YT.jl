@@ -1,8 +1,10 @@
+module data_objects
+
 using PyCall
 @pyimport yt
 import Base: size, show
-
-include("utils.jl")
+import ..yt_array: YTArray, YTQuantity
+import ..utils: pyslice
 
 # Dataset
 
@@ -206,4 +208,6 @@ function show(io::IO, grids::Grids)
         end
     end
     println(io, "  $(grids.grids[end][:__repr__]()) ]")
+end
+
 end

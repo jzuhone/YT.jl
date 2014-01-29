@@ -1,6 +1,6 @@
 module units
 
-include("array.jl")
+import ..yt_array: YTQuantity
 
 using PyCall
 

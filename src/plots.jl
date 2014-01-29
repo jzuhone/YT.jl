@@ -1,3 +1,6 @@
+module plots
+
+import ..data_objects: DataSet
 using PyCall
 @pyimport yt.visualization.plot_window as pw
 
@@ -35,3 +38,4 @@ function annotate_grids(plot::PlotWindow)
     plot.plot[:annotate_grids]()
 end
 
+end

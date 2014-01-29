@@ -1,9 +1,10 @@
+module yt_array
+
 import Base: convert, eltype, hypot, max, min, ndims, show, size, sqrt
 using SymPy
 using PyCall
 @pyimport yt
-
-include("utils.jl")
+import ..utils: pyslice
 
 # Grab the classes for creating YTArrays and YTQuantities
 
@@ -436,4 +437,4 @@ ndims(a::YTArray) = ndims(a.array)
 
 eltype(a::YTArray) = eltype(a.array)
 
-
+end

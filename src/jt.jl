@@ -3,7 +3,7 @@ module jt
 export load
 export YTArray, YTQuantity, in_units, in_cgs
 export Grids, Sphere, AllData
-export physical_constants
+export physical_constants, units
 export SlicePlot, show, annotate_grids, set_width, zoom, set_log
 
 using PyCall
@@ -13,6 +13,7 @@ using PyCall
 include("array.jl")
 include("data_objects.jl")
 include("physical_constants.jl")
+include("units.jl")
 include("plots.jl")
 
 function load(fn::String; args...)

@@ -1,6 +1,8 @@
 using PyCall
 @pyimport yt
-import Base.show
+import Base: size, show
+
+include("utils.jl")
 
 # Dataset
 
@@ -123,6 +125,8 @@ type Grids <: AbstractArray
     end
 end
 
+size(grids::Grids) = size(grids.grids)
+
 type Grid <: DataContainer
     cont::PyObject
     left_edge::YTArray
@@ -166,6 +170,10 @@ function getindex(grids::Grids, i::Int)
          Grids(g[:Children]))
 end
 
+function getindex(grids::Grids, idxs::Ranges)
+    Grids(grids.grids[idxs])
+end
+
 # Show
 
 function show(io::IO, ds::DataSet)
@@ -176,4 +184,26 @@ function show(io::IO, dc::DataContainer)
     println(io,dc.cont[:__repr__]())
 end
 
-show(io::IO, grids::Grids) = show(io, grids.grids)
+function show(io::IO, grids::Grids)
+    num_grids = length(grids)
+    if num_grids == 0
+        println(io, "[]")
+        return
+    end
+    if num_grids == 1
+        println(io, "[ $(grids.grids[1][:__repr__]()) ]")
+        return
+    end
+    n = num_grids > 14 ? 10 : num_grids
+    println(io, "[ $(grids.grids[1][:__repr__]()),")
+    for grid in grids.grids[2:n-1]
+        println(io, "  $(grid[:__repr__]()),")
+    end
+    if num_grids > 14
+        println(io, "  ...")
+        for grid in grids.grids[num_grids-4:num_grids-1]
+            println(io, "  $(grid[:__repr__]()),")
+        end
+    end
+    println(io, "  $(grids.grids[end][:__repr__]()) ]")
+end

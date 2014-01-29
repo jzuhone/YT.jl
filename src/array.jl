@@ -3,7 +3,6 @@ import Base.convert
 import Base.sqrt
 using SymPy
 using PyCall
-@pyimport yt.mods as ytmods
 @pyimport yt
 
 # Grab the classes for creating YTArrays and YTQuantities
@@ -13,7 +12,7 @@ ytquantity_new = yt.units["yt_array"]["YTQuantity"]
 
 # YTArray definition
 
-type YTArray
+type YTArray <: AbstractArray
     ytarray::PyObject
     array::PyArray
     units::Sym
@@ -81,11 +80,7 @@ end
 function getindex(a::YTArray, i::Int)
     YTQuantity(a.array[i], a.units)
 end
-function getindex(a::YTArray, idxs::Range1{Int})
-    pycall(a.ytarray["__getitem__"], YTArray,
-           pyslice(idxs))
-end
-function getindex(a::YTArray, idxs::Range{Int})
+function getindex(a::YTArray, idxs::Ranges)
     pycall(a.ytarray["__getitem__"], YTArray,
            pyslice(idxs))
 end
@@ -93,11 +88,8 @@ end
 function setindex!(a::YTArray, x::Real, i::Int)
     a.array[i] = x
 end
-function setindex!(a::YTArray, idxs::Range1{Int})
-    a.ytarray[:__setitem__](pyslice(idxs))
-end
-function setindex!(a::YTArray, idxs::Range{Int})
-    a.ytarray[:__setitem__](pyslice(idxs))
+function setindex!(a::YTArray, x::Real, idxs::Ranges)
+    a.ytarray[:__setitem__](pyslice(idxs), x)
 end
 
 # For grids

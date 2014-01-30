@@ -6,36 +6,42 @@ using PyCall
 
 abstract PlotWindow
 
+PlotAxis = Union(String,Array,Integer)
+StringOrArray = Union(String,Array)
+
 type SlicePlot <: PlotWindow
     plot::PyObject
-    function SlicePlot(ds::DataSet, axis::String, fields::Array{ASCIIString,1}; args...)
-        new(pw.SlicePlot(ds.ds, axis, fields; args...))
-    end
-    function SlicePlot(ds::DataSet, axis::Array, fields::Array{ASCIIString,1}; args...)
+    function SlicePlot(ds::DataSet, axis::PlotAxis, fields::StringOrArray;
+                       args...)
         new(pw.SlicePlot(ds.ds, axis, fields; args...))
     end
 end
 
-# Plot callbacks
+type ProjectionPlot <: PlotWindow
+    plot::PyObject
+    function ProjectionPlot(ds::DataSet, axis::PlotAxis, fields::StringOrArray;
+                       data_source=nothing, args...)
+        if data_source != nothing
+            source = data_source.cont
+        else
+            source = pybuiltin("None")
+        end
+        new(pw.ProjectionPlot(ds.ds, axis, fields, data_source=source; args...))
+    end
+end
 
-function show(plot::PlotWindow)
+# Plot methods
+
+function show_plot(plot::PlotWindow)
     plot.plot
 end
 
-function set_width(plot::PlotWindow, value::Real, unit::String)
-    plot.plot[:set_width](value, unit)
+function call(plot::PlotWindow)
+    pywrap(plot.plot)
 end
 
-function set_log(plot::PlotWindow, field::String, islog::Bool)
-    plot.plot[:set_log](field, islog)
-end
-
-function zoom(plot::PlotWindow, zoom::Real)
-    plot.plot[:zoom](zoom)
-end
-
-function annotate_grids(plot::PlotWindow)
-    plot.plot[:annotate_grids]()
+function save_plot(plot::PlotWindow; args...)
+    pywrap(plot.plot).save(args...)
 end
 
 end

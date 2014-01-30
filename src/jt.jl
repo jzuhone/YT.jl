@@ -4,7 +4,7 @@ export load
 export YTArray, YTQuantity, in_units, in_cgs
 export Grids, Sphere, AllData
 export physical_constants, units
-export SlicePlot, show, annotate_grids, set_width, zoom, set_log
+export SlicePlot, ProjectionPlot, show_plot, save_plot, call
 
 using PyCall
 @pyimport yt.mods as ytmods
@@ -19,7 +19,7 @@ include("plots.jl")
 
 import .yt_array: YTArray, YTQuantity, in_units, in_cgs
 import .data_objects: DataSet, Grids, Sphere, AllData
-import .plots: SlicePlot, show, annotate_grids, set_width, zoom, set_log
+import .plots: SlicePlot, ProjectionPlot, show_plot, save_plot, call
 
 function load(fn::String; args...)
     ds = ytmods.load(fn; args...)

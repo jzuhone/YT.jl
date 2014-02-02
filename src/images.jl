@@ -27,6 +27,11 @@ function getindex(frb::FixedResolutionBuffer, key::String)
     YTArray(get(frb.frb, PyObject, key))
 end
 
+function getindex(frb::FixedResolutionBuffer, ftype::String, fname::String)
+    YTArray(get(frb.frb, PyObject, (ftype,fname)))
+end
+
+
 function show(io::IO, frb::FixedResolutionBuffer)
     println(io,"FixedResolutionBuffer ($(frb.buff_size[1])x$(frb.buff_size[2])):")
     for k in keys(frb.limits)

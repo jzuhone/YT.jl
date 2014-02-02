@@ -251,6 +251,10 @@ function getindex(dc::DataContainer, key::String)
     YTArray(get(dc.cont, PyObject, key))
 end
 
+function getindex(dc::DataContainer, ftype::String, fname::String)
+    YTArray(get(dc.cont, PyObject, (ftype,fname)))
+end
+
 function getindex(grids::Grids, i::Int)
     g = grids.grids[i]
     Grid(g,

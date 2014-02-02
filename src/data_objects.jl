@@ -42,7 +42,7 @@ type DataSet
 end
 
 function get_smallest_dx(ds::DataSet)
-    pycall(ds.h["get_smallest_dx"], YTArray)
+    pycall(ds.h["get_smallest_dx"], YTArray)[1]
 end
 
 function print_stats(ds::DataSet)

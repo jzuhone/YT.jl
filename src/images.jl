@@ -2,7 +2,7 @@ module images
 
 using PyCall
 
-import ..yt_array: YTArray
+import ..yt_array: YTArray, YTQuantity
 import Base.show
 
 # FixedResolutionBuffer
@@ -15,7 +15,8 @@ type FixedResolutionBuffer
         limits = frb[:limits]
         for k in keys(limits)
             if limits[k] != nothing
-                limits[k] = YTArray([limits[k][1][1],limits[k][end][1]], "code_length")
+                limits[k] = (YTQuantity(limits[k][1][1],"code_length"),
+                             YTQuantity(limits[k][end][1],"code_length"))
             end
         end
         new(frb, limits, frb[:buff_size])
@@ -32,7 +33,7 @@ function show(io::IO, frb::FixedResolutionBuffer)
         if frb.limits[k] != nothing
             a = frb.limits[k][1]
             b = frb.limits[k][2]
-            println(io,"    $(a.value) $(a.units) <= $k < $(b.value) $(b.units)")
+            println(io,"    $(a.value) code_length <= $k < $(b.value) code_length")
         end
     end
 end

@@ -575,7 +575,7 @@ function show(io::IO, a::YTArray)
 end
 
 function show(io::IO, q::YTQuantity)
-    println(io,"$(q.value) $(q.units)")
+    print(io,"$(q.value) $(q.units)")
 end
 
 # Array methods

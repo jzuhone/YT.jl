@@ -270,21 +270,21 @@ end
 # Show
 
 function show(io::IO, ds::DataSet)
-    println(io,ds.ds[:__repr__]())
+    print(io,ds.ds[:__repr__]())
 end
 
 function show(io::IO, dc::DataContainer)
-    println(io,dc.cont[:__repr__]())
+    print(io,dc.cont[:__repr__]())
 end
 
 function show(io::IO, grids::Grids)
     num_grids = length(grids)
     if num_grids == 0
-        println(io, "[]")
+        print(io, "[]")
         return
     end
     if num_grids == 1
-        println(io, "[ $(grids.grids[1][:__repr__]()) ]")
+        print(io, "[ $(grids.grids[1][:__repr__]()) ]")
         return
     end
     n = num_grids > 8 ? 5 : num_grids
@@ -298,7 +298,7 @@ function show(io::IO, grids::Grids)
             println(io, "  $(grid[:__repr__]()),")
         end
     end
-    println(io, "  $(grids.grids[end][:__repr__]()) ]")
+    print(io, "  $(grids.grids[end][:__repr__]()) ]")
 end
 
 end

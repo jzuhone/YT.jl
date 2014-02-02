@@ -12,7 +12,7 @@ using PyCall
 @pyimport yt
 
 include("utils.jl")
-include("array.jl")
+include("yt_array.jl")
 include("images.jl")
 include("data_objects.jl")
 include("physical_constants.jl")

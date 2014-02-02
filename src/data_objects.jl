@@ -4,7 +4,8 @@ using PyCall
 @pyimport yt
 import Base: size, show
 import ..yt_array: YTArray, YTQuantity
-import ..utils: pyslice
+import ..utils: pyslice, Axis, RealOrArray
+import ..images: FixedResolutionBuffer
 
 # Dataset
 
@@ -20,6 +21,18 @@ type DataSet
     dimensionality::Integer
     current_time::YTQuantity
     current_redshift::Real
+    function DataSet(ds::PyObject)
+        new(ds, ds[:h],
+            PyDict(ds[:h]["parameters"]::PyObject),
+            YTArray(ds["domain_center"]),
+            YTArray(ds["domain_left_edge"]),
+            YTArray(ds["domain_right_edge"]),
+            YTArray(ds["domain_width"]),
+            ds[:domain_dimensions],
+            ds[:dimensionality][1],
+            YTQuantity(ds["current_time"]),
+            ds[:current_redshift])
+    end
 end
 
 function get_smallest_dx(ds::DataSet)
@@ -64,15 +77,45 @@ type Region <: DataContainer
 
 end
 
+# Disk
+
+# Ray
+
+# Boolean
+
+# Cutting
+
 # Projection
 
 type Projection <: DataContainer
     cont::PyObject
     ds::DataSet
-    axis
+    field::String
+    axis::Axis
     weight_field
     center
     data_source
+    function Projection(ds::DataSet, field::String, axis::Axis, weight_field=nothing,
+                        center=nothing, data_source=nothing; args...)
+        if weight_field != nothing
+            weight = weight_field
+        else
+            weight = pybuiltin("None")
+        end
+        if center != nothing
+            c = center
+        else
+            c = pybuiltin("None")
+        end
+        if data_source != nothing
+            source = data_source.cont
+        else
+            source = pybuiltin("None")
+        end
+        prj = pf.h[:proj](field, axis, weight_field=weight, center=c,
+                          data_source=source; args...)
+        new(prj, ds, field, axis, weight_field, center, data_source)
+    end
 end
 
 # Slice
@@ -80,9 +123,24 @@ end
 type Slice <: DataContainer
     cont::PyObject
     ds::DataSet
-    axis
+    axis::Axis
     center
-    data_source
+    function Slice(ds::DataSet, axis::Axis, coord::RealOrArray, center=nothing; args...)
+        if center != nothing
+            c = center
+        else
+            c = pybuiltin("None")
+        end
+        slc = ds.h[:slice](axis, coord, center=c; args...)
+        new(slc, ds, axis, center)
+    end
+end
+
+SliceOrProj = Union(Slice,Projection)
+Resolution = Union(Integer,(Integer,Integer))
+
+function to_frb(obj::SliceOrProj, width::(Real,String), nx::Resolution; args...)
+    FixedResolutionBuffer(obj.cont[:to_frb](width, nx; args...))
 end
 
 # Sphere
@@ -131,6 +189,8 @@ end
 
 size(grids::Grids) = size(grids.grids)
 
+# Grid
+
 type Grid <: DataContainer
     cont::PyObject
     left_edge::YTArray
@@ -140,6 +200,35 @@ type Grid <: DataContainer
     active_dimensions::Array
     Parent::Grids
     Children::Grids
+end
+
+# GridCollection
+
+type GridCollection <: DataContainer
+    cont::PyObject
+    ds::DataSet
+    center::Array
+    function GridCollection(ds::DataSet, center::Array, grid_list::Grids; args...)
+        gds = ds.h[:grid_collection](center, grid_list.grids; args...)
+        new(gds, center)
+    end
+end
+
+# CoveringGrid
+
+type CoveringGrid <: DataContainer
+    cont::PyObject
+    ds::DataSet
+    left_edge::YTArray
+    right_edge::YTArray
+    level::Integer
+    active_dimensions::Array
+    function CoveringGrid(ds::DataSet, level::Integer, left_edge::Array,
+                          dims::Array; args...)
+        cg = ds.h[:covering_grid](level, left_edge, dims; args...)
+        new(cg, ds, YTArray(cg["left_edge"]), YTArray(cg["right_edge"]),
+            level, cg[:ActiveDimensions])
+    end
 end
 
 # Field parameters

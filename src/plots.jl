@@ -1,7 +1,8 @@
 module plots
 
 import ..data_objects: DataSet, DataContainer
-import ..utils: Axis, StringOrArray
+import ..utils: Axis, FieldOrArray, Field
+
 using PyCall
 @pyimport yt.visualization.plot_window as pw
 @pyimport yt.visualization.profile_plotter as pp
@@ -10,7 +11,7 @@ abstract YTPlot
 
 type SlicePlot <: YTPlot
     plot::PyObject
-    function SlicePlot(ds::DataSet, axis::Axis, fields::StringOrArray;
+    function SlicePlot(ds::DataSet, axis::Axis, fields::FieldOrArray;
                        args...)
         new(pw.SlicePlot(ds.ds, axis, fields; args...))
     end
@@ -18,7 +19,7 @@ end
 
 type ProjectionPlot <: YTPlot
     plot::PyObject
-    function ProjectionPlot(ds::DataSet, axis::Axis, fields::StringOrArray;
+    function ProjectionPlot(ds::DataSet, axis::Axis, fields::FieldOrArray;
                             data_source=nothing, args...)
         if data_source != nothing
             source = data_source.cont
@@ -32,7 +33,7 @@ end
 type PhasePlot <: YTPlot
     plot::PyObject
     function PhasePlot(dc::DataContainer, x_field::String, y_field::String,
-                       z_fields::StringOrArray; args...)
+                       z_fields::FieldOrArray; args...)
         new(pp.PhasePlot(dc.cont, x_field, y_field, z_fields; args...))
     end
 end
@@ -40,7 +41,7 @@ end
 type ProfilePlot <: YTPlot
     plot::PyObject
     function ProfilePlot(dc::DataContainer, x_field::String,
-                         y_fields::StringOrArray; args...)
+                         y_fields::FieldOrArray; args...)
         new(pp.ProfilePlot(dc.cont, x_field, y_fields; args...))
     end
 end

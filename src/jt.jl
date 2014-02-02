@@ -1,11 +1,11 @@
 module jt
 
-export load, load_uniform_grid, load_amr_grids, load_particles
-export YTArray, YTQuantity, in_units, in_cgs, get_array
+export load, load_uniform_grid, load_amr_grids, load_particles, CutRegion
+export YTArray, YTQuantity, in_units, in_cgs, get_array, Disk, Ray, Boolean
 export Slice, Grids, Sphere, AllData, Projection, GridCollection, CoveringGrid
-export physical_constants, units, to_frb, get_smallest_dx, print_stats
+export physical_constants, units, to_frb, get_smallest_dx, print_stats, CuttingPlane
 export SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot, show_plot, save_plot, call
-export FixedResolutionBuffer
+export FixedResolutionBuffer, Profile1D, Profile2D, Profile2D, add_fields, cut_region
 
 using PyCall
 @pyimport yt.mods as ytmods
@@ -18,13 +18,16 @@ include("data_objects.jl")
 include("physical_constants.jl")
 include("units.jl")
 include("plots.jl")
+include("profiles.jl")
 
 import .yt_array: YTArray, YTQuantity, in_units, in_cgs, get_array
 import .data_objects: DataSet, Grids, Sphere, AllData, Projection, Slice,
-    GridCollection, CoveringGrid, to_frb, print_stats, get_smallest_dx
+    GridCollection, CoveringGrid, to_frb, print_stats, get_smallest_dx,
+    Disk, Ray, Boolean, CuttingPlane, CutRegion, cut_region
 import .plots: SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot, show_plot,
     save_plot, call
 import .images: FixedResolutionBuffer
+import .profiles: Profile1D, Profile2D, Profile3D, add_fields
 
 function load(fn::String; args...)
     ds = ytmods.load(fn; args...)

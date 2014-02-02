@@ -4,7 +4,7 @@ using PyCall
 @pyimport yt
 import Base: size, show
 import ..yt_array: YTArray, YTQuantity
-import ..utils: pyslice, Axis, RealOrArray
+import ..utils: pyslice, Axis, RealOrArray, Length, StringOrArray
 import ..images: FixedResolutionBuffer
 
 # Dataset
@@ -71,31 +71,69 @@ type Region <: DataContainer
     center::YTArray
     left_edge::YTArray
     right_edge::YTArray
-
-    function Region(ds::DataSet, center::Array, left_edge::Array,
+    function Region(ds::DataSet, center::StringOrArray, left_edge::Array,
                     right_edge::Array; args...)
         reg = ds.h[:region](center, left_edge, right_edge; args...)
         new(reg, ds, YTArray(reg["center"]), YTArray(reg["left_edge"]),
             YTArray(reg["right_edge"]))
     end
-    function Region(ds::DataSet, center::String, left_edge::Array,
-                    right_edge::Array; args...)
-        reg = ds.h[:region](center, left_edge, right_edge; args...)
-        new(reg, ds, YTArray(reg["center"]), YTArray(reg["left_edge"]),
-            YTArray(reg["right_edge"]))
-    end
-
 end
 
 # Disk
 
+type Disk <: DataContainer
+    cont::PyObject
+    ds::DataSet
+    center::YTArray
+    normal::Array
+    radius::YTQuantity
+    height::YTQuantity
+    function Disk(ds::DataSet, center::StringOrArray, normal::Array,
+                  radius::Length; height::Length; args...)
+        dk = ds.h[:disk](center, normal, radius, height; args...)
+        new(dk, ds, YTArray(dk["center"]), normal, YTQuantity(sp["radius"]),
+            YTQuantity(dk["height"]))
+    end
+end
+
 # Ray
+
+type Ray <: DataContainer
+    cont::PyObject
+    ds::DataSet
+    start_point::YTArray
+    end_point::YTArray
+    function Ray(ds::DataSet, start_point::Array, end_point::Array; args...)
+        ray = ds.h[:ray](start_point, end_point; args...)
+        new(ray, ds, YTArray(ray["start_point"]), YTArray(ray["end_point"]))
+    end
+end
 
 # Boolean
 
+type Boolean <: DataContainer
+    cont::PyObject
+    ds::DataSet
+    regions::Array
+    function Boolean(ds::DataSet, regions::Array; args...)
+        regs = [region.cont for region in regions]
+        bool_reg = ds.h[:boolean](regs; args...)
+        new(bool_reg, ds, regions)
+    end
+end
+
 # CuttingPlane
 
-# FieldCuts
+type CuttingPlane <: DataContainer
+    cont::PyObject
+    ds::DataSet
+    normal::Array
+    center::StringOrArray
+    function CuttingPlane(ds::DataSet, normal::Array, center::StringOrArray; args...)
+        cutting = ds.h[:cutting](normal, center; args...)
+        new(cutting, ds, normal, center)
+    end
+end
 
 # Projection
 
@@ -151,7 +189,7 @@ end
 SliceOrProj = Union(Slice,Projection)
 Resolution = Union(Integer,(Integer,Integer))
 
-function to_frb(obj::SliceOrProj, width::(Real,String), nx::Resolution; args...)
+function to_frb(obj::SliceOrProj, width::Length, nx::Resolution; args...)
     FixedResolutionBuffer(obj.cont[:to_frb](width, nx; args...))
 end
 
@@ -162,23 +200,23 @@ type Sphere <: DataContainer
     ds::DataSet
     center::YTArray
     radius::YTQuantity
+    function Sphere(ds::DataSet, center::StringOrArray, radius::Length; args...)
+        sp = ds.h[:sphere](center, radius; args...)
+        new(sp, ds, YTArray(sp["center"]), YTQuantity(sp["radius"]))
+    end
+end
 
-    function Sphere(ds::DataSet, center::String, radius::Real; args...)
-        sp = ds.h[:sphere](center, radius; args...)
-        new(sp, ds, YTArray(sp["center"]), YTQuantity(sp["radius"]))
-    end
-    function Sphere(ds::DataSet, center::String, radius::(Real,String); args...)
-        sp = ds.h[:sphere](center, radius; args...)
-        new(sp, ds, YTArray(sp["center"]), YTQuantity(sp["radius"]))
-    end
-    function Sphere(ds::DataSet, center::Array, radius::(Real,String); args...)
-        sp = ds.h[:sphere](center, radius; args...)
-        new(sp, ds, YTArray(sp["center"]), YTQuantity(sp["radius"]))
-    end
-    function sphere(ds::DataSet, center::Array, radius::Real; args...)
-        sp = ds.h[:sphere](center, radius; args...)
-        new(sp, ds, YTArray(sp["center"]), YTQuantity(sp["radius"]))
-    end
+# CutRegion
+
+type CutRegion <: DataContainer
+    cont::PyObject
+    ds::DataSet
+    conditions::Array{String}
+end
+
+function cut_region(dc::DataContainer, conditions::Array{String})
+    cut_reg = dc.cont[:cut_region](conditions)
+    CutRegion(cut_reg, dc.ds, conditions)
 end
 
 # Grids
@@ -315,6 +353,4 @@ function show(io::IO, grids::Grids)
         end
     end
     print(io, "  $(grids.grids[end][:__repr__]()) ]")
-end
-
 end

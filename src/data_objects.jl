@@ -21,6 +21,9 @@ type DataSet
     dimensionality::Integer
     current_time::YTQuantity
     current_redshift::Real
+    field_list::Array
+    derived_field_list::Array
+    max_level::Integer
     function DataSet(ds::PyObject)
         new(ds, ds[:h],
             PyDict(ds[:h]["parameters"]::PyObject),
@@ -31,12 +34,19 @@ type DataSet
             ds[:domain_dimensions],
             ds[:dimensionality][1],
             YTQuantity(ds["current_time"]),
-            ds[:current_redshift])
+            ds[:current_redshift],
+            ds[:h][:field_list],
+            ds[:h][:derived_field_list],
+            ds[:h][:max_level][1])
     end
 end
 
 function get_smallest_dx(ds::DataSet)
     pycall(ds.h["get_smallest_dx"], YTArray)
+end
+
+function print_stats(ds::DataSet)
+    ds.h[:print_stats]()
 end
 
 # Data containers
@@ -83,7 +93,9 @@ end
 
 # Boolean
 
-# Cutting
+# CuttingPlane
+
+# FieldCuts
 
 # Projection
 

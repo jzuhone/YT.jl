@@ -2,6 +2,11 @@ module utils
 
 using PyCall
 
+Axis = Union(String,Array,Integer)
+StringOrArray = Union(String,Array)
+IntOrRange = Union(Int,Range,Range1)
+RealOrArray = Union(Real,Array)
+
 # Convert slices in Julia to Python slices
 
 pyslice(i::Int) = i-1

@@ -66,13 +66,17 @@ type YTArray <: AbstractArray
     YTArray(array::AbstractArray, q::YTQuantity) = YTArray(array, q.units)
 end
 
-# Helper function
+# Helper functions
 function get_array(a::YTArray)
     if typeof(a.array) <: PyArray
         return copy(a.array)
     else
         return a.array
     end
+end
+
+function send_array_to_yt(a::YTArray)
+    pycall(ytarray_new, PyObject, a.array, a.units[:__str__]())
 end
 
 # Copy, similar

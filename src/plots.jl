@@ -2,6 +2,7 @@ module plots
 
 import ..data_objects: DataSet, DataContainer
 import ..utils: Axis, FieldOrArray, Field
+import ..yt_array: YTArray, send_array_to_yt
 
 using PyCall
 @pyimport yt.visualization.plot_window as pw
@@ -11,22 +12,33 @@ abstract YTPlot
 
 type SlicePlot <: YTPlot
     plot::PyObject
-    function SlicePlot(ds::DataSet, axis::Axis, fields::FieldOrArray;
-                       args...)
-        new(pw.SlicePlot(ds.ds, axis, fields; args...))
+    function SlicePlot(ds::DataSet, axis::Axis, fields::FieldOrArray,
+                       center="c"; args...)
+        if typeof(center) == YTArray
+            c = send_array_to_yt(center)
+        else
+            c = center
+        end
+        new(pw.SlicePlot(ds.ds, axis, fields, center=c; args...))
     end
 end
 
 type ProjectionPlot <: YTPlot
     plot::PyObject
-    function ProjectionPlot(ds::DataSet, axis::Axis, fields::FieldOrArray;
-                            data_source=nothing, args...)
+    function ProjectionPlot(ds::DataSet, axis::Axis, fields::FieldOrArray,
+                            center="c", data_source=nothing; args...)
         if data_source != nothing
             source = data_source.cont
         else
             source = pybuiltin("None")
         end
-        new(pw.ProjectionPlot(ds.ds, axis, fields, data_source=source; args...))
+        if typeof(center) == YTArray
+            c = send_array_to_yt(center)
+        else
+            c = nothing
+        end
+        new(pw.ProjectionPlot(ds.ds, axis, fields, center=c,
+                              data_source=source; args...))
     end
 end
 

@@ -3,7 +3,7 @@ module data_objects
 using PyCall
 @pyimport yt
 import Base: size, show
-import ..yt_array: YTArray, YTQuantity
+import ..yt_array: YTArray, YTQuantity, send_array_to_yt
 import ..utils: pyslice, Axis, RealOrArray, Length, StringOrArray
 import ..images: FixedResolutionBuffer
 
@@ -71,9 +71,24 @@ type Region <: DataContainer
     center::YTArray
     left_edge::YTArray
     right_edge::YTArray
-    function Region(ds::DataSet, center::StringOrArray, left_edge::Array,
-                    right_edge::Array; args...)
-        reg = ds.h[:region](center, left_edge, right_edge; args...)
+    function Region(ds::DataSet, center::Union(StringOrArray,YTArray),
+                    left_edge::AbstractArray, right_edge::AbstractArray; args...)
+        if typeof(center) == YTArray
+            c = send_array_to_yt(center)
+        else
+            c = center
+        end
+        if typeof(left_edge) == YTArray
+            le = send_array_to_yt(left_edge)
+        else
+            le = left_edge
+        end
+        if typeof(right_edge) == YTArray
+            re = send_array_to_yt(right_edge)
+        else
+            re = right_edge
+        end
+        reg = ds.h[:region](c, le, re; args...)
         new(reg, ds, YTArray(reg["center"]), YTArray(reg["left_edge"]),
             YTArray(reg["right_edge"]))
     end
@@ -88,9 +103,25 @@ type Disk <: DataContainer
     normal::Array
     radius::YTQuantity
     height::YTQuantity
-    function Disk(ds::DataSet, center::StringOrArray, normal::Array,
-                  radius::Length; height::Length; args...)
-        dk = ds.h[:disk](center, normal, radius, height; args...)
+    function Disk(ds::DataSet, center::Union(StringOrArray,YTArray), normal::Array,
+                  radius::Union(Length,YTQuantity),
+                  height::Union(Length,YTQuantity); args...)
+        if typeof(center) == YTArray
+            c = send_array_to_yt(center)
+        else
+            c = center
+        end
+        if typeof(radius) == YTQuantity
+            r = radius.ytquantity
+        else
+            r = radius
+        end
+        if typeof(height) == YTQuantity
+            h = height.ytquantity
+        else
+            h = height
+        end
+        dk = ds.h[:disk](c, normal, r, h; args...)
         new(dk, ds, YTArray(dk["center"]), normal, YTQuantity(sp["radius"]),
             YTQuantity(dk["height"]))
     end
@@ -103,8 +134,19 @@ type Ray <: DataContainer
     ds::DataSet
     start_point::YTArray
     end_point::YTArray
-    function Ray(ds::DataSet, start_point::Array, end_point::Array; args...)
-        ray = ds.h[:ray](start_point, end_point; args...)
+    function Ray(ds::DataSet, start_point::AbstractArray,
+                 end_point::AbstractArray; args...)
+        if typeof(start_point) == YTArray
+            sp = send_array_to_yt(start_point)
+        else
+            sp = start_point
+        end
+        if typeof(end_point) == YTArray
+            ep = send_array_to_yt(end_point)
+        else
+            ep = end_point
+        end
+        ray = ds.h[:ray](sp, ep; args...)
         new(ray, ds, YTArray(ray["start_point"]), YTArray(ray["end_point"]))
     end
 end
@@ -129,8 +171,14 @@ type CuttingPlane <: DataContainer
     ds::DataSet
     normal::Array
     center::StringOrArray
-    function CuttingPlane(ds::DataSet, normal::Array, center::StringOrArray; args...)
-        cutting = ds.h[:cutting](normal, center; args...)
+    function CuttingPlane(ds::DataSet, normal::Array,
+                          center::Union(StringOrArray,YTArray); args...)
+        if typeof(center) == YTArray
+            c = send_array_to_yt(center)
+        else
+            c = center
+        end
+        cutting = ds.h[:cutting](normal, c; args...)
         new(cutting, ds, normal, center)
     end
 end
@@ -152,10 +200,12 @@ type Projection <: DataContainer
         else
             weight = pybuiltin("None")
         end
-        if center != nothing
-            c = center
-        else
+        if center == nothing
             c = pybuiltin("None")
+        elseif typeof(center) == YTArray
+            c = send_array_to_yt(center)
+        else
+            c = nothing
         end
         if data_source != nothing
             source = data_source.cont
@@ -175,13 +225,23 @@ type Slice <: DataContainer
     ds::DataSet
     axis::Axis
     center
-    function Slice(ds::DataSet, axis::Axis, coord::RealOrArray, center=nothing; args...)
-        if center != nothing
-            c = center
+    function Slice(ds::DataSet, axis::Axis, coord::Union(RealOrArray,YTQuantity,YTArray),
+                   center=nothing; args...)
+        if typeof(coord) == YTArray
+            cd = send_array_to_yt(coord)
+        elseif typeof(coord) == YTQuantity
+            cd = coord.quantity
         else
-            c = pybuiltin("None")
+            cd = coord
         end
-        slc = ds.h[:slice](axis, coord, center=c; args...)
+        if center == nothing
+            c = pybuiltin("None")
+        elseif typeof(center) == YTArray
+            c = send_array_to_yt(center)
+        else
+            c = center
+        end
+        slc = ds.h[:slice](axis, cd, center=c; args...)
         new(slc, ds, axis, center)
     end
 end
@@ -200,8 +260,19 @@ type Sphere <: DataContainer
     ds::DataSet
     center::YTArray
     radius::YTQuantity
-    function Sphere(ds::DataSet, center::StringOrArray, radius::Length; args...)
-        sp = ds.h[:sphere](center, radius; args...)
+    function Sphere(ds::DataSet, center::Union(StringOrArray,YTArray),
+                    radius::Union(Length,YTQuantity); args...)
+        if typeof(center) == YTArray
+            c = send_array_to_yt(center)
+        else
+            c = center
+        end
+        if typeof(radius) == YTQuantity
+            r = radius.ytquantity
+        else
+            r = radius
+        end
+        sp = ds.h[:sphere](c, r; args...)
         new(sp, ds, YTArray(sp["center"]), YTQuantity(sp["radius"]))
     end
 end
@@ -211,10 +282,10 @@ end
 type CutRegion <: DataContainer
     cont::PyObject
     ds::DataSet
-    conditions::Array{String}
+    conditions::Array
 end
 
-function cut_region(dc::DataContainer, conditions::Array{String})
+function cut_region(dc::DataContainer, conditions::Array)
     cut_reg = dc.cont[:cut_region](conditions)
     CutRegion(cut_reg, dc.ds, conditions)
 end
@@ -353,4 +424,6 @@ function show(io::IO, grids::Grids)
         end
     end
     print(io, "  $(grids.grids[end][:__repr__]()) ]")
+end
+
 end

@@ -14,7 +14,6 @@ type Profile1D <: YTProfile
     profile::PyObject
     source::DataContainer
     x_field::Field
-    x_bins::Array
     weight_field
     function Profile1D(data_source::DataContainer, x_field::Field, x_n::Integer,
                        x_min::Limit, x_max::Limit, x_log::Bool; weight_field=nothing)
@@ -35,7 +34,7 @@ type Profile1D <: YTProfile
         end
         profile = prof.Profile1D(data_source.cont, x_field, x_n, xmin, xmax,
                                  x_log, weight_field=weight)
-        new(profile, data_source, x_field, profile[:x_bins], weight_field)
+        new(profile, data_source, x_field, weight_field)
     end
 end
 
@@ -43,9 +42,7 @@ type Profile2D <: YTProfile
     profile::PyObject
     source::DataContainer
     x_field::Field
-    x_bins::Array
     y_field::Field
-    y_bins::Array
     weight_field
     function Profile2D(data_source::DataContainer, x_field::Field, x_n::Integer,
                        x_min::Real, x_max::Real, x_log::Bool, y_field::Field,
@@ -79,8 +76,7 @@ type Profile2D <: YTProfile
         profile = prof.Profile2D(data_source.cont, x_field, x_n, xmin, xmax,
                                  x_log, y_field, y_n, ymin, ymax, y_log,
                                  weight_field=weight)
-        new(profile, data_source, x_field, profile[:x_bins], y_field,
-            profile[:y_bins], weight_field)
+        new(profile, data_source, x_field, y_field, weight_field)
     end
 end
 
@@ -88,11 +84,8 @@ type Profile3D <: YTProfile
     profile::PyObject
     source::DataContainer
     x_field::Field
-    x_bins::Array
     y_field::Field
-    y_bins::Array
     z_field::Field
-    z_bins::Array
     weight_field
     function Profile3D(data_source::DataContainer, x_field::Field, x_n::Integer,
                        x_min::Real, x_max::Real, x_log::Bool, y_field::Field,
@@ -137,8 +130,7 @@ type Profile3D <: YTProfile
         profile = prof.Profile3D(data_source.cont, x_field, x_n, xmin, xmax,
                                  x_log, y_field, y_n, ymin, ymax, y_log,
                                  z_field, z_n, zmin, zmax, z_log, weight_field=weight)
-        new(profile, data_source, x_field, profile[:x_bins], y_field,
-            profile[:y_bins], z_field, profile[:z_bins], weight_field)
+        new(profile, data_source, x_field, y_field, z_field, weight_field)
     end
 end
 

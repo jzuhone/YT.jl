@@ -12,8 +12,8 @@ abstract YTPlot
 
 type SlicePlot <: YTPlot
     plot::PyObject
-    function SlicePlot(ds::DataSet, axis::Axis, fields::FieldOrArray,
-                       center="c"; args...)
+    function SlicePlot(ds::DataSet, axis::Axis, fields::FieldOrArray;
+                       center="c", args...)
         if typeof(center) == YTArray
             c = send_array_to_yt(center)
         else
@@ -26,7 +26,7 @@ end
 type ProjectionPlot <: YTPlot
     plot::PyObject
     function ProjectionPlot(ds::DataSet, axis::Axis, fields::FieldOrArray,
-                            center="c", data_source=nothing; args...)
+                            center="c"; data_source=nothing, args...)
         if data_source != nothing
             source = data_source.cont
         else
@@ -35,7 +35,7 @@ type ProjectionPlot <: YTPlot
         if typeof(center) == YTArray
             c = send_array_to_yt(center)
         else
-            c = nothing
+            c = center
         end
         new(pw.ProjectionPlot(ds.ds, axis, fields, center=c,
                               data_source=source; args...))

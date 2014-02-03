@@ -193,8 +193,8 @@ type Projection <: DataContainer
     weight_field
     center
     data_source
-    function Projection(ds::DataSet, field::String, axis::Axis, weight_field=nothing,
-                        center=nothing, data_source=nothing; args...)
+    function Projection(ds::DataSet, field::String, axis::Axis; weight_field=nothing,
+                        center=nothing, data_source=nothing, args...)
         if weight_field != nothing
             weight = weight_field
         else
@@ -225,8 +225,8 @@ type Slice <: DataContainer
     ds::DataSet
     axis::Axis
     center
-    function Slice(ds::DataSet, axis::Axis, coord::Union(RealOrArray,YTQuantity,YTArray),
-                   center=nothing; args...)
+    function Slice(ds::DataSet, axis::Axis, coord::Union(RealOrArray,YTQuantity,YTArray);
+                   center=nothing, args...)
         if typeof(coord) == YTArray
             cd = send_array_to_yt(coord)
         elseif typeof(coord) == YTQuantity

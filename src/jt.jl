@@ -1,11 +1,11 @@
 module jt
 
-export load, load_uniform_grid, load_amr_grids, load_particles, CutRegion
+export load, load_uniform_grid, load_amr_grids, load_particles, CutRegion, DataContainer
 export YTArray, YTQuantity, in_units, in_cgs, get_array, Disk, Ray, Boolean
 export Slice, Grids, Sphere, AllData, Projection, GridCollection, CoveringGrid
 export physical_constants, units, to_frb, get_smallest_dx, print_stats, CuttingPlane
 export SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot, show_plot, save_plot, call
-export FixedResolutionBuffer, Profile1D, Profile2D, Profile2D, add_fields, cut_region
+export FixedResolutionBuffer, Profile1D, Profile2D, Profile3D, add_fields, cut_region
 
 using PyCall
 @pyimport yt.mods as ytmods
@@ -23,7 +23,7 @@ include("profiles.jl")
 import .yt_array: YTArray, YTQuantity, in_units, in_cgs, get_array
 import .data_objects: DataSet, Grids, Sphere, AllData, Projection, Slice,
     GridCollection, CoveringGrid, to_frb, print_stats, get_smallest_dx,
-    Disk, Ray, Boolean, CuttingPlane, CutRegion, cut_region
+    Disk, Ray, Boolean, CuttingPlane, CutRegion, cut_region, DataContainer
 import .plots: SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot, show_plot,
     save_plot, call
 import .images: FixedResolutionBuffer

@@ -1,6 +1,7 @@
 module profiles
 
 using PyCall
+import Base.show
 import ..data_objects: DataContainer
 import ..utils: Field, FieldOrArray
 import ..yt_array: YTArray, YTQuantity

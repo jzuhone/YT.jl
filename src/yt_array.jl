@@ -12,16 +12,6 @@ import ..utils: pyslice, IntOrRange, RealOrArray
 ytarray_new = yt.units["yt_array"]["YTArray"]
 ytquantity_new = yt.units["yt_array"]["YTQuantity"]
 
-function fix_sqrt_units(units::String)
-    m = match(r"sqrt\((.*?)\)", units)
-    if m != nothing
-        subunit = m.captures[1]
-        return replace(units, "sqrt($subunit)", "($subunit)**0.5")
-    else
-        return units
-    end
-end
-
 # YTQuantity definition
 
 type YTQuantity
@@ -34,11 +24,10 @@ type YTQuantity
             ytquantity[:units], ytquantity[:units][:dimensions][:__str__]())
     end
     function YTQuantity(value::Real, units::String)
-        units_str = fix_sqrt_units(units)
-        if units_str == "dimensionless"
-            units_str = ""
+        if units == "dimensionless"
+            units = ""
         end
-        ytquantity = pycall(ytquantity_new, PyObject, value, units_str)
+        ytquantity = pycall(ytquantity_new, PyObject, value, units)
         new(ytquantity, ytquantity[:ndarray_view]()[1],
             ytquantity[:units], ytquantity[:units][:dimensions][:__str__]())
     end
@@ -155,8 +144,7 @@ end
 # Unit conversions
 
 function in_units(q::YTQuantity, units::String)
-    units_str = fix_sqrt_units(units)
-    YTQuantity(pycall(q.ytquantity["in_units"], PyObject, units_str))
+    YTQuantity(pycall(q.ytquantity["in_units"], PyObject, units))
 end
 in_units(q::YTQuantity, units::Sym) = in_units(q, units[:__str__]())
 in_units(q::YTQuantity, p::YTQuantity) = in_units(q, p.units)
@@ -194,7 +182,7 @@ end
 function *(a::YTQuantity, b::YTQuantity)
     same_dims = a.dimensions == b.dimensions
     if same_dims
-        c = q.value*in_units(b, a).value
+        c = a.value*in_units(b, a).value
         units = a.units*a.units
     else
         c = a.value*b.value
@@ -454,7 +442,8 @@ end
 
 function sqrt(a::YTQuantity)
     c = sqrt(a.value)
-    units = "\($(a.units[:__str__]())\)**0.5"
+    #units = "\($(a.units[:__str__]())\)**0.5"
+    units = "sqrt\($(a.units[:__str__]())\)"
     return YTQuantity(c, units)
 end
 

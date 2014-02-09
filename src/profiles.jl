@@ -9,33 +9,24 @@ import ..yt_array: YTArray, YTQuantity
 
 abstract YTProfile
 
-Limit = Union(Real,YTQuantity)
-
 type Profile1D <: YTProfile
     profile::PyObject
     source::DataContainer
     x_field::Field
+    x::YTArray
+    x_bins::YTArray
     weight_field
     function Profile1D(data_source::DataContainer, x_field::Field, x_n::Integer,
-                       x_min::Limit, x_max::Limit, x_log::Bool; weight_field=nothing)
+                       x_min::Real, x_max::Real, x_log::Bool; weight_field=nothing)
         if weight_field != nothing
             weight = weight_field
         else
             weight = pybuiltin("None")
         end
-        if typeof(x_min) == YTQuantity
-            xmin = x_min.ytquantity
-        else
-            xmin = x_min
-        end
-        if typeof(x_max) == YTQuantity
-            xmax = x_max.ytquantity
-        else
-            xmax = x_max
-        end
-        profile = prof.Profile1D(data_source.cont, x_field, x_n, xmin, xmax,
+        profile = prof.Profile1D(data_source.cont, x_field, x_n, x_min, x_max,
                                  x_log, weight_field=weight)
-        new(profile, data_source, x_field, weight_field)
+        new(profile, data_source, x_field, YTArray(profile["x"]),
+            YTArray(profile["x_bins"]), weight_field)
     end
 end
 
@@ -44,6 +35,10 @@ type Profile2D <: YTProfile
     source::DataContainer
     x_field::Field
     y_field::Field
+    x::YTArray
+    x_bins::YTArray
+    y::YTArray
+    y_bins::YTArray
     weight_field
     function Profile2D(data_source::DataContainer, x_field::Field, x_n::Integer,
                        x_min::Real, x_max::Real, x_log::Bool, y_field::Field,
@@ -54,30 +49,12 @@ type Profile2D <: YTProfile
         else
             weight = pybuiltin("None")
         end
-        if typeof(x_min) == YTQuantity
-            xmin = x_min.ytquantity
-        else
-            xmin = x_min
-        end
-        if typeof(x_max) == YTQuantity
-            xmax = x_max.ytquantity
-        else
-            xmax = x_max
-        end
-        if typeof(y_min) == YTQuantity
-            ymin = y_min.ytquantity
-        else
-            ymin = y_min
-        end
-        if typeof(y_max) == YTQuantity
-            ymax = y_max.ytquantity
-        else
-            ymax = y_max
-        end
-        profile = prof.Profile2D(data_source.cont, x_field, x_n, xmin, xmax,
-                                 x_log, y_field, y_n, ymin, ymax, y_log,
+        profile = prof.Profile2D(data_source.cont, x_field, x_n, x_min, x_max,
+                                 x_log, y_field, y_n, y_min, y_max, y_log,
                                  weight_field=weight)
-        new(profile, data_source, x_field, y_field, weight_field)
+        new(profile, data_source, x_field, y_field, YTArray(profile["x"]),
+            YTArray(profile["x_bins"]), YTArray(profile["y"]),
+            YTArray(profile["y_bins"]), weight_field)
     end
 end
 
@@ -87,6 +64,12 @@ type Profile3D <: YTProfile
     x_field::Field
     y_field::Field
     z_field::Field
+    x::YTArray
+    x_bins::YTArray
+    y::YTArray
+    y_bins::YTArray
+    z::YTArray
+    z_bins::YTArray
     weight_field
     function Profile3D(data_source::DataContainer, x_field::Field, x_n::Integer,
                        x_min::Real, x_max::Real, x_log::Bool, y_field::Field,
@@ -98,58 +81,38 @@ type Profile3D <: YTProfile
         else
             weight = pybuiltin("None")
         end
-        if typeof(x_min) == YTQuantity
-            xmin = x_min.ytquantity
-        else
-            xmin = x_min
-        end
-        if typeof(x_max) == YTQuantity
-            xmax = x_max.ytquantity
-        else
-            xmax = x_max
-        end
-        if typeof(y_min) == YTQuantity
-            ymin = y_min.ytquantity
-        else
-            ymin = y_min
-        end
-        if typeof(y_max) == YTQuantity
-            ymax = y_max.ytquantity
-        else
-            ymax = y_max
-        end
-        if typeof(z_min) == YTQuantity
-            zmin = z_min.ytquantity
-        else
-            zmin = z_min
-        end
-        if typeof(z_max) == YTQuantity
-            zmax = z_max.ytquantity
-        else
-            zmax = z_max
-        end
-        profile = prof.Profile3D(data_source.cont, x_field, x_n, xmin, xmax,
-                                 x_log, y_field, y_n, ymin, ymax, y_log,
-                                 z_field, z_n, zmin, zmax, z_log, weight_field=weight)
-        new(profile, data_source, x_field, y_field, z_field, weight_field)
+        profile = prof.Profile3D(data_source.cont, x_field, x_n, x_min, x_max,
+                                 x_log, y_field, y_n, y_min, y_max, y_log,
+                                 z_field, z_n, z_min, z_max, z_log, weight_field=weight)
+        new(profile, data_source, x_field, y_field, z_field, YTArray(profile["x"]),
+            YTArray(profile["x_bins"]), YTArray(profile["y"]),
+            YTArray(profile["y_bins"]), YTArray(profile["z"]),
+            YTArray(profile["z_bins"]), weight_field)
     end
 end
 
-function getindex(profile::YTProfile, key::String)
-    YTArray(get(profile.profile, PyObject, key))
+function set_x_unit(profile::YTProfile, String::new_unit)
+    profile.x = in_units(profile.x, new_unit)
+    profile.x_bins = in_units(profile.x_bins, new_unit)
+end
+function set_y_unit(profile::YTProfile, String::new_unit)
+    profile.y = in_units(profile.y, new_unit)
+    profile.y_bins = in_units(profile.y_bins, new_unit)
+end
+function set_z_unit(profile::YTProfile, String::new_unit)
+    profile.z = in_units(profile.z, new_unit)
+    profile.z_bins = in_units(profile.z_bins, new_unit)
 end
 
-function getindex(profile::YTProfile, ftype::String, fname::String)
-    YTArray(get(profile.profile, PyObject, (ftype,fname)))
+function set_field_unit(profile::YTProfile, field::String, new_unit::String)
+    profile.profile[:set_field_unit](field, new_unit)
 end
 
-function add_fields(profile::YTProfile, fields::FieldOrArray)
-    profile.profile[:add_fields](fields)
-end
-
-function show(io::IO, profile::YTProfile)
-    print(io,profile.profile[:__repr__]())
-end
+getindex(profile::YTProfile, key::String) = YTArray(get(profile.profile, PyObject, key))
+getindex(profile::YTProfile, ftype::String, fname::String) = YTArray(get(profile.profile,
+                                                                         PyObject, (ftype,fname)))
+add_fields(profile::YTProfile, fields::FieldOrArray) = profile.profile[:add_fields](fields)
+show(io::IO, profile::YTProfile) = print(io,profile.profile[:__repr__]())
 
 end
 

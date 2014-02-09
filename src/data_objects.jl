@@ -1,11 +1,11 @@
 module data_objects
 
 using PyCall
-@pyimport yt
 import Base: size, show
 import ..yt_array: YTArray, YTQuantity
 import ..utils: pyslice, Axis, RealOrArray, Length, StringOrArray
 import ..images: FixedResolutionBuffer
+import jt: yt
 
 # Dataset
 

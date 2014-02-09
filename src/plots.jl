@@ -2,7 +2,7 @@ module plots
 
 import ..data_objects: DataSet, DataContainer
 import ..utils: Axis, FieldOrArray, Field
-import ..yt_array: YTArray, send_array_to_yt
+import ..yt_array: YTArray
 
 using PyCall
 @pyimport yt.visualization.plot_window as pw
@@ -15,7 +15,7 @@ type SlicePlot <: YTPlot
     function SlicePlot(ds::DataSet, axis::Axis, fields::FieldOrArray;
                        center="c", args...)
         if typeof(center) == YTArray
-            c = send_array_to_yt(center)
+            c = convert(PyObject, center)
         else
             c = center
         end
@@ -33,7 +33,7 @@ type ProjectionPlot <: YTPlot
             source = pybuiltin("None")
         end
         if typeof(center) == YTArray
-            c = send_array_to_yt(center)
+            c = convert(PyObject, center)
         else
             c = center
         end

@@ -4,7 +4,7 @@ import ..yt_array: YTQuantity
 
 using PyCall
 
-@pyimport yt
+import jt: yt
 
 # meter
 

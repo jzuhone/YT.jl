@@ -7,8 +7,9 @@ import Base: cbrt, convert, copy, eltype, hypot, maximum, minimum, ndims,
 
 using SymPy
 using PyCall
-@pyimport yt
+#@pyimport yt
 import ..utils: pyslice, IntOrRange, RealOrArray
+import jt: yt
 
 # Grab the classes for creating YTArrays and YTQuantities
 
@@ -96,10 +97,6 @@ function get_array(a::YTArray)
     else
         return a.array
     end
-end
-
-function send_array_to_yt(a::YTArray)
-    pycall(ytarray_new, PyObject, a.array, a.units[:__str__]())
 end
 
 # Copy
@@ -421,14 +418,15 @@ end
 function show(io::IO, a::YTArray)
     num_cells = length(a)
     if num_cells == 0
-        println(io, "[] $(a.units)")
+        println(io, "YTArray [] $(a.units)")
         return
     end
     if num_cells == 1
-        println(io, "[ $(a.array[1]) ] $(a.units)")
+        println(io, "YTArray [ $(a.array[1]) ] $(a.units)")
         return
     end
     nd = ndims(a)
+    print(io, "YTArray ")
     if nd == 1
         show_helper1d(io, a.array)
     elseif nd == 2

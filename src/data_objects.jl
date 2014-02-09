@@ -3,7 +3,7 @@ module data_objects
 using PyCall
 @pyimport yt
 import Base: size, show
-import ..yt_array: YTArray, YTQuantity, send_array_to_yt
+import ..yt_array: YTArray, YTQuantity
 import ..utils: pyslice, Axis, RealOrArray, Length, StringOrArray
 import ..images: FixedResolutionBuffer
 
@@ -74,17 +74,17 @@ type Region <: DataContainer
     function Region(ds::DataSet, center::Union(StringOrArray,YTArray),
                     left_edge::AbstractArray, right_edge::AbstractArray; args...)
         if typeof(center) == YTArray
-            c = send_array_to_yt(center)
+            c = convert(PyObject, center)
         else
             c = center
         end
         if typeof(left_edge) == YTArray
-            le = send_array_to_yt(left_edge)
+            le = convert(PyObject, left_edge)
         else
             le = left_edge
         end
         if typeof(right_edge) == YTArray
-            re = send_array_to_yt(right_edge)
+            re = convert(PyObject, right_edge)
         else
             re = right_edge
         end
@@ -107,7 +107,7 @@ type Disk <: DataContainer
                   radius::Union(Length,YTQuantity),
                   height::Union(Length,YTQuantity); args...)
         if typeof(center) == YTArray
-            c = send_array_to_yt(center)
+            c = convert(PyObject, center)
         else
             c = center
         end
@@ -137,12 +137,12 @@ type Ray <: DataContainer
     function Ray(ds::DataSet, start_point::AbstractArray,
                  end_point::AbstractArray; args...)
         if typeof(start_point) == YTArray
-            sp = send_array_to_yt(start_point)
+            sp = convert(PyObject, start_point)
         else
             sp = start_point
         end
         if typeof(end_point) == YTArray
-            ep = send_array_to_yt(end_point)
+            ep = convert(PyObject, end_point)
         else
             ep = end_point
         end
@@ -174,7 +174,7 @@ type CuttingPlane <: DataContainer
     function CuttingPlane(ds::DataSet, normal::Array,
                           center::Union(StringOrArray,YTArray); args...)
         if typeof(center) == YTArray
-            c = send_array_to_yt(center)
+            c = convert(PyObject, center)
         else
             c = center
         end
@@ -203,7 +203,7 @@ type Projection <: DataContainer
         if center == nothing
             c = pybuiltin("None")
         elseif typeof(center) == YTArray
-            c = send_array_to_yt(center)
+            c = convert(PyObject, center)
         else
             c = nothing
         end
@@ -228,7 +228,7 @@ type Slice <: DataContainer
     function Slice(ds::DataSet, axis::Axis, coord::Union(RealOrArray,YTQuantity,YTArray);
                    center=nothing, args...)
         if typeof(coord) == YTArray
-            cd = send_array_to_yt(coord)
+            cd = convert(PyObject, coord)
         elseif typeof(coord) == YTQuantity
             cd = coord.quantity
         else
@@ -237,7 +237,7 @@ type Slice <: DataContainer
         if center == nothing
             c = pybuiltin("None")
         elseif typeof(center) == YTArray
-            c = send_array_to_yt(center)
+            c = convert(PyObject, center)
         else
             c = center
         end
@@ -263,7 +263,7 @@ type Sphere <: DataContainer
     function Sphere(ds::DataSet, center::Union(StringOrArray,YTArray),
                     radius::Union(Length,YTQuantity); args...)
         if typeof(center) == YTArray
-            c = send_array_to_yt(center)
+            c = convert(PyObject, center)
         else
             c = center
         end

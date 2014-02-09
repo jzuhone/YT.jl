@@ -1,7 +1,10 @@
 module yt_array
 
 import Base: cbrt, convert, copy, eltype, hypot, maximum, minimum, ndims,
-             similar, show, size, sqrt
+             similar, show, size, sqrt, exp, log, log10, sin, cos, tan,
+             expm1, log2, log1p, sinh, cosh, tanh, csc, sec, cot, csch,
+             sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan
+
 using SymPy
 using PyCall
 @pyimport yt
@@ -24,9 +27,6 @@ type YTQuantity
             ytquantity[:units], ytquantity[:units][:dimensions][:__str__]())
     end
     function YTQuantity(value::Real, units::String)
-        if units == "dimensionless"
-            units = ""
-        end
         ytquantity = pycall(ytquantity_new, PyObject, value, units)
         new(ytquantity, ytquantity[:ndarray_view]()[1],
             ytquantity[:units], ytquantity[:units][:dimensions][:__str__]())
@@ -55,6 +55,40 @@ type YTArray <: AbstractArray
     YTArray(array::AbstractArray, q::YTQuantity) = YTArray(array, q.units)
 end
 
+YTObject = Union(YTArray,YTQuantity)
+
+# Macros
+
+macro array_same_units(a,b,op)
+    quote
+        if ($a.dimensions)==($b.dimensions)
+            return YTArray(($op)(get_array($a),in_units($b,($a.units)).array), ($a.units))
+        else
+            error("Not in the same dimensions!")
+        end
+    end
+end
+
+macro quantity_same_units(a,b,op)
+    quote
+        if ($a.dimensions)==($b.dimensions)
+            return YTQuantity(($op)(($a.value),in_units($b,($a.units)).value), ($a.units))
+        else
+            error("Not in the same dimensions!")
+        end
+    end
+end
+
+macro arr_quan_same_units(a,b,op)
+    quote
+        if ($a.dimensions)==($b.dimensions)
+            return YTArray(($op)(get_array($a),in_units($b,($a.units)).value), ($a.units))
+        else
+            error("Not in the same dimensions!")
+        end
+    end
+end
+
 # Helper functions
 function get_array(a::YTArray)
     if typeof(a.array) <: PyArray
@@ -68,25 +102,19 @@ function send_array_to_yt(a::YTArray)
     pycall(ytarray_new, PyObject, a.array, a.units[:__str__]())
 end
 
-# Copy, similar
+# Copy
 
-function copy(q::YTQuantity)
-    YTQuantity(q.value, q)
-end
-function copy(a::YTArray)
-    YTArray(get_array(a), a.units)
-end
+copy(q::YTQuantity) = YTQuantity(q.value, q)
+copy(a::YTArray) = YTArray(get_array(a), a.units)
 
 # Conversions
 
 convert(::Type{YTArray}, o::PyObject) = YTArray(o)
 convert(::Type{YTQuantity}, o::PyObject) = YTQuantity(o)
-function convert(::Type{Array}, a::YTArray)
-    get_array(a)
-end
-function convert(::Type{Real}, q::YTQuantity)
-    q.value
-end
+convert(::Type{Array}, a::YTArray) = get_array(a)
+convert(::Type{Real}, q::YTQuantity) = q.value
+convert(::Type{PyObject}, a::YTArray) = pycall(ytarray_new, PyObject, a.array, a.units[:__str__]())
+convert(::Type{PyObject}, a::YTQuantity) = pycall(ytquantity_new, PyObject, a.value, a.units[:__str__]())
 
 # Indexing, ranges (slicing)
 
@@ -140,7 +168,6 @@ function getindex(a::YTArray, i::IntOrRange, j::IntOrRange)
     end
 end
 
-
 # Unit conversions
 
 function in_units(q::YTQuantity, units::String)
@@ -166,18 +193,15 @@ function in_cgs(a::YTArray)
     YTArray(get_array(a)*q.value, q.units)
 end
 
-# Basic arithmetic
+# Arithmetic and comparisons
 
-# YTQuantity first
+# YTQuantity
 
-function +(a::YTQuantity, b::YTQuantity)
-    same_dims = a.dimensions == b.dimensions
-    if !same_dims
-        error("Quantities are not in the same dimensions!")
-    end
-    c = a.value + in_units(b, a).value
-    return YTQuantity(r, b.units)
+for op = (:+, :-, :hypot, :(==), :(!=), :(>=), :(<=), :<, :>)
+    @eval ($op)(a::YTQuantity,b::YTQuantity) = @quantity_same_units(a,b,($op))
 end
+
+-(a::YTQuantity) = YTQuantity(-a.value, a.units)
 
 function *(a::YTQuantity, b::YTQuantity)
     same_dims = a.dimensions == b.dimensions
@@ -191,73 +215,44 @@ function *(a::YTQuantity, b::YTQuantity)
     return YTQuantity(c, units)
 end
 
-function *(a::YTQuantity, b::Real)
-    c = b*a.value
-    return YTQuantity(c, a)
-end
-
+*(a::YTQuantity, b::Real) = YTQuantity(b*a.value, a.units)
 *(a::Real, b::YTQuantity) = *(b, a)
 /(a::YTQuantity, b::Real) = *(a, 1.0/b)
 \(a::YTQuantity, b::Real) = /(b,a)
 
-function /(a::Real, b::YTQuantity)
-    c = a/b.value
-    units = "1/\($(b.units[:__str__]())\)"
-    return YTQuantity(c, units)
-end
+/(a::Real, b::YTQuantity) = YTQuantity(a/b.value, "1/\($(b.units[:__str__]())\)")
 
 \(a::Real, b::YTQuantity) = /(b,a)
 
-function ^(a::YTQuantity, b::Integer)
-    c = a.value^b
-    units = a.units^b
-    return YTQuantity(c, units)
-end
+^(a::YTQuantity, b::Integer) = YTQuantity(a.value^b, a.units^b)
+^(a::YTQuantity, b::Real) = YTQuantity(a.value^b, a.units^b)
 
-function ^(a::YTQuantity, b::Real)
-    c = a.value^b
-    units = a.units^b
-    return YTQuantity(c, units)
-end
-
--(a::YTQuantity, b::YTQuantity) = +(a,-b)
 /(a::YTQuantity, b::YTQuantity) = *(a,1.0/b)
 \(a::YTQuantity, b::YTQuantity) = /(b,a)
 
-function *(a::YTQuantity, b::Array)
-    c = b*a.value
-    return YTArray(c, a)
-end
+# YTQuantities and Arrays
 
+*(a::YTQuantity, b::Array) = YTArray(b*a.value, a.units)
 *(a::Array, b::YTQuantity) = *(b, a)
 /(a::YTQuantity, b::Array) = *(a, 1.0/b)
 /(a::Array, b::YTQuantity) = *(a, 1.0/b)
 \(a::YTQuantity, b::Array) = /(b,a)
 \(a::Array, b::YTQuantity) = /(b,a)
--(a::YTQuantity) = *(-1.0, a)
 
-function *(a::YTQuantity, b::PyArray)
-    c = copy(b)*a.value
-    return YTArray(c, a)
-end
-
+*(a::YTQuantity, b::PyArray) = YTArray(copy(b)*a.value, a.units)
 *(a::PyArray, b::YTQuantity) = *(b, a)
 /(a::YTQuantity, b::PyArray) = *(a, 1.0/b)
 /(a::PyArray, b::YTQuantity) = *(a, 1.0/b)
 \(a::YTQuantity, b::PyArray) = /(b,a)
 \(a::PyArray, b::YTQuantity) = /(b,a)
--(a::YTQuantity) = *(-1.0, a)
 
 # YTArray next
 
-function +(a::YTArray, b::YTArray)
-    same_dims = a.dimensions == b.dimensions
-    if !same_dims
-        error("Arrays are not in the same dimensions!")
-    end
-    c = get_array(a) + in_units(b, a.units).array
-    return YTArray(c, a.units)
+for op = (:+, :-, :hypot, :.==, :.!=, :.>=, :.<=, :.<, :.>)
+    @eval ($op)(a::YTArray,b::YTArray) = @array_same_units(a,b,($op))
 end
+
+-(a::YTArray) = YTArray(-a.array, a.units)
 
 function .*(a::YTArray, b::YTArray)
     same_dims = a.dimensions == b.dimensions
@@ -268,63 +263,41 @@ function .*(a::YTArray, b::YTArray)
         c = get_array(a).*get_array(b)
         units = a.units*b.units
     end
-    if units[:__str__]() == "dimensionless"
-        return c
-    else
-        return YTArray(c, units)
-    end
+    return YTArray(c, units)
 end
 
-function *(a::YTArray, b::Real)
-    c = b*get_array(a)
-    return YTArray(c, a.units)
-end
+# YTArrays and Reals
 
--(a::YTArray) = *(-1.0, a)
+*(a::YTArray, b::Real) = YTArray(b*get_array(a), a.units)
 *(a::Real, b::YTArray) = *(b, a)
 /(a::YTArray, b::Real) = *(a, 1.0/b)
 \(a::YTArray, b::Real) = /(b,a)
 
-function /(a::Real, b::YTArray)
-    c = a/get_array(b)
-    quantity = 1.0/b.quantity
-    return YTArray(c, quantity)
-end
-
+/(a::Real, b::YTArray) = YTArray(a/get_array(b), 1.0/b.quantity)
 \(a::Real, b::YTArray) = /(b,a)
 
--(a::YTArray, b::YTArray) = +(a,-b)
 ./(a::YTArray, b::YTArray) = .*(a,1.0/b)
 .\(a::YTArray, b::YTArray) = ./(b, a)
 
-function .*(a::YTArray, b::Array)
-    c = b.*get_array(a)
-    return YTArray(c, a.units)
-end
+# YTArrays and Arrays
 
+.*(a::YTArray, b::Array) = YTArray(b.*get_array(a), a.units)
 .*(a::Array, b::YTArray) = .*(b, a)
 ./(a::YTArray, b::Array) = .*(a, 1.0/b)
 ./(a::Array, b::YTArray) = .*(a, 1.0/b)
 .\(a::YTArray, b::Array) = ./(b, a)
 .\(a::Array, b::YTArray) = ./(b, a)
 
-function .^(a::YTArray, b::Real)
-    c = get_array(a).^b
-    units = a.units^b
-    return YTArray(c, units)
+.^(a::YTArray, b::Real) = YTArray(get_array(a).^b, a.units^b)
+
+# YTArrays and YTQuantities
+
+for op = (:+, :-, :hypot, :.==, :.!=, :.>=, :.<=, :.<, :.>)
+    @eval ($op)(a::YTArray,b::YTQuantity) = @arr_quan_same_units(a,b,($op))
 end
 
-function +(a::YTQuantity, b::YTArray)
-    same_dims = a.dimensions == b.dimensions
-    if !same_dims
-        error("Array and quantity are not in the same dimensions!")
-    end
-    c = a.value + in_units(b, a.units).array
-    return YTArray(c, a.units)
-end
 +(a::YTQuantity, b::YTArray) = +(b,a)
--(a::YTArray, b::YTQuantity) = +(a,-b)
--(a::YTQuantity, b::YTArray) = -(b,a)
+-(a::YTQuantity, b::YTArray) = -(-(b,a))
 
 function *(a::YTQuantity, b::YTArray)
     same_dims = a.dimensions == b.dimensions
@@ -335,11 +308,7 @@ function *(a::YTQuantity, b::YTArray)
         c = a.value*get_array(b)
         units = a.units*b.units
     end
-    if units[:__str__]() == "dimensionless"
-        return c
-    else
-        return YTArray(c, units)
-    end
+    return YTArray(c, units)
 end
 
 *(a::YTArray, b::YTQuantity) = *(b,a)
@@ -348,134 +317,39 @@ end
 \(a::YTArray, b::YTQuantity) = /(b,a)
 \(a::YTQuantity, b::YTArray) = /(b,a)
 
-# Comparison functions
-
-function .==(a::YTArray, b::YTArray)
-    same_dims = a.dimensions == b.dimensions
-    if !same_dims
-        error("Arrays are not in the same dimensions!")
-    end
-    return get_array(a) .== in_units(b,a.units).array
-end
-
-.!=(a::YTArray, b::YTArray) = !(.==(a,b))
-
-function .>=(a::YTArray, b::YTArray)
-    same_dims = a.dimensions == b.dimensions
-    if !same_dims
-        error("Arrays are not in the same dimensions!")
-    end
-    return get_array(a) .>= in_units(b,a.units).array
-end
-.<=(a::YTArray, b::YTArray) = .>=(b,a)
-
-function .>(a::YTArray, b::YTArray)
-    same_dims = a.dimensions == b.dimensions
-    if !same_dims
-        error("Arrays are not in the same dimensions!")
-    end
-    return get_array(a) .> in_units(b,a.units).array
-end
-.<(a::YTArray, b::YTArray) = .>(b,a)
-
-function ==(a::YTQuantity, b::YTQuantity)
-    same_dims = a.dimensions == b.dimensions
-    if !same_dims
-        error("Quantities are not in the same dimensions!")
-    end
-    return a.value == in_units(b,a.units).value
-end
-!=(a::YTQuantity, b::YTQuantity) = !(==(a,b))
-
-function >=(a::YTQuantity, b::YTQuantity)
-    same_dims = a.dimensions == b.dimensions
-    if !same_dims
-        error("Quantities are not in the same dimensions!")
-    end
-    return a.value >= in_units(b,a.units).value
-end
-<=(a::YTQuantity, b::YTQuantity) = >=(b,a)
-
-function >(a::YTQuantity, b::YTQuantity)
-    same_dims = a.dimensions == b.dimensions
-    if !same_dims
-        error("Quantities are not in the same dimensions!")
-    end
-    return a.value > in_units(b,a.units).value
-end
-<(a::YTQuantity, b::YTQuantity) = >(b,a)
-
-function .==(a::YTQuantity, b::YTArray)
-    same_dims = a.dimensions == b.dimensions
-    if !same_dims
-        error("Quantities are not in the same dimensions!")
-    end
-    return get_array(a) .== b.value
-end
-.==(a::YTArray, b::YTQuantity) = .==(b,a)
-.!=(a::YTQuantity, b::YTArray) = !(.==(a,b))
-.!=(a::YTArray, b::YTQuantity) = .!=(b,a)
-
-function .>=(a::YTQuantity, b::YTArray)
-    same_dims = a.dimensions == b.dimensions
-    if !same_dims
-        error("Quantities are not in the same dimensions!")
-    end
-    return a.value .>= in_units(b,a.units).array
-end
-.<=(a::YTArray, b::YTQuantity) = .>=(b,a)
-.<(a::YTQuantity, b::YTArray) = !(.>=(a,b))
-.>=(a::YTArray, b::YTQuantity) =!(.<(a,b))
-
-function .>(a::YTQuantity, b::YTArray)
-    same_dims = a.dimensions == b.dimensions
-    if !same_dims
-        error("Quantities are not in the same dimensions!")
-    end
-    return a.value .> in_units(b,a.units).array
-end
-.<(a::YTArray, b::YTQuantity) = .>(b,a)
-.<=(a::YTQuantity, b::YTArray) = !(.>(a,b))
-.>(a::YTArray, b::YTQuantity) = !(.<=(a,b))
+.==(a::YTQuantity, b::YTArray) = .==(b,a)
+.!=(a::YTQuantity, b::YTArray) = .!=(b,a)
+.>=(a::YTQuantity, b::YTArray) = .<=(b,a)
+.<=(a::YTQuantity, b::YTArray) = .>=(b,a)
+.>(a::YTQuantity, b::YTArray) = .<(b,a)
+.<(a::YTQuantity, b::YTArray) = .>(b,a)
 
 # Mathematical functions
 
-function sqrt(a::YTQuantity)
-    c = sqrt(a.value)
-    #units = "\($(a.units[:__str__]())\)**0.5"
-    units = "sqrt\($(a.units[:__str__]())\)"
-    return YTQuantity(c, units)
-end
+sqrt(a::YTQuantity) = YTQuantity(sqrt(a.value), "sqrt\($(a.units[:__str__]())\)")
+sqrt(a::YTArray) = YTArray(sqrt(a.array), "sqrt\($(a.units[:__str__]())\)")
 
-function sqrt(a::YTArray)
-    c = sqrt(a.array)
-    units = "\($(a.units[:__str__]())\)**0.5"
-    return YTArray(c, units)
-end
-
-function cbrt(a::YTQuantity)
-    return YTQuantity(cbrt(a.value), (a.units)^(1/3))
-end
-
-function cbrt(a::YTArray)
-    c = cbrt(a.array)
-    units = cbrt(a.units)
-    return YTArray(c, units)
-end
+cbrt(a::YTQuantity) = YTQuantity(cbrt(a.value), (a.units)^(1/3))
+cbrt(a::YTArray) = YTArray(cbrt(a.array), (a.units)^(1/3))
 
 maximum(a::YTArray) = YTQuantity(maximum(a.array), a.units)
 minimum(a::YTArray) = YTQuantity(minimum(a.array), a.units)
 
-function hypot(a::YTArray, b::YTArray)
-    same_dims = a.dimensions == b.dimensions
-    if !same_dims
-        error("Arrays are not in the same dimensions!")
-    end
-    c = hypot(a.array, b.array)
-    return YTArray(c, a.units)
-end
-
 hypot(a::YTArray, b::YTArray, c::YTArray) = hypot(hypot(a,b), c)
+hypot(a::YTQuantity, b::YTQuantity, c::YTQuantity) = hypot(hypot(a,b), c)
+
+abs(a::YTArray) = YTArray(abs(a.array), a.units)
+abs(q::YTQuantity) = YTQuantity(abs(q.value), q.units)
+abs2(a::YTArray) = YTArray(abs2(a.array), a.units*a.units)
+abs2(q::YTQuantity) = YTQuantity(abs2(q.value), q.units*q.units)
+
+for op = (:exp, :log, :log2, :log10, :log1p, :expm1,
+          :sin, :cos, :tan, :sec, :csc, :cot, :sinh,
+          :cosh, :tanh, :coth, :sech, :csch, :sinpi,
+          :cospi, :asin, :acos, :atan)
+    @eval ($op)(a::YTArray) = ($op)(a.array)
+    @eval ($op)(q::YTQuantity) = ($op)(q.value)
+end
 
 # Show
 
@@ -565,9 +439,7 @@ function show(io::IO, a::YTArray)
     print(io, " $(a.units)")
 end
 
-function show(io::IO, q::YTQuantity)
-    print(io,"$(q.value) $(q.units)")
-end
+show(io::IO, q::YTQuantity) = print(io,"$(q.value) $(q.units)")
 
 # Array methods
 

@@ -1,11 +1,12 @@
 module jt
 
-export load, load_uniform_grid, load_amr_grids, load_particles, CutRegion, DataContainer
-export YTArray, YTQuantity, in_units, in_cgs, get_array, Disk, Ray, Boolean
-export Slice, Grids, Sphere, AllData, Projection, GridCollection, CoveringGrid
-export physical_constants, units, to_frb, get_smallest_dx, print_stats, CuttingPlane
-export SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot, show_plot, save_plot, call
-export FixedResolutionBuffer, Profile1D, Profile2D, Profile3D, add_fields, cut_region
+export load, load_uniform_grid, load_amr_grids, load_particles, CutRegion,
+    DataContainer, YTArray, YTQuantity, in_units, in_cgs, get_array, Disk,
+    Ray, Boolean, Slice, Grids, Sphere, AllData, Projection, GridCollection,
+    CoveringGrid, physical_constants, units, to_frb, get_smallest_dx,
+    print_stats, CuttingPlane, SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot,
+    show_plot, save_plot, call, FixedResolutionBuffer, Profile1D, Profile2D,
+    Profile3D, add_fields, cut_region
 
 using PyCall
 @pyimport yt.mods as ytmods
@@ -29,10 +30,7 @@ import .plots: SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot, show_plot,
 import .images: FixedResolutionBuffer
 import .profiles: Profile1D, Profile2D, Profile3D, add_fields
 
-function load(fn::String; args...)
-    ds = ytmods.load(fn; args...)
-    return DataSet(ds)
-end
+load(fn::String; args...) = DataSet(ytmods.load(fn; args...))
 
 # Stream datasets
 

@@ -6,7 +6,8 @@ export load, load_uniform_grid, load_amr_grids, load_particles, CutRegion,
     CoveringGrid, physical_constants, units, to_frb, get_smallest_dx,
     print_stats, CuttingPlane, SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot,
     show_plot, save_plot, call, FixedResolutionBuffer, Profile1D, Profile2D,
-    Profile3D, add_fields, cut_region
+    Profile3D, add_fields, cut_region, set_field_unit, set_x_unit, set_y_unit,
+    set_z_unit
 
 using PyCall
 @pyimport yt.mods as ytmods
@@ -28,7 +29,8 @@ import .data_objects: DataSet, Grids, Sphere, AllData, Projection, Slice,
 import .plots: SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot, show_plot,
     save_plot, call
 import .images: FixedResolutionBuffer
-import .profiles: Profile1D, Profile2D, Profile3D, add_fields
+import .profiles: Profile1D, Profile2D, Profile3D, add_fields, set_x_unit,
+    set_y_unit, set_z_unit, set_field_unit
 
 load(fn::String; args...) = DataSet(ytmods.load(fn; args...))
 

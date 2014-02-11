@@ -4,7 +4,7 @@ using PyCall
 import Base.show
 import ..data_objects: DataContainer
 import ..utils: Field, FieldOrArray
-import ..yt_array: YTArray, YTQuantity
+import ..yt_array: YTArray, YTQuantity, in_units
 @pyimport yt.data_objects.profiles as prof
 
 abstract YTProfile
@@ -94,14 +94,17 @@ end
 function set_x_unit(profile::YTProfile, new_unit::String)
     profile.x = in_units(profile.x, new_unit)
     profile.x_bins = in_units(profile.x_bins, new_unit)
+    return
 end
 function set_y_unit(profile::YTProfile, new_unit::String)
     profile.y = in_units(profile.y, new_unit)
     profile.y_bins = in_units(profile.y_bins, new_unit)
+    return
 end
 function set_z_unit(profile::YTProfile, new_unit::String)
     profile.z = in_units(profile.z, new_unit)
     profile.z_bins = in_units(profile.z_bins, new_unit)
+    return
 end
 
 function set_field_unit(profile::YTProfile, field::String, new_unit::String)

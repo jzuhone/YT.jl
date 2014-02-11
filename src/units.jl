@@ -33,7 +33,7 @@ kg = kilogram   = YTQuantity(yt.units["kg"])
 
 # second
 
-fs   = femtoseconds = YTQuantity(yt.units["fs"])
+fs   = femtosecond = YTQuantity(yt.units["fs"])
 ps   = picosecond   = YTQuantity(yt.units["ps"])
 ns   = nanosecond   = YTQuantity(yt.units["ns"])
 ms   = millisecond  = YTQuantity(yt.units["ms"])

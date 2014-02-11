@@ -18,8 +18,6 @@ sigma_thompson = YTQuantity(ytutils.physical_constants["sigma_thompson"])
 amu_cgs = YTQuantity(ytutils.physical_constants["amu_cgs"])
 Na = 1 / amu_cgs
 Tcmb = YTQuantity(ytutils.physical_constants["Tcmb"])
-rho_crit_now = YTQuantity(ytutils.physical_constants["rho_crit_now"])
-hubble_constant = YTQuantity(ytutils.physical_constants["hubble_constant"])
 stefan_boltzmann = YTQuantity(ytutils.physical_constants["stefan_boltzmann_constant_cgs"])
 
 end

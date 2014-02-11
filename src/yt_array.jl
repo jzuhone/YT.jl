@@ -3,7 +3,8 @@ module yt_array
 import Base: cbrt, convert, copy, eltype, hypot, maximum, minimum, ndims,
              similar, show, size, sqrt, exp, log, log10, sin, cos, tan,
              expm1, log2, log1p, sinh, cosh, tanh, csc, sec, cot, csch,
-             sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan
+             sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan, sum,
+             cumsum, cummin, cummax, cumsum_kbn, diff
 
 using SymPy
 using PyCall
@@ -447,5 +448,23 @@ size(a::YTArray, n::Integer) = size(a.array, n)
 ndims(a::YTArray) = ndims(a.array)
 
 eltype(a::YTArray) = eltype(a.array)
+
+sum(a::YTArray) = sum(a.array)*a.quantity
+sum(a::YTArray, dims) = sum(a.array, dims)*a.quantity
+
+cumsum(a::YTArray) = cumsum(a.array)*a.quantity
+cumsum(a::YTArray, dim::Integer) = cumsum(a.array, dim)*a.quantity
+
+cumsum_kbn(a::YTArray) = cumsum(a.array)*a.quantity
+cumsum_kbn(a::YTArray, dim::Integer) = cumsum(a.array, dim)*a.quantity
+
+cummin(a::YTArray) = cummin(a.array)*a.quantity
+cummin(a::YTArray, dim::Integer) = cummin(a.array, dim)*a.quantity
+
+cummax(a::YTArray) = cummax(a.array)*a.quantity
+cummax(a::YTArray, dim::Integer) = cummax(a.array, dim)*a.quantity
+
+#diff(a::YTArray) = diff(a.array)*a.quantity
+#diff(a::YTArray, dim::Integer) = diff(a.array, dim)*a.quantity
 
 end

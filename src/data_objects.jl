@@ -388,19 +388,12 @@ function getindex(grids::Grids, i::Int)
          Grids(g[:Children]))
 end
 
-function getindex(grids::Grids, idxs::Ranges)
-    Grids(grids.grids[idxs])
-end
+getindex(grids::Grids, idxs::Ranges) = Grids(grids.grids[idxs])
 
 # Show
 
-function show(io::IO, ds::DataSet)
-    print(io,ds.ds[:__repr__]())
-end
-
-function show(io::IO, dc::DataContainer)
-    print(io,dc.cont[:__repr__]())
-end
+show(io::IO, ds::DataSet) = print(io,ds.ds[:__repr__]())
+show(io::IO, dc::DataContainer) = print(io,dc.cont[:__repr__]())
 
 function show(io::IO, grids::Grids)
     num_grids = length(grids)

@@ -3,7 +3,7 @@ module data_objects
 using PyCall
 import Base: size, show
 import ..yt_array: YTArray, YTQuantity
-import ..utils: pyslice, Axis, RealOrArray, Length, StringOrArray
+import ..utils: Axis, RealOrArray, Length, StringOrArray, Field
 import ..images: FixedResolutionBuffer
 import jt: yt
 
@@ -11,7 +11,7 @@ import jt: yt
 
 type DataSet
     ds::PyObject
-    h::PyObject
+    index::PyObject
     parameters::PyDict
     domain_center::YTArray
     domain_left_edge::YTArray
@@ -21,12 +21,10 @@ type DataSet
     dimensionality::Integer
     current_time::YTQuantity
     current_redshift::Real
-    field_list::Array
-    derived_field_list::Array
     max_level::Integer
     function DataSet(ds::PyObject)
-        new(ds, ds[:h],
-            PyDict(ds[:h]["parameters"]::PyObject),
+        new(ds, ds[:index],
+            PyDict(ds["parameters"]::PyObject),
             YTArray(ds["domain_center"]),
             YTArray(ds["domain_left_edge"]),
             YTArray(ds["domain_right_edge"]),
@@ -35,18 +33,16 @@ type DataSet
             ds[:dimensionality][1],
             YTQuantity(ds["current_time"]),
             ds[:current_redshift],
-            ds[:h][:field_list],
-            ds[:h][:derived_field_list],
-            ds[:h][:max_level][1])
+            ds[:max_level][1])
     end
 end
 
 function get_smallest_dx(ds::DataSet)
-    pycall(ds.h["get_smallest_dx"], YTArray)[1]
+    pycall(ds.index["get_smallest_dx"], YTArray)[1]
 end
 
 function print_stats(ds::DataSet)
-    ds.h[:print_stats]()
+    ds.index[:print_stats]()
 end
 
 # Data containers
@@ -58,8 +54,9 @@ abstract DataContainer
 type AllData <: DataContainer
     cont::PyObject
     ds::DataSet
+    field_dict::Dict
     function AllData(ds::DataSet; args...)
-        new(ds.h[:all_data](args...))
+        new(ds.ds[:all_data](args...), ds, Dict())
     end
 end
 
@@ -71,6 +68,7 @@ type Region <: DataContainer
     center::YTArray
     left_edge::YTArray
     right_edge::YTArray
+    field_dict::Dict
     function Region(ds::DataSet, center::Union(StringOrArray,YTArray),
                     left_edge::AbstractArray, right_edge::AbstractArray; args...)
         if typeof(center) == YTArray
@@ -88,9 +86,9 @@ type Region <: DataContainer
         else
             re = right_edge
         end
-        reg = ds.h[:region](c, le, re; args...)
+        reg = ds.ds[:region](c, le, re; args...)
         new(reg, ds, YTArray(reg["center"]), YTArray(reg["left_edge"]),
-            YTArray(reg["right_edge"]))
+            YTArray(reg["right_edge"]), Dict())
     end
 end
 
@@ -103,6 +101,7 @@ type Disk <: DataContainer
     normal::Array
     radius::YTQuantity
     height::YTQuantity
+    field_dict::Dict
     function Disk(ds::DataSet, center::Union(StringOrArray,YTArray), normal::Array,
                   radius::Union(Length,YTQuantity),
                   height::Union(Length,YTQuantity); args...)
@@ -121,9 +120,9 @@ type Disk <: DataContainer
         else
             h = height
         end
-        dk = ds.h[:disk](c, normal, r, h; args...)
+        dk = ds.ds[:disk](c, normal, r, h; args...)
         new(dk, ds, YTArray(dk["center"]), normal, YTQuantity(sp["radius"]),
-            YTQuantity(dk["height"]))
+            YTQuantity(dk["height"]), Dict())
     end
 end
 
@@ -134,6 +133,7 @@ type Ray <: DataContainer
     ds::DataSet
     start_point::YTArray
     end_point::YTArray
+    field_dict::Dict
     function Ray(ds::DataSet, start_point::AbstractArray,
                  end_point::AbstractArray; args...)
         if typeof(start_point) == YTArray
@@ -146,8 +146,9 @@ type Ray <: DataContainer
         else
             ep = end_point
         end
-        ray = ds.h[:ray](sp, ep; args...)
-        new(ray, ds, YTArray(ray["start_point"]), YTArray(ray["end_point"]))
+        ray = ds.ds[:ray](sp, ep; args...)
+        new(ray, ds, YTArray(ray["start_point"]),
+            YTArray(ray["end_point"]), Dict())
     end
 end
 
@@ -157,10 +158,11 @@ type Boolean <: DataContainer
     cont::PyObject
     ds::DataSet
     regions::Array
+    field_dict::Dict
     function Boolean(ds::DataSet, regions::Array; args...)
         regs = [region.cont for region in regions]
-        bool_reg = ds.h[:boolean](regs; args...)
-        new(bool_reg, ds, regions)
+        bool_reg = ds.ds[:boolean](regs; args...)
+        new(bool_reg, ds, regions, Dict())
     end
 end
 
@@ -171,6 +173,7 @@ type CuttingPlane <: DataContainer
     ds::DataSet
     normal::Array
     center::StringOrArray
+    field_dict::Dict
     function CuttingPlane(ds::DataSet, normal::Array,
                           center::Union(StringOrArray,YTArray); args...)
         if typeof(center) == YTArray
@@ -178,8 +181,8 @@ type CuttingPlane <: DataContainer
         else
             c = center
         end
-        cutting = ds.h[:cutting](normal, c; args...)
-        new(cutting, ds, normal, center)
+        cutting = ds.ds[:cutting](normal, c; args...)
+        new(cutting, ds, normal, center, Dict())
     end
 end
 
@@ -193,6 +196,7 @@ type Projection <: DataContainer
     weight_field
     center
     data_source
+    field_dict::Dict
     function Projection(ds::DataSet, field::String, axis::Axis; weight_field=nothing,
                         center=nothing, data_source=nothing, args...)
         if weight_field != nothing
@@ -212,9 +216,10 @@ type Projection <: DataContainer
         else
             source = pybuiltin("None")
         end
-        prj = pf.h[:proj](field, axis, weight_field=weight, center=c,
-                          data_source=source; args...)
-        new(prj, ds, field, axis, weight_field, center, data_source)
+        prj = ds.ds[:proj](field, axis, weight_field=weight, center=c,
+                           data_source=source; args...)
+        new(prj, ds, field, axis, weight_field, center,
+            data_source, Dict())
     end
 end
 
@@ -225,6 +230,7 @@ type Slice <: DataContainer
     ds::DataSet
     axis::Axis
     center
+    field_dict::Dict
     function Slice(ds::DataSet, axis::Axis, coord::Union(RealOrArray,YTQuantity,YTArray);
                    center=nothing, args...)
         if typeof(coord) == YTArray
@@ -241,8 +247,8 @@ type Slice <: DataContainer
         else
             c = center
         end
-        slc = ds.h[:slice](axis, cd, center=c; args...)
-        new(slc, ds, axis, center)
+        slc = ds.ds[:slice](axis, cd, center=c; args...)
+        new(slc, ds, axis, center, Dict())
     end
 end
 
@@ -260,6 +266,7 @@ type Sphere <: DataContainer
     ds::DataSet
     center::YTArray
     radius::YTQuantity
+    field_dict::Dict
     function Sphere(ds::DataSet, center::Union(StringOrArray,YTArray),
                     radius::Union(Length,YTQuantity); args...)
         if typeof(center) == YTArray
@@ -272,8 +279,9 @@ type Sphere <: DataContainer
         else
             r = radius
         end
-        sp = ds.h[:sphere](c, r; args...)
-        new(sp, ds, YTArray(sp["center"]), YTQuantity(sp["radius"]))
+        sp = ds.ds[:sphere](c, r; args...)
+        new(sp, ds, YTArray(sp["center"]),
+            YTQuantity(sp["radius"]), Dict())
     end
 end
 
@@ -283,28 +291,30 @@ type CutRegion <: DataContainer
     cont::PyObject
     ds::DataSet
     conditions::Array
+    field_dict::Dict
 end
 
 function cut_region(dc::DataContainer, conditions::Array)
     cut_reg = dc.cont[:cut_region](conditions)
-    CutRegion(cut_reg, dc.ds, conditions)
+    CutRegion(cut_reg, dc.ds, conditions, Dict())
 end
 
 # Grids
 
 type Grids <: AbstractArray
     grids::Array
+    grid_dict::Dict
     function Grids(ds::DataSet)
-        new(ds.h[:grids])
+        new(ds.index[:grids], Dict())
     end
     function Grids(grid_array::Array)
-        new(grid_array)
+        new(grid_array, Dict())
     end
     function Grids(grid::PyObject)
-        new([grid])
+        new([grid], Dict())
     end
     function Grids(nothing)
-        new([])
+        new([], Dict())
     end
 end
 
@@ -316,23 +326,13 @@ type Grid <: DataContainer
     cont::PyObject
     left_edge::YTArray
     right_edge::YTArray
+    id::Integer
     level::Integer
     number_of_particles::Integer
     active_dimensions::Array
     Parent::Grids
     Children::Grids
-end
-
-# GridCollection
-
-type GridCollection <: DataContainer
-    cont::PyObject
-    ds::DataSet
-    center::Array
-    function GridCollection(ds::DataSet, center::Array, grid_list::Grids; args...)
-        gds = ds.h[:grid_collection](center, grid_list.grids; args...)
-        new(gds, center)
-    end
+    field_dict::Dict
 end
 
 # CoveringGrid
@@ -344,11 +344,12 @@ type CoveringGrid <: DataContainer
     right_edge::YTArray
     level::Integer
     active_dimensions::Array
+    field_dict::Dict
     function CoveringGrid(ds::DataSet, level::Integer, left_edge::Array,
                           dims::Array; args...)
-        cg = ds.h[:covering_grid](level, left_edge, dims; args...)
+        cg = ds.ds[:covering_grid](level, left_edge, dims; args...)
         new(cg, ds, YTArray(cg["left_edge"]), YTArray(cg["right_edge"]),
-            level, cg[:ActiveDimensions])
+            level, cg[:ActiveDimensions], Dict())
     end
 end
 
@@ -368,24 +369,28 @@ end
 
 # Indices
 
-function getindex(dc::DataContainer, key::String)
-    YTArray(get(dc.cont, PyObject, key))
-end
-
-function getindex(dc::DataContainer, ftype::String, fname::String)
-    YTArray(get(dc.cont, PyObject, (ftype,fname)))
+function getindex(dc::DataContainer, key::Field)
+    if !haskey(dc.field_dict, key)
+        dc.field_dict[key] = YTArray(get(dc.cont, PyObject, key))
+        dc.cont[:__delitem__](key)
+    end
+    return dc.field_dict[key]
 end
 
 function getindex(grids::Grids, i::Int)
-    g = grids.grids[i]
-    Grid(g,
-         YTArray(g["LeftEdge"]),
-         YTArray(g["RightEdge"]),
-         g[:Level][1],
-         g[:NumberOfParticles][1],
-         g[:ActiveDimensions],
-         Grids(g[:Parent]),
-         Grids(g[:Children]))
+    if !haskey(grids.grid_dict, i)
+        g = grids.grids[i]
+        grids.grid_dict[i] = Grid(g,
+                                  YTArray(g["LeftEdge"]),
+                                  YTArray(g["RightEdge"]),
+                                  g[:id][1],
+                                  g[:Level][1],
+                                  g[:NumberOfParticles][1],
+                                  g[:ActiveDimensions],
+                                  Grids(g[:Parent]),
+                                  Grids(g[:Children]), Dict())
+    end
+    return grids.grid_dict[i]
 end
 
 getindex(grids::Grids, idxs::Ranges) = Grids(grids.grids[idxs])

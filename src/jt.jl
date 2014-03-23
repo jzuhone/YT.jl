@@ -1,8 +1,8 @@
 module jt
 
 export load, load_uniform_grid, load_amr_grids, load_particles, CutRegion,
-    DataContainer, YTArray, YTQuantity, in_units, in_cgs, get_array, Disk,
-    Ray, Boolean, Slice, Grids, Sphere, AllData, Projection, GridCollection,
+    DataContainer, YTArray, YTQuantity, in_units, in_cgs, Disk,
+    Ray, Boolean, Slice, Grids, Sphere, AllData, Projection,
     CoveringGrid, physical_constants, units, to_frb, get_smallest_dx,
     print_stats, CuttingPlane, SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot,
     show_plot, FixedResolutionBuffer, Profile1D, Profile2D, Profile3D,
@@ -21,10 +21,10 @@ include("units.jl")
 include("plots.jl")
 include("profiles.jl")
 
-import .yt_array: YTArray, YTQuantity, in_units, in_cgs, get_array
+import .yt_array: YTArray, YTQuantity, in_units, in_cgs
 import .data_objects: DataSet, Grids, Sphere, AllData, Projection, Slice,
-    GridCollection, CoveringGrid, to_frb, print_stats, get_smallest_dx,
-    Disk, Ray, Boolean, CuttingPlane, CutRegion, cut_region, DataContainer
+    CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray, Boolean,
+    CuttingPlane, CutRegion, cut_region, DataContainer
 import .plots: SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot, show_plot
 import .images: FixedResolutionBuffer
 import .profiles: Profile1D, Profile2D, Profile3D, add_fields, set_x_unit,

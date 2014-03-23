@@ -6,10 +6,9 @@ import Base: cbrt, convert, copy, eltype, hypot, maximum, minimum, ndims,
              sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan, sum,
              cumsum, cummin, cummax, cumsum_kbn, diff
 
-using SymPy
+import SymPy: Sym
 using PyCall
-#@pyimport yt
-import ..utils: pyslice, IntOrRange, RealOrArray
+import ..utils: IntOrRange, RealOrArray
 import jt: yt
 
 # Grab the classes for creating YTArrays and YTQuantities
@@ -40,13 +39,13 @@ end
 # YTArray definition
 
 type YTArray <: AbstractArray
-    array::AbstractArray
+    array::Array
     quantity::YTQuantity
     units::Sym
     dimensions::String
     function YTArray(ytarray::PyObject)
         quantity = YTQuantity(1.0, ytarray[:units])
-        new(pycall(ytarray["ndarray_view"], PyArray),
+        new(ytarray[:ndarray_view](),
             quantity, ytarray[:units], ytarray[:units][:dimensions][:__str__]())
     end
     function YTArray(array::AbstractArray, units::String)
@@ -64,7 +63,7 @@ YTObject = Union(YTArray,YTQuantity)
 macro array_same_units(a,b,op)
     quote
         if ($a.dimensions)==($b.dimensions)
-            return YTArray(($op)(get_array($a),in_units($b,($a.units)).array), ($a.units))
+            return YTArray(($op)($a,in_units($b,($a.units)).array), ($a.units))
         else
             error("Not in the same dimensions!")
         end
@@ -84,32 +83,23 @@ end
 macro arr_quan_same_units(a,b,op)
     quote
         if ($a.dimensions)==($b.dimensions)
-            return YTArray(($op)(get_array($a),in_units($b,($a.units)).value), ($a.units))
+            return YTArray(($op)($a,in_units($b,($a.units)).value), ($a.units))
         else
             error("Not in the same dimensions!")
         end
     end
 end
 
-# Helper functions
-function get_array(a::YTArray)
-    if typeof(a.array) <: PyArray
-        return copy(a.array)
-    else
-        return a.array
-    end
-end
-
 # Copy
 
 copy(q::YTQuantity) = YTQuantity(q.value, q)
-copy(a::YTArray) = YTArray(get_array(a), a.units)
+copy(a::YTArray) = YTArray(a.array, a.units)
 
 # Conversions
 
 convert(::Type{YTArray}, o::PyObject) = YTArray(o)
 convert(::Type{YTQuantity}, o::PyObject) = YTQuantity(o)
-convert(::Type{Array}, a::YTArray) = get_array(a)
+convert(::Type{Array}, a::YTArray) = a.array
 convert(::Type{Real}, q::YTQuantity) = q.value
 convert(::Type{PyObject}, a::YTArray) = pycall(ytarray_new, PyObject, a.array, a.units[:__str__]())
 convert(::Type{PyObject}, a::YTQuantity) = pycall(ytquantity_new, PyObject, a.value, a.units[:__str__]())
@@ -117,26 +107,20 @@ convert(::Type{PyObject}, a::YTQuantity) = pycall(ytquantity_new, PyObject, a.va
 # Indexing, ranges (slicing)
 
 getindex(a::YTArray, i::Int) = YTQuantity(a.array[i], a.units)
-# Hack to PyArray to conserve memory
-getindex(a::PyArray, idxs::Ranges) = pycall(a.o["__getitem__"], PyArray, pyslice(idxs))
+getindex(a::YTArray, idxs::Array{Int,1}) = YTArray(getindex(a.array, idxs), a.units)
 getindex(a::YTArray, idxs::Ranges) = YTArray(getindex(a.array, idxs), a.units)
 
 function setindex!(a::YTArray, x::Real, i::Int)
     a.array[i] = x
 end
-# Hack to PyArray to conserve memory
-function setindex!(a::PyArray, x::RealOrArray, idxs::Ranges)
-    pycall(a.o["__setitem__"], PyArray, pyslice(idxs), x)
-end
 function setindex!(a::YTArray, x::RealOrArray, idxs::Ranges)
+    YTArray(setindex!(a.array, x, idxs), a.units)
+end
+function setindex!(a::YTArray, x::RealOrArray, idxs::Array{Int,1})
     YTArray(setindex!(a.array, x, idxs), a.units)
 end
 
 # For grids
-# Hack to PyArray to conserve memory
-function getindex(a::PyArray, i::IntOrRange, j::IntOrRange, k::IntOrRange)
-    pycall(a.o["__getitem__"], PyArray, (pyslice(i), pyslice(j), pyslice(k),))
-end
 function getindex(a::YTArray, i::IntOrRange, j::IntOrRange, k::IntOrRange)
     num_items = length(i)*length(j)*length(k)
     if num_items == 1
@@ -147,16 +131,6 @@ function getindex(a::YTArray, i::IntOrRange, j::IntOrRange, k::IntOrRange)
 end
 
 # For images
-# Hack to PyArray to conserve memory
-function getindex(a::PyArray, i::Integer, j::Ranges)
-    pycall(a.o["__getitem__"], PyArray, (i-1, pyslice(j),))
-end
-function getindex(a::PyArray, i::Ranges, j::Integer)
-    pycall(a.o["__getitem__"], PyArray, (pyslice(i), j-1,))
-end
-function getindex(a::PyArray, i::Ranges, j::Ranges)
-    pycall(a.o["__getitem__"], PyArray, (pyslice(i), pyslice(j),))
-end
 function getindex(a::YTArray, i::IntOrRange, j::IntOrRange)
     num_items = length(i)*length(j)
     if num_items == 1
@@ -180,7 +154,7 @@ end
 
 function in_units(a::YTArray, units::String)
     q = in_units(a.quantity, units)
-    YTArray(get_array(a)*q.value, q.units)
+    YTArray(a.array*q.value, q.units)
 end
 in_units(a::YTArray, units::Sym) = in_units(a, units[:__str__]())
 in_units(a::YTArray, b::YTQuantity) = in_units(a, b.units)
@@ -188,7 +162,7 @@ in_units(a::YTArray, b::YTArray) = in_units(a, b.units)
 
 function in_cgs(a::YTArray)
     q = in_cgs(a.quantity)
-    YTArray(get_array(a)*q.value, q.units)
+    YTArray(a.array*q.value, q.units)
 end
 
 # Arithmetic and comparisons
@@ -237,13 +211,6 @@ end
 \(a::YTQuantity, b::Array) = /(b,a)
 \(a::Array, b::YTQuantity) = /(b,a)
 
-*(a::YTQuantity, b::PyArray) = YTArray(copy(b)*a.value, a.units)
-*(a::PyArray, b::YTQuantity) = *(b, a)
-/(a::YTQuantity, b::PyArray) = *(a, 1.0/b)
-/(a::PyArray, b::YTQuantity) = *(a, 1.0/b)
-\(a::YTQuantity, b::PyArray) = /(b,a)
-\(a::PyArray, b::YTQuantity) = /(b,a)
-
 # YTArray next
 
 for op = (:+, :-, :hypot, :.==, :.!=, :.>=, :.<=, :.<, :.>)
@@ -255,10 +222,10 @@ end
 function .*(a::YTArray, b::YTArray)
     same_dims = a.dimensions == b.dimensions
     if same_dims
-        c = get_array(a).*in_units(b, a.units).array
+        c = a.array.*in_units(b, a.units).array
         units = a.units*a.units
     else
-        c = get_array(a).*get_array(b)
+        c = a.array.*b.array
         units = a.units*b.units
     end
     return YTArray(c, units)
@@ -266,12 +233,12 @@ end
 
 # YTArrays and Reals
 
-*(a::YTArray, b::Real) = YTArray(b*get_array(a), a.units)
+*(a::YTArray, b::Real) = YTArray(b*a.array, a.units)
 *(a::Real, b::YTArray) = *(b, a)
 /(a::YTArray, b::Real) = *(a, 1.0/b)
 \(a::YTArray, b::Real) = /(b,a)
 
-/(a::Real, b::YTArray) = YTArray(a/get_array(b), 1.0/b.quantity)
+/(a::Real, b::YTArray) = YTArray(a/b.array, 1.0/b.quantity)
 \(a::Real, b::YTArray) = /(b,a)
 
 ./(a::YTArray, b::YTArray) = .*(a,1.0/b)
@@ -279,14 +246,14 @@ end
 
 # YTArrays and Arrays
 
-.*(a::YTArray, b::Array) = YTArray(b.*get_array(a), a.units)
+.*(a::YTArray, b::Array) = YTArray(b.*a.array, a.units)
 .*(a::Array, b::YTArray) = .*(b, a)
 ./(a::YTArray, b::Array) = .*(a, 1.0/b)
 ./(a::Array, b::YTArray) = .*(a, 1.0/b)
 .\(a::YTArray, b::Array) = ./(b, a)
 .\(a::Array, b::YTArray) = ./(b, a)
 
-.^(a::YTArray, b::Real) = YTArray(get_array(a).^b, a.units^b)
+.^(a::YTArray, b::Real) = YTArray(a.array.^b, a.units^b)
 
 # YTArrays and YTQuantities
 
@@ -303,7 +270,7 @@ function *(a::YTQuantity, b::YTArray)
         c = a.value*in_units(b, a.units).array
         units = a.units*a.units
     else
-        c = a.value*get_array(b)
+        c = a.value*b.array
         units = a.units*b.units
     end
     return YTArray(c, units)
@@ -351,7 +318,7 @@ end
 
 # Show
 
-function show_helper1d(io::IO, a::AbstractArray)
+function show_helper1d(io::IO, a::Array)
     num_cells = length(a)
     n = num_cells > 6 ? 4 : num_cells
     print(io, "[ $(a[1]),")
@@ -368,7 +335,7 @@ function show_helper1d(io::IO, a::AbstractArray)
     print(io, " $(a[end]) ]")
 end
 
-function show_helper2d(io::IO, a::AbstractArray)
+function show_helper2d(io::IO, a::Array)
     nx,ny = size(a)
     print(io, "[")
     show_helper1d(io, a[1,:])
@@ -392,7 +359,7 @@ function show_helper2d(io::IO, a::AbstractArray)
     print(io, "]")
 end
 
-function show_helper3d(io::IO, a::AbstractArray)
+function show_helper3d(io::IO, a::Array)
     nx,ny,nz = size(a)
     print(io, "[")
     show_helper2d(io, a[1,:,:])
@@ -464,7 +431,7 @@ cummin(a::YTArray, dim::Integer) = cummin(a.array, dim)*a.quantity
 cummax(a::YTArray) = cummax(a.array)*a.quantity
 cummax(a::YTArray, dim::Integer) = cummax(a.array, dim)*a.quantity
 
-#diff(a::YTArray) = diff(a.array)*a.quantity
-#diff(a::YTArray, dim::Integer) = diff(a.array, dim)*a.quantity
+diff(a::YTArray) = diff(a.array)*a.quantity
+diff(a::YTArray, dim::Integer) = diff(a.array, dim)*a.quantity
 
 end

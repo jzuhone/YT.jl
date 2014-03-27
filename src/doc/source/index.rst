@@ -3,20 +3,24 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to jt's documentation!
-==============================
+jt: A Julia interface to yt
+===========================
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-
+   what_is_jt
+   installing_jt
+   loading_datasets
+   arrays_quantities_units
+   data_objects
+   visualization
 
 Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
 

@@ -1,6 +1,6 @@
 module plots
 
-import ..data_objects: DataSet, DataContainer
+import ..data_objects: Dataset, DataContainer
 import ..utils: Axis, FieldOrArray, Field
 import ..yt_array: YTArray
 
@@ -8,7 +8,7 @@ using PyCall
 @pyimport yt.visualization.plot_window as pw
 @pyimport yt.visualization.profile_plotter as pp
 
-function SlicePlot(ds::DataSet, axis::Axis, fields::FieldOrArray;
+function SlicePlot(ds::Dataset, axis::Axis, fields::FieldOrArray;
                    center="c", args...)
     if typeof(center) == YTArray
         c = convert(PyObject, center)
@@ -18,7 +18,7 @@ function SlicePlot(ds::DataSet, axis::Axis, fields::FieldOrArray;
     pywrap(pw.SlicePlot(ds.ds, axis, fields, center=c; args...))
 end
 
-function ProjectionPlot(ds::DataSet, axis::Axis, fields::FieldOrArray,
+function ProjectionPlot(ds::Dataset, axis::Axis, fields::FieldOrArray,
                         center="c"; data_source=nothing, args...)
     if data_source != nothing
         source = data_source.cont

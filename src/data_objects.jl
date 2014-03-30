@@ -59,7 +59,7 @@ abstract DataContainer
 
 type AllData <: DataContainer
     cont::PyObject
-    ds::DataSet
+    ds::Dataset
     field_dict::Dict
     function AllData(ds::Dataset; args...)
         new(ds.ds[:all_data](args...), ds, Dict())
@@ -310,8 +310,8 @@ end
 type Grids <: AbstractArray
     grids::Array
     grid_dict::Dict
-    function Grids(ds::DataSet)
-        new(ds.index[:grids], Dict())
+    function Grids(index::Index)
+        new(index.index[:grids], Dict())
     end
     function Grids(grid_array::Array)
         new(grid_array, Dict())

@@ -1,8 +1,9 @@
 module jt
 
-# DataSets, Indices
+# Datasets, Indices
 
 export Dataset, Index
+export print_stats, get_smallest_dx
 
 # YTArrays, YTQuantities, units
 
@@ -55,7 +56,7 @@ import .images: FixedResolutionBuffer
 import .profiles: Profile1D, Profile2D, Profile3D, add_fields, set_x_unit,
     set_y_unit, set_z_unit, set_field_unit
 
-load(fn::String; args...) = DataSet(yt.load(fn; args...))
+load(fn::String; args...) = Dataset(yt.load(fn; args...))
 
 # Stream datasets
 

@@ -24,11 +24,18 @@ What ``jt`` Doesn't Do (and Probably Won't)
 them would be somewhat redundant, especially those features that don't involve a lot of additional coding on the part
 of the end-user. Some of these features include:
 
-* Analysis modules (e.g., particle trajectories, two-point functions, simulated observations, etc.)
+* Analysis modules (e.g., particle trajectories, two-point functions, halo finders, simulated observations, etc.)
 * Initial conditions generation
 * Volume rendering
+* Utilities for cosmology, image writing, generating streamlines, clump finding, etc.
 
 ``yt`` does a great job at handling these tasks already, and so if you are looking to use these features, working with
 ``yt`` directly from within a Python environment is the way to go. The purpose of ``jt`` is to expose ``yt``'s basic
 data loading and examining features, as well as a few handy visualization tools, so that those who want to take
 advantage of both Julia's and ``yt``'s strengths can do so.
+
+Some Bits of Advice
+-------------------
+
+1. This documentation does not exhaustively cover the API of ``yt``'s Python methods that may be accessed via ``jt``.
+ For that, consulting the `yt Documentation <http://yt-project.org/doc>`_ is recommended.

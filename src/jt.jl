@@ -8,7 +8,6 @@ export print_stats, get_smallest_dx
 # YTArrays, YTQuantities, units
 
 export YTArray, YTQuantity
-export physical_constants, units
 export in_units, in_cgs
 
 # load

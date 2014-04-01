@@ -9,14 +9,12 @@ If we grab the ``"density"`` field from a sphere, it will be returned as a ``YTA
 
 .. code-block:: julia
 
-    ds = load("sloshing_nomag2_hdf5_plt_cnt_0100")
-    sp = Sphere(ds, "c", (100.,"kpc"))
-    sp["density"]
+    julia> sp = Sphere(ds, "c", (100.,"kpc"))
+    YTSphere (sloshing_nomag2_hdf5_plt_cnt_0100): center=[ 0.  0.  0.] code_length, radius=100.0 kpc
 
-.. parsed-literal::
-
+    julia> sp["density"]
     YTArray [ 1.3086558386643183e-26, 1.28922012403754e-26, 1.3036428741306716e-26,  ...
-	 1.6194386856326155e-26, 1.6152527924542866e-26, 1.595660076018442e-26 ] g/cm**3
+	         1.6194386856326155e-26, 1.6152527924542866e-26, 1.595660076018442e-26 ] g/cm**3
 
 ``YTArray``s can be manipulated many of the same ways that normal Julia arrays are, and the units are retained.
 
@@ -24,44 +22,33 @@ Finding the maximum density:
 
 .. code-block:: julia
 
-    maximum(sp["density"])
-
-.. parsed-literal::
-
+    julia> maximum(sp["density"])
     9.256136409265674e-26 g/cm**3
 
 Multiplying the temperature by a constant unitless number:
 
 .. code-block:: julia
 
-    sp["temperature"]*5
-
-.. parsed-literal::
-
+    julia> sp["temperature"]*5
     YTArray [ 4.41628e8, 4.4457548e8, 4.4363016e8,  ...
-	 3.390078e8, 3.369208e8, 3.4209352e8 ] K
+	         3.390078e8, 3.369208e8, 3.4209352e8 ] K
 
 Multiplying element-wise one ``YTArray`` by another:
 
 .. code-block:: julia
 
-    sp["density"].*sp["temperature"]
-
-.. parsed-literal::
-
+    julia> sp["density"].*sp["temperature"]
     YTArray [ 1.1558781214352911e-18, 1.1463113109392978e-18, 1.1566705936668994e-18,  ...
-	 1.0980046921024092e-18, 1.0884245260718644e-18, 1.0917299442572327e-18 ] K*g/cm**3
+	         1.0980046921024092e-18, 1.0884245260718644e-18, 1.0917299442572327e-18 ] K*g/cm**3
 
 However, attempting to perform an operation that doesn't make sense will throw an error. For example, suppose that
 you tried to instead `add` ``"density"`` and ``"temperature"``, which aren't the same type of physical quantity:
 
 .. code-block:: julia
 
-    sp["density"]+sp["temperature"]
-
-.. parsed-literal::
-
-    Not in the same dimensions!
+    julia> sp["density"]+sp["temperature"]
+    ERROR: Not in the same dimensions!
+     in + at /Users/jzuhone/.julia/jt/src/yt_array.jl:68
 
 Changing units
 --------------
@@ -71,23 +58,17 @@ as the example, we can change it to units of solar masses per kiloparsec:
 
 .. code-block:: julia
 
-    a = in_units(sp["density"], "Msun/kpc**3")
-
-.. parsed-literal::
-
+    julia> a = in_units(sp["density"], "Msun/kpc**3")
     YTArray [ 193361.43661723754, 190489.69785225237, 192620.74223809008,  ...
-	 239281.3920328031, 238662.9022094481, 235767.96552301125 ] Msun/kpc**3
+	         239281.3920328031, 238662.9022094481, 235767.96552301125 ] Msun/kpc**3
 
 We can switch back to cgs units rather easily:
 
 .. code-block:: julia
 
-    in_cgs(a)
-
-.. parsed-literal::
-
+    julia> in_cgs(a)
     YTArray [ 1.3086558386643183e-26, 1.28922012403754e-26, 1.303642874130672e-26,  ...
-	 1.6194386856326155e-26, 1.6152527924542868e-26, 1.595660076018442e-26 ] g/cm**3
+	         1.6194386856326155e-26, 1.6152527924542868e-26, 1.595660076018442e-26 ] g/cm**3
 
 Physical Constants
 ------------------
@@ -97,10 +78,9 @@ module, and are unitful quantities which can be used with other quantities and a
 
 .. code-block:: julia
 
-    kb = jt.physical_constants.kboltz # Boltzmann constant
-    kT = in_units(kb*sp["temperature"], "keV") # computing kT in kilo-electronvolts
+    julia> kb = jt.physical_constants.kboltz # Boltzmann constant
+    1.3806488e-16 erg/K
 
-.. parsed-literal::
-
+    julia> kT = in_units(kb*sp["temperature"], "keV") # computing kT in kilo-electronvolts
     YTArray [ 7.611310547262892, 7.66210937707406, 7.645817103743251,  ...
-	 5.842685798328886, 5.806717052886709, 5.895867148202309 ] keV
+	         5.842685798328886, 5.806717052886709, 5.895867148202309 ] keV

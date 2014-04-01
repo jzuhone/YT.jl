@@ -5,7 +5,7 @@ Installing ``jt``
 
 .. code-block:: julia
 
-    Pkg.add("jt")
+    julia> Pkg.add("jt")
 
 This will also install the following dependencies:
 
@@ -20,6 +20,6 @@ Once ``jt`` is installed, running
 
 .. code-block:: julia
 
-    using jt
+    julia> using jt
 
 will load it into the namespace.

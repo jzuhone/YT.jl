@@ -1,7 +1,7 @@
 Datasets
 ========
 
-The most basic ``jt`` object is the ``Dataset``. This is a collection of volumetric data that may be stored on disk,
+The most basic jt object is the ``Dataset``. This is a collection of volumetric data that may be stored on disk,
 or created in-memory. To load a ``Dataset`` from disk, we use ``load``:
 
 .. code-block:: julia
@@ -25,15 +25,15 @@ or created in-memory. To load a ``Dataset`` from disk, we use ``load``:
     yt : [INFO     ] 2014-03-31 23:46:28,342 Loaded magnetic_field (108 new fields)
     "sloshing_nomag2_hdf5_plt_cnt_0100"
 
-Where you can see that the ``yt`` log is being outputted. The ``Dataset`` object ``ds`` now contains all of the basic metadata about the data stored in the file
-``"sloshing_nomag2_hdf5_plt_cnt_0100"``. Attached to ``ds`` are several useful attributes, as well as a number of
-methods for creating ```DataContainers``.
+Where you can see that the yt log has been outputted. The ``Dataset`` object ``ds`` now contains all of the basic
+metadata about the data stored in the file ``"sloshing_nomag2_hdf5_plt_cnt_0100"``. Attached to ``ds`` are several
+useful attributes, as well as a number of methods for creating ``DataContainers``.
 
 Parameters
 ----------
 
-Each simulation ``Dataset`` normally has a number of runtime parameters associated with it. This is stored in a
-dictionary:
+Each simulation ``Dataset`` normally has a number of runtime parameters associated with it. This is stored in the
+``parameters`` dictionary:
 
 .. code-block:: julia
 
@@ -57,7 +57,7 @@ dictionary:
     0-dimensional Array{Int32,0}:
      16
 
-At this time, the parameters dictionary does not return unitful quantities.
+At this time, the ``parameters`` dictionary does not return `unitful quantities`_.
 
 Index
 -----

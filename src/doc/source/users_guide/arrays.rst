@@ -1,9 +1,12 @@
 Arrays, Quantities, and Units
 =============================
 
-Whenever ``jt`` returns physical data, it is typically associated with certain units (e.g., density in grams per
-cubic centimeter, temperature in Kelvin, and so on). ``jt`` exposes ``yt``'s ``YTArray``, ``YTQuantity``, and units
+Whenever jt returns physical data, it is typically associated with certain units (e.g., density in grams per
+cubic centimeter, temperature in Kelvin, and so on). jt exposes yt's ``YTArray``, ``YTQuantity``, and units
 facilities so that unitful objects may be manipulated and operated on.
+
+Arrays
+------
 
 If we grab the ``"density"`` field from a sphere, it will be returned as a ``YTArray`` in :math:`\rm{g}/\rm{cm}^3`:
 
@@ -16,7 +19,9 @@ If we grab the ``"density"`` field from a sphere, it will be returned as a ``YTA
     YTArray [ 1.3086558386643183e-26, 1.28922012403754e-26, 1.3036428741306716e-26,  ...
 	         1.6194386856326155e-26, 1.6152527924542866e-26, 1.595660076018442e-26 ] g/cm**3
 
-``YTArray``s can be manipulated many of the same ways that normal Julia arrays are, and the units are retained.
+A ``YTArray`` can be manipulated in many of the same ways that normal Julia arrays are, and the units are retained.
+
+Examples:
 
 Finding the maximum density:
 
@@ -50,6 +55,15 @@ you tried to instead `add` ``"density"`` and ``"temperature"``, which aren't the
     ERROR: Not in the same dimensions!
      in + at /Users/jzuhone/.julia/jt/src/yt_array.jl:68
 
+Quantities
+----------
+
+A ``YTQuantity`` is just a scalar version of a ``YTArray``. They can be manipulated in the same way:
+
+.. code-block:: julia
+
+    julia>
+
 Changing units
 --------------
 
@@ -70,10 +84,13 @@ We can switch back to cgs units rather easily:
     YTArray [ 1.3086558386643183e-26, 1.28922012403754e-26, 1.303642874130672e-26,  ...
 	         1.6194386856326155e-26, 1.6152527924542868e-26, 1.595660076018442e-26 ] g/cm**3
 
+Unit Objects
+------------
+
 Physical Constants
 ------------------
 
-Some of ``yt``'s physical constants are represented in ``jt``. They are available via the ``physical_constants``
+Some of yt's physical constants are represented in jt. They are available via the ``physical_constants``
 module, and are unitful quantities which can be used with other quantities and arrays:
 
 .. code-block:: julia

@@ -1,8 +1,9 @@
-``jt`` Users' Guide
+jt Users' Guide
 ===========================
 
 .. toctree::
    :maxdepth: 1
 
    datasets
+   data_containers
    arrays

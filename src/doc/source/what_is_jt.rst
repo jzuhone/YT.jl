@@ -38,4 +38,4 @@ Some Bits of Advice
 -------------------
 
 1. This documentation does not exhaustively cover the API of ``yt``'s Python methods that may be accessed via ``jt``.
- For that, consulting the `yt Documentation <http://yt-project.org/doc>`_ is recommended.
+For that, consulting the `yt Documentation <http://yt-project.org/doc>`_ is recommended.

@@ -37,9 +37,25 @@ dictionary:
 
 .. code-block:: julia
 
-    julia> ds.parameters
-    ["min_particles_per_blk"=>1,"zmax"=>3.70272e24,"maxcondentr"=>1000.0,"usemassdiffusivity"=>0,
-    ...
+    julia> collect(keys(ds.parameters))
+    293-element Array{Any,1}:
+     "min_particles_per_blk"
+     "zmax"
+     "maxcondentr"
+     "usemassdiffusivity"
+     "saturatedconduction"
+     "zmin"
+     ⋮
+     "flux_correct"
+     "nxb"
+     "plotfilenumber"
+     "log_file"
+     "e_modification"
+     "order"
+
+    julia> ds.parameters["nxb"]
+    0-dimensional Array{Int32,0}:
+     16
 
 At this time, the parameters dictionary does not return unitful quantities.
 

@@ -4,7 +4,7 @@ import Base: cbrt, convert, copy, eltype, hypot, maximum, minimum, ndims,
              similar, show, size, sqrt, exp, log, log10, sin, cos, tan,
              expm1, log2, log1p, sinh, cosh, tanh, csc, sec, cot, csch,
              sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan, sum,
-             cumsum, cummin, cummax, cumsum_kbn, diff
+             cumsum, cummin, cummax, cumsum_kbn, diff, display, print
 
 import SymPy: Sym
 using PyCall
@@ -405,6 +405,19 @@ function show(io::IO, a::YTArray)
     print(io, " $(a.units)")
 end
 
+function print(io::IO, a::YTArray)
+    for aa in a
+        println(io,aa)
+    end
+end
+
+function print(a::YTArray)
+    for aa in a
+        println(aa)
+    end
+end
+
+display(a::YTArray) = show(STDOUT, a)
 show(io::IO, q::YTQuantity) = print(io,"$(q.value) $(q.units)")
 
 # Array methods

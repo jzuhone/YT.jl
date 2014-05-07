@@ -63,30 +63,87 @@ YTObject = Union(YTArray,YTQuantity)
 macro array_same_units(a,b,op)
     quote
         if ($a.dimensions)==($b.dimensions)
-            return YTArray(($op)($a,in_units($b,($a.units)).array), ($a.units))
+            new_array = ($op)(($a.array),in_units($b,($a.units)).array)
+            if iseltype(new_array,Bool)
+                return new_array
+            else
+                return YTArray(new_array, ($a.units))
+            end
         else
             error("Not in the same dimensions!")
         end
+    end
+end
+
+macro array_mult_op(a,b,op)
+    quote
+        same_dims = ($a.dimensions) == ($b.dimensions)
+        if same_dims
+            c = ($op)(($a.array), in_units($b, ($a.units)).array)
+            units = ($op)(($a.units), ($a.units))
+        else
+            c = ($op)(($a.array), ($b.array))
+            units = ($op)(($a.units), ($b.units))
+        end
+        return YTArray(c, units)
     end
 end
 
 macro quantity_same_units(a,b,op)
     quote
         if ($a.dimensions)==($b.dimensions)
-            return YTQuantity(($op)(($a.value),in_units($b,($a.units)).value), ($a.units))
+            new_value = ($op)(($a.value),in_units($b,($a.units)).value)
+            if iseltype(new_value,Bool)
+                return new_value
+            else
+                return YTQuantity(new_value, ($a.units))
+            end
         else
             error("Not in the same dimensions!")
         end
     end
 end
 
+macro quantity_mult_op(a,b,op)
+    quote
+        same_dims = ($a.dimensions) == ($b.dimensions)
+        if same_dims
+            c = ($op)(($a.value), in_units($b, ($a.units)).value)
+            units = ($op)(($a.units), ($a.units))
+        else
+            c = ($op)(($a.value), ($b.value))
+            units = ($op)(($a.units), ($b.units))
+        end
+        return YTQuantity(c, units)
+    end
+end
+
 macro arr_quan_same_units(a,b,op)
     quote
         if ($a.dimensions)==($b.dimensions)
-            return YTArray(($op)($a,in_units($b,($a.units)).value), ($a.units))
+            new_array = ($op)(($a.array),in_units($b,($a.units)).value)
+            if iseltype(new_array,Bool)
+                return new_array
+            else
+                return YTArray(new_array, ($a.units))
+            end
         else
             error("Not in the same dimensions!")
         end
+    end
+end
+
+macro arr_quan_mult_op(a,b,op)
+    quote
+        same_dims = ($a.dimensions) == ($b.dimensions)
+        if same_dims
+            c = ($op)(($a.array), in_units($b, ($a.units)).value)
+            units = ($op)(($a.units), ($a.units))
+        else
+            c = ($op)(($a.array), ($b.value))
+            units = ($op)(($a.units), ($b.units))
+        end
+        return YTArray(c, units)
     end
 end
 
@@ -173,19 +230,11 @@ for op = (:+, :-, :hypot, :(==), :(!=), :(>=), :(<=), :<, :>)
     @eval ($op)(a::YTQuantity,b::YTQuantity) = @quantity_same_units(a,b,($op))
 end
 
--(a::YTQuantity) = YTQuantity(-a.value, a.units)
-
-function *(a::YTQuantity, b::YTQuantity)
-    same_dims = a.dimensions == b.dimensions
-    if same_dims
-        c = a.value*in_units(b, a).value
-        units = a.units*a.units
-    else
-        c = a.value*b.value
-        units = a.units*b.units
-    end
-    return YTQuantity(c, units)
+for op = (:*, :/)
+    @eval ($op)(a::YTQuantity,b::YTQuantity) = @quantity_mult_op(a,b,($op))
 end
+
+-(a::YTQuantity) = YTQuantity(-a.value, a.units)
 
 *(a::YTQuantity, b::Real) = YTQuantity(b*a.value, a.units)
 *(a::Real, b::YTQuantity) = *(b, a)
@@ -199,7 +248,6 @@ end
 ^(a::YTQuantity, b::Integer) = YTQuantity(a.value^b, a.units^b)
 ^(a::YTQuantity, b::Real) = YTQuantity(a.value^b, a.units^b)
 
-/(a::YTQuantity, b::YTQuantity) = *(a,1.0/b)
 \(a::YTQuantity, b::YTQuantity) = /(b,a)
 
 # YTQuantities and Arrays
@@ -217,19 +265,11 @@ for op = (:+, :-, :hypot, :.==, :.!=, :.>=, :.<=, :.<, :.>)
     @eval ($op)(a::YTArray,b::YTArray) = @array_same_units(a,b,($op))
 end
 
--(a::YTArray) = YTArray(-a.array, a.units)
-
-function .*(a::YTArray, b::YTArray)
-    same_dims = a.dimensions == b.dimensions
-    if same_dims
-        c = a.array.*in_units(b, a.units).array
-        units = a.units*a.units
-    else
-        c = a.array.*b.array
-        units = a.units*b.units
-    end
-    return YTArray(c, units)
+for op = (:.*, :./)
+    @eval ($op)(a::YTArray,b::YTArray) = @array_mult_op(a,b,($op))
 end
+
+-(a::YTArray) = YTArray(-a.array, a.units)
 
 # YTArrays and Reals
 
@@ -241,7 +281,6 @@ end
 /(a::Real, b::YTArray) = YTArray(a/b.array, 1.0/b.quantity)
 \(a::Real, b::YTArray) = /(b,a)
 
-./(a::YTArray, b::YTArray) = .*(a,1.0/b)
 .\(a::YTArray, b::YTArray) = ./(b, a)
 
 # YTArrays and Arrays
@@ -261,23 +300,14 @@ for op = (:+, :-, :hypot, :.==, :.!=, :.>=, :.<=, :.<, :.>)
     @eval ($op)(a::YTArray,b::YTQuantity) = @arr_quan_same_units(a,b,($op))
 end
 
+for op = (:*, :/)
+    @eval ($op)(a::YTArray,b::YTQuantity) = @arr_quan_mult_op(a,b,($op))
+end
+
 +(a::YTQuantity, b::YTArray) = +(b,a)
 -(a::YTQuantity, b::YTArray) = -(-(b,a))
 
-function *(a::YTQuantity, b::YTArray)
-    same_dims = a.dimensions == b.dimensions
-    if same_dims
-        c = a.value*in_units(b, a.units).array
-        units = a.units*a.units
-    else
-        c = a.value*b.array
-        units = a.units*b.units
-    end
-    return YTArray(c, units)
-end
-
-*(a::YTArray, b::YTQuantity) = *(b,a)
-/(a::YTArray, b::YTQuantity) = *(a, 1.0/b)
+*(a::YTQuantity, b::YTArray) = *(b,a)
 /(a::YTQuantity, b::YTArray) = *(a, 1.0/b)
 \(a::YTArray, b::YTQuantity) = /(b,a)
 \(a::YTQuantity, b::YTArray) = /(b,a)

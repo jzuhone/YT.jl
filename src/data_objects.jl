@@ -404,6 +404,7 @@ getindex(grids::Grids, idxs::Ranges) = Grids(grids.grids[idxs])
 # Show
 
 show(io::IO, ds::Dataset) = print(io,ds.ds[:__repr__]())
+show(io::IO, index::Index) = print(io,index.index[:__repr__]())
 show(io::IO, dc::DataContainer) = print(io,dc.cont[:__repr__]())
 
 function show(io::IO, grids::Grids)

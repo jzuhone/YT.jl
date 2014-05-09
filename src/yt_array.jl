@@ -13,24 +13,24 @@ import jt: yt
 
 # Grab the classes for creating YTArrays and YTQuantities
 
-ytarray_new = yt.units["yt_array"]["YTArray"]
-ytquantity_new = yt.units["yt_array"]["YTQuantity"]
+bare_array = yt.units["yt_array"]["YTArray"]
+bare_quan = yt.units["yt_array"]["YTQuantity"]
 
 # YTQuantity definition
 
 type YTQuantity
-    ytquantity::PyObject
+    yt_quantity::PyObject
     value::Real
     units::Sym
     dimensions::String
-    function YTQuantity(ytquantity::PyObject)
-        new(ytquantity, ytquantity[:ndarray_view]()[1],
-            ytquantity[:units], ytquantity[:units][:dimensions][:__str__]())
+    function YTQuantity(yt_quantity::PyObject)
+        new(yt_quantity, yt_quantity[:ndarray_view]()[1],
+            yt_quantity[:units], yt_quantity[:units][:dimensions][:__str__]())
     end
     function YTQuantity(value::Real, units::String)
-        ytquantity = pycall(ytquantity_new, PyObject, value, units)
-        new(ytquantity, ytquantity[:ndarray_view]()[1],
-            ytquantity[:units], ytquantity[:units][:dimensions][:__str__]())
+        yt_quantity = pycall(bare_quan, PyObject, value, units)
+        new(yt_quantity, yt_quantity[:ndarray_view]()[1],
+            yt_quantity[:units], yt_quantity[:units][:dimensions][:__str__]())
     end
     YTQuantity(value::Real, units::Sym) = YTQuantity(value, units[:__str__]())
     YTQuantity(value::Real, q::YTQuantity) = YTQuantity(value, q.units)
@@ -40,17 +40,17 @@ end
 
 type YTArray <: AbstractArray
     array::Array
-    quantity::YTQuantity
+    unit_quantity::YTQuantity
     units::Sym
     dimensions::String
-    function YTArray(ytarray::PyObject)
-        quantity = YTQuantity(1.0, ytarray[:units])
-        new(ytarray[:ndarray_view](),
-            quantity, ytarray[:units], ytarray[:units][:dimensions][:__str__]())
+    function YTArray(yt_array::PyObject)
+        unit_quantity = YTQuantity(yt_array["unit_quantity"])
+        new(yt_array[:ndarray_view](),
+            unit_quantity, yt_array[:units], yt_array[:units][:dimensions][:__str__]())
     end
     function YTArray(array::AbstractArray, units::String)
-        quantity = YTQuantity(1.0, units)
-        new(array, quantity, quantity.units, quantity.units[:dimensions][:__str__]())
+        unit_quantity = YTQuantity(1.0, units)
+        new(array, unit_quantity, unit_quantity.units, unit_quantity.units[:dimensions][:__str__]())
     end
     YTArray(array::AbstractArray, units::Sym) = YTArray(array, units[:__str__]())
     YTArray(array::AbstractArray, q::YTQuantity) = YTArray(array, q.units)
@@ -149,7 +149,7 @@ end
 
 # Copy
 
-copy(q::YTQuantity) = YTQuantity(q.value, q)
+copy(q::YTQuantity) = YTQuantity(q.value, q.units)
 copy(a::YTArray) = YTArray(a.array, a.units)
 
 # Conversions
@@ -158,8 +158,8 @@ convert(::Type{YTArray}, o::PyObject) = YTArray(o)
 convert(::Type{YTQuantity}, o::PyObject) = YTQuantity(o)
 convert(::Type{Array}, a::YTArray) = a.array
 convert(::Type{Real}, q::YTQuantity) = q.value
-convert(::Type{PyObject}, a::YTArray) = pycall(ytarray_new, PyObject, a.array, a.units[:__str__]())
-convert(::Type{PyObject}, a::YTQuantity) = pycall(ytquantity_new, PyObject, a.value, a.units[:__str__]())
+convert(::Type{PyObject}, a::YTArray) = pycall(bare_array, PyObject, a.array, a.units[:__str__]())
+convert(::Type{PyObject}, a::YTQuantity) = pycall(bare_quan, PyObject, a.value, a.units[:__str__]())
 
 # Indexing, ranges (slicing)
 
@@ -200,17 +200,17 @@ end
 # Unit conversions
 
 function in_units(q::YTQuantity, units::String)
-    YTQuantity(pycall(q.ytquantity["in_units"], PyObject, units))
+    YTQuantity(pycall(q.yt_quantity["in_units"], PyObject, units))
 end
 in_units(q::YTQuantity, units::Sym) = in_units(q, units[:__str__]())
 in_units(q::YTQuantity, p::YTQuantity) = in_units(q, p.units)
 
 function in_cgs(q::YTQuantity)
-    pycall(q.ytquantity["in_cgs"], YTQuantity)
+    pycall(q.yt_quantity["in_cgs"], YTQuantity)
 end
 
 function in_units(a::YTArray, units::String)
-    q = in_units(a.quantity, units)
+    q = in_units(a.unit_quantity, units)
     YTArray(a.array*q.value, q.units)
 end
 in_units(a::YTArray, units::Sym) = in_units(a, units[:__str__]())
@@ -218,7 +218,7 @@ in_units(a::YTArray, b::YTQuantity) = in_units(a, b.units)
 in_units(a::YTArray, b::YTArray) = in_units(a, b.units)
 
 function in_cgs(a::YTArray)
-    q = in_cgs(a.quantity)
+    q = in_cgs(a.unit_quantity)
     YTArray(a.array*q.value, q.units)
 end
 
@@ -278,7 +278,7 @@ end
 /(a::YTArray, b::Real) = *(a, 1.0/b)
 \(a::YTArray, b::Real) = /(b,a)
 
-/(a::Real, b::YTArray) = YTArray(a/b.array, 1.0/b.quantity)
+/(a::Real, b::YTArray) = YTArray(a/b.array, 1.0/b.unit_quantity)
 \(a::Real, b::YTArray) = /(b,a)
 
 .\(a::YTArray, b::YTArray) = ./(b, a)
@@ -459,22 +459,22 @@ ndims(a::YTArray) = ndims(a.array)
 
 eltype(a::YTArray) = eltype(a.array)
 
-sum(a::YTArray) = sum(a.array)*a.quantity
-sum(a::YTArray, dims) = sum(a.array, dims)*a.quantity
+sum(a::YTArray) = sum(a.array)*a.unit_quantity
+sum(a::YTArray, dims) = sum(a.array, dims)*a.unit_quantity
 
-cumsum(a::YTArray) = cumsum(a.array)*a.quantity
-cumsum(a::YTArray, dim::Integer) = cumsum(a.array, dim)*a.quantity
+cumsum(a::YTArray) = cumsum(a.array)*a.unit_quantity
+cumsum(a::YTArray, dim::Integer) = cumsum(a.array, dim)*a.unit_quantity
 
-cumsum_kbn(a::YTArray) = cumsum(a.array)*a.quantity
-cumsum_kbn(a::YTArray, dim::Integer) = cumsum(a.array, dim)*a.quantity
+cumsum_kbn(a::YTArray) = cumsum(a.array)*a.unit_quantity
+cumsum_kbn(a::YTArray, dim::Integer) = cumsum(a.array, dim)*a.unit_quantity
 
-cummin(a::YTArray) = cummin(a.array)*a.quantity
-cummin(a::YTArray, dim::Integer) = cummin(a.array, dim)*a.quantity
+cummin(a::YTArray) = cummin(a.array)*a.unit_quantity
+cummin(a::YTArray, dim::Integer) = cummin(a.array, dim)*a.unit_quantity
 
-cummax(a::YTArray) = cummax(a.array)*a.quantity
-cummax(a::YTArray, dim::Integer) = cummax(a.array, dim)*a.quantity
+cummax(a::YTArray) = cummax(a.array)*a.unit_quantity
+cummax(a::YTArray, dim::Integer) = cummax(a.array, dim)*a.unit_quantity
 
-diff(a::YTArray) = diff(a.array)*a.quantity
-diff(a::YTArray, dim::Integer) = diff(a.array, dim)*a.quantity
+diff(a::YTArray) = diff(a.array)*a.unit_quantity
+diff(a::YTArray, dim::Integer) = diff(a.array, dim)*a.unit_quantity
 
 end

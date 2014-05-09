@@ -55,6 +55,11 @@ you tried to instead `add` ``"density"`` and ``"temperature"``, which aren't the
     ERROR: Not in the same dimensions!
      in + at /Users/jzuhone/.julia/jt/src/yt_array.jl:68
 
+It is also possible to create a ``YTArray`` from a regular Julia ``Array``:
+
+.. code-block:: julia
+
+    julia> a =
 Quantities
 ----------
 
@@ -87,11 +92,13 @@ We can switch back to cgs units rather easily:
 Unit Objects
 ------------
 
+The submodule ``jt.units`` contains a number of quantities that are simply
+
 Physical Constants
 ------------------
 
-Some of yt's physical constants are represented in jt. They are available via the ``physical_constants``
-module, and are unitful quantities which can be used with other quantities and arrays:
+Some of yt's physical constants are represented in jt. They are available via the ``jt.physical_constants``
+submodule, and are unitful quantities which can be used with other quantities and arrays:
 
 .. code-block:: julia
 

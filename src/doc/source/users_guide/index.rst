@@ -7,3 +7,5 @@ jt Users' Guide
    datasets
    data_containers
    arrays
+   profiles
+   plotting

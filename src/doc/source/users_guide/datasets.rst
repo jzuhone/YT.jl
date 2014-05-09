@@ -62,10 +62,19 @@ At this time, the ``parameters`` dictionary does not return `unitful quantities`
 Index
 -----
 
-The index is
+The ``Index`` of a ``Dataset`` is a link to the collection of volume elements (grids, cells, SPH particles) that make
+up the dataset. It is an attribute of the ``Dataset``:
+
+.. code-block:: julia
+
+    julia> ds.index
+    <yt.frontends.flash.data_structures.FLASHHierarchy object at 0x105935dd0>
+
+which is not very illuminating, but it at least tells you what sort of dataset you are dealing with. You will rarely
+need to access the ``Index``, but it has a few methods that may be useful.
 
 ``print_stats`` may be used to get a quick synopsis of the structure of the ``Dataset``. In this case,
-it is a FLASH AMR ``Dataset``, so statistics regarding the grids and cells are printed:
+it is a FLASH AMR dataset, so statistics regarding the grids and cells are printed:
 
 .. code-block:: julia
 
@@ -90,3 +99,10 @@ it is a FLASH AMR ``Dataset``, so statistics regarding the grids and cells are p
 	        Width: 2.344e+03 pc
 	        Width: 4.834e+08 AU
 	        Width: 7.232e+21 cm
+
+``get_smallest_dx`` returns the length scale of the smallest cell or SPH smoothing length:
+
+.. code-block:: julia
+
+    julia> get_smallest_dx(ds.index)
+    7.231875e21 code_length

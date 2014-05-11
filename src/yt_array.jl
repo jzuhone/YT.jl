@@ -4,7 +4,8 @@ import Base: cbrt, convert, copy, eltype, hypot, maximum, minimum, ndims,
              similar, show, size, sqrt, exp, log, log10, sin, cos, tan,
              expm1, log2, log1p, sinh, cosh, tanh, csc, sec, cot, csch,
              sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan, sum,
-             cumsum, cummin, cummax, cumsum_kbn, diff, display, print
+             cumsum, cummin, cummax, cumsum_kbn, diff, display, print,
+             showarray
 
 import SymPy: Sym
 using PyCall
@@ -75,15 +76,15 @@ macro array_same_units(a,b,op)
     end
 end
 
-macro array_mult_op(a,b,op)
+macro array_mult_op(a,b,op1,op2)
     quote
         same_dims = ($a.dimensions) == ($b.dimensions)
         if same_dims
-            c = ($op)(($a.array), in_units($b, ($a.units)).array)
-            units = ($op)(($a.units), ($a.units))
+            c = ($op1)(($a.array), in_units($b, ($a.units)).array)
+            units = ($op2)(($a.units), ($a.units))
         else
-            c = ($op)(($a.array), ($b.array))
-            units = ($op)(($a.units), ($b.units))
+            c = ($op1)(($a.array), ($b.array))
+            units = ($op2)(($a.units), ($b.units))
         end
         return YTArray(c, units)
     end
@@ -265,8 +266,8 @@ for op = (:+, :-, :hypot, :.==, :.!=, :.>=, :.<=, :.<, :.>)
     @eval ($op)(a::YTArray,b::YTArray) = @array_same_units(a,b,($op))
 end
 
-for op = (:.*, :./)
-    @eval ($op)(a::YTArray,b::YTArray) = @array_mult_op(a,b,($op))
+for (op1, op2) in zip((:.*, :./),(:*,:/))
+    @eval ($op1)(a::YTArray,b::YTArray) = @array_mult_op(a,b,($op1),($op2))
 end
 
 -(a::YTArray) = YTArray(-a.array, a.units)
@@ -348,91 +349,9 @@ end
 
 # Show
 
-function show_helper1d(io::IO, a::Array)
-    num_cells = length(a)
-    n = num_cells > 6 ? 4 : num_cells
-    print(io, "[ $(a[1]),")
-    for x in a[2:n-1]
-        print(io, " $(x),")
-    end
-    if num_cells > 6
-        println(io, "  ...")
-        print(io, "\t")
-        for x in a[num_cells-2:num_cells-1]
-            print(io, " $x,")
-        end
-    end
-    print(io, " $(a[end]) ]")
-end
-
-function show_helper2d(io::IO, a::Array)
-    nx,ny = size(a)
-    print(io, "[")
-    show_helper1d(io, a[1,:])
-    println(io, ",")
-    n = nx > 6 ? 4 : nx
-    for i in 2:n-1
-        print(io, "   ")
-        show_helper1d(io, a[i,:])
-        println(io, ",")
-    end
-    if nx > 6
-        println(io,"   ...")
-        for i in n-2:n-1
-            print(io, "   ")
-            show_helper1d(io, a[i,:])
-            println(io, ",")
-        end
-    end
-    print(io, "   ")
-    show_helper1d(io, a[end,:])
-    print(io, "]")
-end
-
-function show_helper3d(io::IO, a::Array)
-    nx,ny,nz = size(a)
-    print(io, "[")
-    show_helper2d(io, a[1,:,:])
-    println(io, ",")
-    n = nx > 6 ? 4 : nx
-    for i in 2:n-1
-        print(io, "   ")
-        show_helper2d(io, a[i,:,:])
-        println(io, ",")
-    end
-    if nx > 6
-        println(io,"   ...")
-        for i in n-2:n-1
-            print(io, "   ")
-            show_helper2d(io, a[i,:,:])
-            println(io, ",")
-        end
-    end
-    print(io, "   ")
-    show_helper2d(io, a[end,:,:])
-    print(io, "]")
-end
-
-function show(io::IO, a::YTArray)
-    num_cells = length(a)
-    if num_cells == 0
-        println(io, "YTArray [] $(a.units)")
-        return
-    end
-    if num_cells == 1
-        println(io, "YTArray [ $(a.array[1]) ] $(a.units)")
-        return
-    end
-    nd = ndims(a)
-    print(io, "YTArray ")
-    if nd == 1
-        show_helper1d(io, a.array)
-    elseif nd == 2
-        show_helper2d(io, a.array)
-    elseif nd == 3
-        show_helper3d(io, a.array)
-    end
-    print(io, " $(a.units)")
+function showarray(io::IO, a::YTArray; kw...)
+    println(io, "$(summary(a)) ($(a.units)):")
+    showarray(io, a.array; header=false)
 end
 
 function print(io::IO, a::YTArray)

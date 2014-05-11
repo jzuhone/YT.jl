@@ -74,6 +74,18 @@ z\b
 z\x
 z\y
 
+a.*b == b.*a
+x*y == y*x
+a*y == y*a
+a./b == b.\a
+x/y == y\x
+x/a == a\x
+
+abs(a) == sqrt(a.*a)
+abs(x) == sqrt(x*x)
+abs(a) == cbrt(a.^3)
+abs(x) == cbrt(x^3)
+
 # These should fail
 
 @test_throws a+b

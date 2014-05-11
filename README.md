@@ -27,7 +27,7 @@ of commands:
 
 	hg clone http://bitbucket.org/yt_analysis/yt
 	cd yt
-	hg up experimental
+    hg up yt-3.0
 	python setup.py install
 
 If you already have a `yt` installation, change that last line to

@@ -39,7 +39,6 @@ include("data_objects.jl")
 include("physical_constants.jl")
 include("units.jl")
 include("plots.jl")
-include("profiles.jl")
 
 import .yt_array: YTArray, YTQuantity, in_units, in_cgs
 import .data_objects: Dataset, Grids, Sphere, AllData, Projection, Slice,

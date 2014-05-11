@@ -13,13 +13,15 @@ work. These include:
 * Slice, projection, profile, and phase plots
 * Symbolic units, YTArrays, YTQuantities
 
-In order to use `jt`, you will need to have the following Julia packages installed:
+To install `jt` just, run:
+
+    Pkg.clone("git://github.com/jzuhone/jt")
+
+which will also install the following dependencies (if you don't already have them):
 
 * [PyCall](http://github.com/stevengj/PyCall.jl)
 * [PyPlot](http://github.com/stevengj/PyPlot.jl)
 * [SymPy](http://github.com/jverzani/SymPy.jl)
-
-You can install these by calling `Pkg.add` on each of them. 
 
 As well, you need to have a working installation of `yt` 3.0, which is currently
 in alpha state. In order to get the required version, issue this set

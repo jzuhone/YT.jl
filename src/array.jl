@@ -1,4 +1,4 @@
-module yt_array
+module array
 
 import Base: cbrt, convert, copy, eltype, hypot, maximum, minimum, ndims,
              similar, show, size, sqrt, exp, log, log10, sin, cos, tan,
@@ -10,12 +10,12 @@ import Base: cbrt, convert, copy, eltype, hypot, maximum, minimum, ndims,
 import SymPy: Sym
 using PyCall
 import ..utils: IntOrRange, RealOrArray
-import jt: yt
+@pyimport yt.units as units
 
 # Grab the classes for creating YTArrays and YTQuantities
 
-bare_array = yt.units["yt_array"]["YTArray"]
-bare_quan = yt.units["yt_array"]["YTQuantity"]
+bare_array = units.yt_array["YTArray"]
+bare_quan = units.yt_array["YTQuantity"]
 
 # YTQuantity definition
 

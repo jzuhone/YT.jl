@@ -2,7 +2,7 @@ module images
 
 using PyCall
 
-import ..yt_array: YTArray, YTQuantity
+import ..array: YTArray, YTQuantity
 import Base.show
 
 # FixedResolutionBuffer

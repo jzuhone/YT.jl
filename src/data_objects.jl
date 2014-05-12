@@ -2,10 +2,9 @@ module data_objects
 
 using PyCall
 import Base: size, show
-import ..yt_array: YTArray, YTQuantity
+import ..array: YTArray, YTQuantity
 import ..utils: Axis, RealOrArray, Length, StringOrArray, Field
 import ..images: FixedResolutionBuffer
-import jt: yt
 
 # Index
 

@@ -4,7 +4,7 @@ using PyCall
 import Base.show
 import ..data_objects: DataContainer
 import ..utils: Field, FieldOrArray
-import ..yt_array: YTArray, YTQuantity, in_units
+import ..array: YTArray, YTQuantity, in_units
 @pyimport yt.data_objects.profiles as prof
 
 abstract YTProfile

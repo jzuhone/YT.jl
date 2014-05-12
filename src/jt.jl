@@ -35,18 +35,18 @@ export SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot
 export show_plot
 
 using PyCall
-@pyimport yt
+@pyimport yt.convenience as ytconv
+@pyimport yt.frontends.stream.api as ytstream
 
 include("utils.jl")
-include("yt_array.jl")
+include("array.jl")
 include("images.jl")
 include("data_objects.jl")
 include("physical_constants.jl")
-include("units.jl")
 include("plots.jl")
 include("profiles.jl")
 
-import .yt_array: YTArray, YTQuantity, in_units, in_cgs
+import .array: YTArray, YTQuantity, in_units, in_cgs
 import .data_objects: Dataset, Grids, Sphere, AllData, Projection, Slice,
     CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray, Boolean,
     CuttingPlane, CutRegion, cut_region, DataContainer
@@ -55,22 +55,22 @@ import .images: FixedResolutionBuffer
 import .profiles: Profile1D, Profile2D, Profile3D, add_fields, set_x_unit,
     set_y_unit, set_z_unit, set_field_unit
 
-load(fn::String; args...) = Dataset(yt.load(fn; args...))
+load(fn::String; args...) = Dataset(ytconv.load(fn; args...))
 
 # Stream datasets
 
 function load_uniform_grid(data::Dict, domain_dimensions::Array; args...)
-    ds = yt.load_uniform_grid(data, domain_dimensions; args...)
+    ds = ytstream.load_uniform_grid(data, domain_dimensions; args...)
     return DataSet(ds)
 end
 
 function load_amr_grids(data::Dict, domain_dimensions::Array; args...)
-    ds = yt.load_amr_grids(data, domain_dimensions; args...)
+    ds = ytstream.load_amr_grids(data, domain_dimensions; args...)
     return DataSet(ds)
 end
 
 function load_particles(data::Dict; args...)
-    ds = yt.load_particles(data; args...)
+    ds = ytstream.load_particles(data; args...)
     return DataSet(ds)
 end
 

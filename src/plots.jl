@@ -2,7 +2,7 @@ module plots
 
 import ..data_objects: Dataset, DataContainer
 import ..utils: Axis, FieldOrArray, Field
-import ..yt_array: YTArray
+import ..array: YTArray
 
 using PyCall
 @pyimport yt.visualization.plot_window as pw

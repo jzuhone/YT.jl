@@ -35,7 +35,7 @@ function ProjectionPlot(ds::Dataset, axis::Axis, fields::FieldOrArray,
 end
 
 function PhasePlot(dc::DataContainer, x_field::String, y_field::String,
-                    z_fields::FieldOrArray; args...)
+                   z_fields::FieldOrArray; args...)
     pywrap(pp.PhasePlot(dc.cont, x_field, y_field, z_fields; args...))
 end
 

@@ -351,7 +351,7 @@ end
 
 function showarray(io::IO, a::YTArray; kw...)
     println(io, "$(summary(a)) ($(a.units)):")
-    showarray(io, a.array; header=false)
+    showarray(io, a.array; header=false, limit=true)
 end
 
 function print(io::IO, a::YTArray)

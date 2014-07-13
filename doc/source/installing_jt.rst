@@ -1,7 +1,7 @@
 Installing jt
 =============
 
-jt may be installed just like any other Julia package:
+``jt`` may be installed just like any other Julia package:
 
 .. code-block:: julia
 
@@ -14,9 +14,10 @@ This will also install the following dependencies:
 * `SymPy <http://github.com/jverzani/SymPy.jl>`_
 * `IJulia <http://github.com/JuliaLang/IJulia.jl>`_
 
-However, for jt to work, yt itself must be installed. The best way to install yt is by using Anaconda.
+However, for ``jt`` to work, ``yt`` itself must be installed. The best way to install ``yt`` is by
+using Anaconda.
 
-Once jt is installed, either
+Once ``jt`` is installed, either
 
 .. code-block:: julia
 

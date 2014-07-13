@@ -1,8 +1,8 @@
 Datasets
 ========
 
-The most basic jt object is the ``Dataset``. This is a collection of volumetric data that may be stored on disk,
-or created in-memory. To load a ``Dataset`` from disk, we use ``load``:
+The most basic ``jt`` object is the ``Dataset``. This is a collection of volumetric data that may
+be stored on disk, or created in-memory. To load a ``Dataset`` from disk, we use ``load``:
 
 .. code-block:: julia
 
@@ -25,15 +25,16 @@ or created in-memory. To load a ``Dataset`` from disk, we use ``load``:
     yt : [INFO     ] 2014-03-31 23:46:28,342 Loaded magnetic_field (108 new fields)
     "sloshing_nomag2_hdf5_plt_cnt_0100"
 
-Where you can see that the yt log has been outputted. The ``Dataset`` object ``ds`` now contains all of the basic
-metadata about the data stored in the file ``"sloshing_nomag2_hdf5_plt_cnt_0100"``. Attached to ``ds`` are several
-useful attributes, as well as a number of methods for creating ``DataContainers``.
+Where you can see that the ``yt`` log has been outputted. The ``Dataset`` object ``ds`` now
+contains all of the basic metadata about the data stored in the file
+``"sloshing_nomag2_hdf5_plt_cnt_0100"``. Attached to ``ds`` are several useful attributes, as well
+as a number of methods for creating ``DataContainers``.
 
 Parameters
 ----------
 
-Each simulation ``Dataset`` normally has a number of runtime parameters associated with it. This is stored in the
-``parameters`` dictionary:
+Each simulation ``Dataset`` normally has a number of runtime parameters associated with it. This
+is stored in the ``parameters`` dictionary:
 
 .. code-block:: julia
 
@@ -59,26 +60,15 @@ Each simulation ``Dataset`` normally has a number of runtime parameters associat
 
 At this time, the ``parameters`` dictionary does not return `unitful quantities`_.
 
-Index
------
-
-The ``Index`` of a ``Dataset`` is a link to the collection of volume elements (grids, cells, SPH particles) that make
-up the dataset. It is an attribute of the ``Dataset``:
-
-.. code-block:: julia
-
-    julia> ds.index
-    <yt.frontends.flash.data_structures.FLASHHierarchy object at 0x105935dd0>
-
-which is not very illuminating, but it at least tells you what sort of dataset you are dealing with. You will rarely
-need to access the ``Index``, but it has a few methods that may be useful.
+Methods
+-------
 
 ``print_stats`` may be used to get a quick synopsis of the structure of the ``Dataset``. In this case,
 it is a FLASH AMR dataset, so statistics regarding the grids and cells are printed:
 
 .. code-block:: julia
 
-    julia> print_stats(ds.index)
+    julia> print_stats(ds)
     level	# grids	       # cells	     # cells^3
     ----------------------------------------------
       0	         1	          4096	            15
@@ -104,5 +94,5 @@ it is a FLASH AMR dataset, so statistics regarding the grids and cells are print
 
 .. code-block:: julia
 
-    julia> get_smallest_dx(ds.index)
+    julia> get_smallest_dx(ds)
     7.231875e21 code_length

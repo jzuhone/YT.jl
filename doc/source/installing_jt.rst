@@ -7,7 +7,7 @@ Installing jt
 
     julia> Pkg.add("jt")
 
-This will also install the following dependencies:
+This will also install the following dependencies, if you don't have them installed already:
 
 * `PyCall <http://github.com/stevengj/PyCall.jl>`_
 * `PyPlot <http://github.com/stevengj/PyPlot.jl>`_

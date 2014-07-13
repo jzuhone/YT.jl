@@ -1,6 +1,9 @@
 What is jt?
 ===========
 
+.. |yt_docs| replace:: ``yt`` Documentation
+.. _yt_docs: http://yt-project.org/doc
+
 ``jt`` is a Julia interface to ``yt``. ``yt`` is a Python package for the analysis and
 visualization of volumetric simulation data. For more information about yt,
 check out http://yt-project.org.
@@ -41,5 +44,4 @@ of both Julia and ``yt`` strengths can do so.
 .. note::
 
     This documentation does not exhaustively cover the API of the Python methods of ``yt`` that may
-    be accessed via ``jt``. For that, consulting the `yt Documentation <http://yt-project
-    .org/doc>`_ is recommended.
+    be accessed via ``jt``. For that, consulting the |yt_docs|_ is recommended.

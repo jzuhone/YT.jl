@@ -20,8 +20,16 @@ run_container_tests(dd)
 
 sp1 = Sphere(ds, "c", (100.,"kpc"))
 sp2 = Sphere(ds, "max", (3.0856e22,"cm"))
-sp3 = Sphere(ds, [0.0,0.0,0.0], (0.2,"unitary"))
+sp3 = Sphere(ds, [3.0856e22,-1.0e23,0], (0.2,"unitary"))
 
 run_container_tests(sp1)
 run_container_tests(sp2)
 run_container_tests(sp3)
+
+reg1 = Region(ds)
+reg2 = Region(ds)
+
+run_container_tests(reg1)
+run_container_tests(reg2)
+
+

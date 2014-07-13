@@ -15,9 +15,30 @@ If we grab the ``"density"`` field from a sphere, it will be returned as a ``YTA
     julia> sp = Sphere(ds, "c", (100.,"kpc"))
     YTSphere (sloshing_nomag2_hdf5_plt_cnt_0100): center=[ 0.  0.  0.] code_length, radius=100.0 kpc
 
+.. code-block:: julia
+
     julia> sp["density"]
-    YTArray [ 1.3086558386643183e-26, 1.28922012403754e-26, 1.3036428741306716e-26,  ...
-	         1.6194386856326155e-26, 1.6152527924542866e-26, 1.595660076018442e-26 ] g/cm**3
+    325184-element YTArray (g/cm**3):
+    1.30866e-26
+    1.28922e-26
+    1.30364e-26
+    1.29997e-26
+    1.31801e-26
+    1.28292e-26
+    1.29769e-26
+    1.29457e-26
+    1.31242e-26
+    1.30882e-26
+    ⋮
+    1.64593e-26
+    1.60622e-26
+    1.64152e-26
+    1.63542e-26
+    1.62294e-26
+    1.58409e-26
+    1.61944e-26
+    1.61525e-26
+    1.59566e-26
 
 A ``YTArray`` can be manipulated in many of the same ways that normal Julia arrays are, and the units are retained.
 
@@ -35,8 +56,27 @@ Multiplying the temperature by a constant unitless number:
 .. code-block:: julia
 
     julia> sp["temperature"]*5
-    YTArray [ 4.41628e8, 4.4457548e8, 4.4363016e8,  ...
-	         3.390078e8, 3.369208e8, 3.4209352e8 ] K
+    325184-element YTArray (K):
+    4.41628e8
+    4.44575e8
+    4.4363e8
+    4.41047e8
+    4.4259e8
+    4.4641e8
+    4.45538e8
+    4.42978e8
+    4.4458e8
+    4.41921e8
+    ⋮
+    3.38115e8
+    3.39889e8
+    3.36052e8
+    3.3417e8
+    3.41066e8
+    3.42885e8
+    3.39008e8
+    3.36921e8
+    3.42094e8
 
 Multiplying element-wise one ``YTArray`` by another:
 

@@ -1,0 +1,201 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>What is jt? &mdash; jt 0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/julia.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="_static/julia.css" type="text/css" />
+  
+    <link rel="top" title="jt 0.1 documentation" href="index.html"/>
+        <link rel="next" title="Installing jt" href="installing_jt.html"/>
+        <link rel="prev" title="jt: A Julia interface to yt" href="index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="http://julialang.org/"><img src="_static/julia-logo.svg" class="logo"></a>
+        <!--
+        <a href="index.html" class="fa fa-home"> jt</a>
+        -->
+        <form class="wy-form" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search docs" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">What is jt?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-jt-does">What jt Does</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-jt-doesn-t-do-and-probably-won-t">What jt Doesn&#8217;t Do (and Probably Won&#8217;t)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installing_jt.html">Installing jt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="users_guide/index.html">jt Users&#8217; Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="users_guide/datasets.html">Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users_guide/data_containers.html">Data Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users_guide/arrays.html">Arrays, Quantities, and Units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="users_guide/plotting.html">Plotting</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">jt</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <ul class="wy-breadcrumbs">
+  <li><a href="index.html">Docs</a> &raquo;</li>
+  <li><a href="">What is jt?</a></li>
+  
+</ul>
+<hr/>
+
+          <div role="main">
+            
+  <div class="section" id="what-is-jt">
+<h1>What is jt?<a class="headerlink" href="#what-is-jt" title="Permalink to this headline">¶</a></h1>
+<p>jt is a Julia interface to yt. yt is a Python package for the analysis and visualization of volumetric
+simulation data. For more information about yt, check out <a class="reference external" href="http://yt-project.org">http://yt-project.org</a>.</p>
+<div class="section" id="what-jt-does">
+<h2>What jt Does<a class="headerlink" href="#what-jt-does" title="Permalink to this headline">¶</a></h2>
+<p>jt exposes a number of yt&#8217;s essential features from within a Julia environment. These include:</p>
+<ul class="simple">
+<li>Datasets</li>
+<li>Data objects (e.g., spheres, rectangular regions, slices, projections, profiles, etc.)</li>
+<li>Unit-aware quantities and arrays</li>
+<li>Simple visualization tools (e.g., <tt class="docutils literal"><span class="pre">SlicePlot</span></tt>, <tt class="docutils literal"><span class="pre">ProjectionPlot</span></tt>, <tt class="docutils literal"><span class="pre">ProfilePlot</span></tt>, etc.)</li>
+</ul>
+<p>jt enables the end-user to &#8220;ask&#8221; physically-motivated questions of volumetric data and work with the &#8220;answers&#8221;
+from within a Julia environment.</p>
+</div>
+<div class="section" id="what-jt-doesn-t-do-and-probably-won-t">
+<h2>What jt Doesn&#8217;t Do (and Probably Won&#8217;t)<a class="headerlink" href="#what-jt-doesn-t-do-and-probably-won-t" title="Permalink to this headline">¶</a></h2>
+<p>jt is not intended to be a full exposure of everything yt does. yt boasts many features, and exposing all of
+them would be somewhat redundant, especially those features that don&#8217;t involve a lot of additional coding on the part
+of the end-user. Some of these features include:</p>
+<ul class="simple">
+<li>Analysis modules (e.g., particle trajectories, two-point functions, halo finders, simulated observations, etc.)</li>
+<li>Initial conditions generation</li>
+<li>Volume rendering</li>
+<li>Utilities for cosmology, image writing, generating streamlines, clump finding, etc.</li>
+</ul>
+<p>yt does a great job at handling these tasks already, and so if you are looking to use these features, working with
+yt directly from within a Python environment is the way to go. The purpose of jt is to expose yt&#8217;s basic
+data loading and examining features, as well as a few handy visualization tools, so that those who want to take
+advantage of both Julia&#8217;s and yt&#8217;s strengths can do so.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This documentation does not exhaustively cover the API of yt&#8217;s Python methods that may be accessed via jt. For
+that, consulting the <a class="reference external" href="http://yt-project.org/doc">yt Documentation</a> is recommended.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons">
+      
+        <a href="installing_jt.html" class="btn btn-neutral float-right" title="Installing jt"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="jt: A Julia interface to yt"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <p>
+      &copy; Copyright 2014, John ZuHone.
+  </p>
+
+  <a href="https://www.github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="http://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+   
+
+</body>
+</html>

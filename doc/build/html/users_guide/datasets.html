@@ -1,0 +1,260 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Datasets &mdash; jt 0.1 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/julia.css" type="text/css" />
+  
+
+  
+    <link rel="stylesheet" href="../_static/julia.css" type="text/css" />
+  
+    <link rel="top" title="jt 0.1 documentation" href="../index.html"/>
+        <link rel="up" title="jt Users’ Guide" href="index.html"/>
+        <link rel="next" title="Data Containers" href="data_containers.html"/>
+        <link rel="prev" title="jt Users’ Guide" href="index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="http://julialang.org/"><img src="../_static/julia-logo.svg" class="logo"></a>
+        <!--
+        <a href="../index.html" class="fa fa-home"> jt</a>
+        -->
+        <form class="wy-form" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search docs" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../what_is_jt.html">What is jt?</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../what_is_jt.html#what-jt-does">What jt Does</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../what_is_jt.html#what-jt-doesn-t-do-and-probably-won-t">What jt Doesn&#8217;t Do (and Probably Won&#8217;t)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../installing_jt.html">Installing jt</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">jt Users&#8217; Guide</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_containers.html">Data Containers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arrays.html">Arrays, Quantities, and Units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plotting.html">Plotting</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">jt</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <ul class="wy-breadcrumbs">
+  <li><a href="../index.html">Docs</a> &raquo;</li>
+  <li><a href="">Datasets</a></li>
+  
+</ul>
+<hr/>
+
+          <div role="main">
+            
+  <div class="section" id="datasets">
+<h1>Datasets<a class="headerlink" href="#datasets" title="Permalink to this headline">¶</a></h1>
+<p>The most basic jt object is the <tt class="docutils literal"><span class="pre">Dataset</span></tt>. This is a collection of volumetric data that may be stored on disk,
+or created in-memory. To load a <tt class="docutils literal"><span class="pre">Dataset</span></tt> from disk, we use <tt class="docutils literal"><span class="pre">load</span></tt>:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">ds</span> <span class="o">=</span> <span class="nb">load</span><span class="p">(</span><span class="s">&quot;sloshing_nomag2_hdf5_plt_cnt_0100&quot;</span><span class="p">)</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">WARNING</span>  <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">27</span><span class="p">,</span><span class="mi">765</span> <span class="n">integer</span> <span class="n">runtime</span> <span class="n">parameter</span> <span class="n">checkpointfilenumber</span> <span class="n">overwrites</span> <span class="n">a</span> <span class="n">simulation</span> <span class="n">scalar</span> <span class="n">of</span> <span class="n">the</span> <span class="n">same</span> <span class="n">name</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">WARNING</span>  <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">27</span><span class="p">,</span><span class="mi">765</span> <span class="n">integer</span> <span class="n">runtime</span> <span class="n">parameter</span> <span class="n">plotfilenumber</span> <span class="n">overwrites</span> <span class="n">a</span> <span class="n">simulation</span> <span class="n">scalar</span> <span class="n">of</span> <span class="n">the</span> <span class="n">same</span> <span class="n">name</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">INFO</span>     <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">27</span><span class="p">,</span><span class="mi">768</span> <span class="n">Parameters</span><span class="p">:</span> <span class="n">current_time</span>              <span class="o">=</span> <span class="mf">7.89058001997e+16</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">INFO</span>     <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">27</span><span class="p">,</span><span class="mi">768</span> <span class="n">Parameters</span><span class="p">:</span> <span class="n">domain_dimensions</span>         <span class="o">=</span> <span class="p">[</span><span class="mi">16</span> <span class="mi">16</span> <span class="mi">16</span><span class="p">]</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">INFO</span>     <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">27</span><span class="p">,</span><span class="mi">769</span> <span class="n">Parameters</span><span class="p">:</span> <span class="n">domain_left_edge</span>          <span class="o">=</span> <span class="p">[</span> <span class="o">-</span><span class="mf">3.70272000e+24</span>  <span class="o">-</span><span class="mf">3.70272000e+24</span>  <span class="o">-</span><span class="mf">3.70272000e+24</span><span class="p">]</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">INFO</span>     <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">27</span><span class="p">,</span><span class="mi">770</span> <span class="n">Parameters</span><span class="p">:</span> <span class="n">domain_right_edge</span>         <span class="o">=</span> <span class="p">[</span>  <span class="mf">3.70272000e+24</span>   <span class="mf">3.70272000e+24</span>   <span class="mf">3.70272000e+24</span><span class="p">]</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">INFO</span>     <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">27</span><span class="p">,</span><span class="mi">770</span> <span class="n">Parameters</span><span class="p">:</span> <span class="n">cosmological_simulation</span>   <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">INFO</span>     <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">28</span><span class="p">,</span><span class="mi">340</span> <span class="n">Loading</span> <span class="n">field</span> <span class="n">plugins</span><span class="o">.</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">INFO</span>     <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">28</span><span class="p">,</span><span class="mi">340</span> <span class="n">Loaded</span> <span class="n">angular_momentum</span> <span class="p">(</span><span class="mi">8</span> <span class="nb">new</span> <span class="n">fields</span><span class="p">)</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">INFO</span>     <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">28</span><span class="p">,</span><span class="mi">340</span> <span class="n">Loaded</span> <span class="n">astro</span> <span class="p">(</span><span class="mi">14</span> <span class="nb">new</span> <span class="n">fields</span><span class="p">)</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">INFO</span>     <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">28</span><span class="p">,</span><span class="mi">340</span> <span class="n">Loaded</span> <span class="n">cosmology</span> <span class="p">(</span><span class="mi">20</span> <span class="nb">new</span> <span class="n">fields</span><span class="p">)</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">INFO</span>     <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">28</span><span class="p">,</span><span class="mi">341</span> <span class="n">Loaded</span> <span class="n">fluid</span> <span class="p">(</span><span class="mi">55</span> <span class="nb">new</span> <span class="n">fields</span><span class="p">)</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">INFO</span>     <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">28</span><span class="p">,</span><span class="mi">341</span> <span class="n">Loaded</span> <span class="n">fluid_vector</span> <span class="p">(</span><span class="mi">87</span> <span class="nb">new</span> <span class="n">fields</span><span class="p">)</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">INFO</span>     <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">28</span><span class="p">,</span><span class="mi">342</span> <span class="n">Loaded</span> <span class="n">geometric</span> <span class="p">(</span><span class="mi">102</span> <span class="nb">new</span> <span class="n">fields</span><span class="p">)</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">INFO</span>     <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">28</span><span class="p">,</span><span class="mi">342</span> <span class="n">Loaded</span> <span class="kd">local</span> <span class="p">(</span><span class="mi">102</span> <span class="nb">new</span> <span class="n">fields</span><span class="p">)</span>
+<span class="n">yt</span> <span class="p">:</span> <span class="p">[</span><span class="n">INFO</span>     <span class="p">]</span> <span class="mi">2014</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">31</span> <span class="mi">23</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">28</span><span class="p">,</span><span class="mi">342</span> <span class="n">Loaded</span> <span class="n">magnetic_field</span> <span class="p">(</span><span class="mi">108</span> <span class="nb">new</span> <span class="n">fields</span><span class="p">)</span>
+<span class="s">&quot;sloshing_nomag2_hdf5_plt_cnt_0100&quot;</span>
+</pre></div>
+</div>
+<p>Where you can see that the yt log has been outputted. The <tt class="docutils literal"><span class="pre">Dataset</span></tt> object <tt class="docutils literal"><span class="pre">ds</span></tt> now contains all of the basic
+metadata about the data stored in the file <tt class="docutils literal"><span class="pre">&quot;sloshing_nomag2_hdf5_plt_cnt_0100&quot;</span></tt>. Attached to <tt class="docutils literal"><span class="pre">ds</span></tt> are several
+useful attributes, as well as a number of methods for creating <tt class="docutils literal"><span class="pre">DataContainers</span></tt>.</p>
+<div class="section" id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this headline">¶</a></h2>
+<p>Each simulation <tt class="docutils literal"><span class="pre">Dataset</span></tt> normally has a number of runtime parameters associated with it. This is stored in the
+<tt class="docutils literal"><span class="pre">parameters</span></tt> dictionary:</p>
+<div class="highlight-julia"><div class="highlight"><pre>julia&gt; collect(keys(ds.parameters))
+293-element Array{Any,1}:
+ &quot;min_particles_per_blk&quot;
+ &quot;zmax&quot;
+ &quot;maxcondentr&quot;
+ &quot;usemassdiffusivity&quot;
+ &quot;saturatedconduction&quot;
+ &quot;zmin&quot;
+ ⋮
+ &quot;flux_correct&quot;
+ &quot;nxb&quot;
+ &quot;plotfilenumber&quot;
+ &quot;log_file&quot;
+ &quot;e_modification&quot;
+ &quot;order&quot;
+
+julia&gt; ds.parameters[&quot;nxb&quot;]
+0-dimensional Array{Int32,0}:
+ 16
+</pre></div>
+</div>
+<p>At this time, the <tt class="docutils literal"><span class="pre">parameters</span></tt> dictionary does not return <a href="#id1"><span class="problematic" id="id2">`unitful quantities`_</span></a>.</p>
+</div>
+<div class="section" id="index">
+<h2>Index<a class="headerlink" href="#index" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">Index</span></tt> of a <tt class="docutils literal"><span class="pre">Dataset</span></tt> is a link to the collection of volume elements (grids, cells, SPH particles) that make
+up the dataset. It is an attribute of the <tt class="docutils literal"><span class="pre">Dataset</span></tt>:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">ds</span><span class="o">.</span><span class="n">index</span>
+<span class="o">&lt;</span><span class="n">yt</span><span class="o">.</span><span class="n">frontends</span><span class="o">.</span><span class="n">flash</span><span class="o">.</span><span class="n">data_structures</span><span class="o">.</span><span class="n">FLASHHierarchy</span> <span class="n">object</span> <span class="n">at</span> <span class="mh">0x105935dd0</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>which is not very illuminating, but it at least tells you what sort of dataset you are dealing with. You will rarely
+need to access the <tt class="docutils literal"><span class="pre">Index</span></tt>, but it has a few methods that may be useful.</p>
+<p><tt class="docutils literal"><span class="pre">print_stats</span></tt> may be used to get a quick synopsis of the structure of the <tt class="docutils literal"><span class="pre">Dataset</span></tt>. In this case,
+it is a FLASH AMR dataset, so statistics regarding the grids and cells are printed:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">print_stats</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<span class="n">level</span>       <span class="c"># grids        # cells       # cells^3</span>
+<span class="o">----------------------------------------------</span>
+  <span class="mi">0</span>          <span class="mi">1</span>                <span class="mi">4096</span>              <span class="mi">15</span>
+  <span class="mi">1</span>          <span class="mi">8</span>               <span class="mi">32768</span>              <span class="mi">31</span>
+  <span class="mi">2</span>         <span class="mi">64</span>              <span class="mi">262144</span>              <span class="mi">63</span>
+  <span class="mi">3</span>        <span class="mi">512</span>             <span class="mi">2097152</span>             <span class="mi">127</span>
+  <span class="mi">4</span>        <span class="mi">256</span>             <span class="mi">1048576</span>             <span class="mi">101</span>
+  <span class="mi">5</span>        <span class="mi">256</span>             <span class="mi">1048576</span>             <span class="mi">101</span>
+  <span class="mi">6</span>        <span class="mi">256</span>             <span class="mi">1048576</span>             <span class="mi">101</span>
+<span class="o">----------------------------------------------</span>
+          <span class="mi">1353</span>             <span class="mi">5541888</span>
+
+
+<span class="n">t</span> <span class="o">=</span> <span class="mf">7.89058002e+16</span> <span class="o">=</span> <span class="mf">7.89058002e+16</span> <span class="n">s</span> <span class="o">=</span> <span class="mf">2.50037393e+09</span> <span class="n">years</span>
+
+<span class="n">Smallest</span> <span class="n">Cell</span><span class="p">:</span>
+            <span class="n">Width</span><span class="p">:</span> <span class="mf">2.344e-03</span> <span class="n">Mpc</span>
+            <span class="n">Width</span><span class="p">:</span> <span class="mf">2.344e+03</span> <span class="n">pc</span>
+            <span class="n">Width</span><span class="p">:</span> <span class="mf">4.834e+08</span> <span class="n">AU</span>
+            <span class="n">Width</span><span class="p">:</span> <span class="mf">7.232e+21</span> <span class="n">cm</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">get_smallest_dx</span></tt> returns the length scale of the smallest cell or SPH smoothing length:</p>
+<div class="highlight-julia"><div class="highlight"><pre><span class="n">julia</span><span class="o">&gt;</span> <span class="n">get_smallest_dx</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<span class="mf">7.231875e21</span> <span class="n">code_length</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons">
+      
+        <a href="data_containers.html" class="btn btn-neutral float-right" title="Data Containers"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="jt Users’ Guide"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <p>
+      &copy; Copyright 2014, John ZuHone.
+  </p>
+
+  <a href="https://www.github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="http://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+   
+
+</body>
+</html>

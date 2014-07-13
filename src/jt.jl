@@ -2,7 +2,7 @@ module jt
 
 # Datasets, Indices
 
-export Dataset, Index
+export Dataset
 export print_stats, get_smallest_dx
 
 # YTArrays, YTQuantities, units

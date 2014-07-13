@@ -6,25 +6,10 @@ import ..array: YTArray, YTQuantity
 import ..utils: Axis, RealOrArray, Length, StringOrArray, Field
 import ..images: FixedResolutionBuffer
 
-# Index
-
-type Index
-    index::PyObject
-end
-
-function get_smallest_dx(index::Index)
-    pycall(index.index["get_smallest_dx"], YTArray)[1]
-end
-
-function print_stats(index::Index)
-    index.index[:print_stats]()
-end
-
 # Dataset
 
 type Dataset
     ds::PyObject
-    index::Index
     parameters::PyDict
     domain_center::YTArray
     domain_left_edge::YTArray
@@ -36,7 +21,7 @@ type Dataset
     current_redshift::Real
     max_level::Integer
     function Dataset(ds::PyObject)
-        new(ds, Index(ds[:index]),
+        new(ds,
             PyDict(ds["parameters"]::PyObject),
             YTArray(ds["domain_center"]),
             YTArray(ds["domain_left_edge"]),
@@ -48,6 +33,14 @@ type Dataset
             ds[:current_redshift],
             ds[:max_level][1])
     end
+end
+
+function get_smallest_dx(ds::Dataset)
+    pycall(ds.ds[:index]["get_smallest_dx"], YTArray)[1]
+end
+
+function print_stats(ds::Dataset)
+    ds.ds[:print_stats]()
 end
 
 # Data containers
@@ -309,8 +302,8 @@ end
 type Grids <: AbstractArray
     grids::Array
     grid_dict::Dict
-    function Grids(index::Index)
-        new(index.index[:grids], Dict())
+    function Grids(ds::Dataset)
+        new(ds.ds[:index][:grids], Dict())
     end
     function Grids(grid_array::Array)
         new(grid_array, Dict())
@@ -403,7 +396,6 @@ getindex(grids::Grids, idxs::Ranges) = Grids(grids.grids[idxs])
 # Show
 
 show(io::IO, ds::Dataset) = print(io,ds.ds[:__repr__]())
-show(io::IO, index::Index) = print(io,index.index[:__repr__]())
 show(io::IO, dc::DataContainer) = print(io,dc.cont[:__repr__]())
 
 function show(io::IO, grids::Grids)

@@ -15,34 +15,37 @@ If we grab the ``"density"`` field from a sphere, it will be returned as a ``YTA
 .. code-block:: julia
 
     julia> sp = Sphere(ds, "c", (100.,"kpc"))
-    YTSphere (sloshing_nomag2_hdf5_plt_cnt_0100): center=[ 0.  0.  0.] code_length, radius=100.0 kpc
+    YTSphere (sloshing_nomag2_hdf5_plt_cnt_0100): center=[ 0.  0.  0.] code_length,
+    radius=100.0 kpc
 
 .. code-block:: julia
 
     julia> sp["density"]
     325184-element YTArray (g/cm**3):
-    1.30866e-26
-    1.28922e-26
-    1.30364e-26
-    1.29997e-26
-    1.31801e-26
-    1.28292e-26
-    1.29769e-26
-    1.29457e-26
-    1.31242e-26
-    1.30882e-26
-    ⋮
-    1.64593e-26
-    1.60622e-26
-    1.64152e-26
-    1.63542e-26
-    1.62294e-26
-    1.58409e-26
-    1.61944e-26
-    1.61525e-26
-    1.59566e-26
+     1.3086558386643183e-26
+     1.28922012403754e-26
+     1.3036428741306716e-26
+     1.2999706649871096e-26
+     1.3180126226317337e-26
+     1.2829197138546694e-26
+     1.297694215792844e-26
+     1.2945722063157944e-26
+     1.3124175650316954e-26
+     1.3088245501274466e-26
+     ⋮
+     1.6093269371270004e-26
+     1.64592576904618e-26
+     1.606223724726208e-26
+     1.6415200117053996e-26
+     1.635422055278283e-26
+     1.622938177378765e-26
+     1.5840914000284966e-26
+     1.6194386856326155e-26
+     1.6152527924542866e-26
+     1.595660076018442e-26
 
-A ``YTArray`` can be manipulated in many of the same ways that normal Julia arrays are, and the units are retained.
+A ``YTArray`` can be manipulated in many of the same ways that normal Julia arrays are, and the
+units are retained.
 
 Examples:
 
@@ -59,34 +62,61 @@ Multiplying the temperature by a constant unitless number:
 
     julia> sp["temperature"]*5
     325184-element YTArray (K):
-    4.41628e8
-    4.44575e8
-    4.4363e8
-    4.41047e8
-    4.4259e8
-    4.4641e8
-    4.45538e8
-    4.42978e8
-    4.4458e8
-    4.41921e8
-    ⋮
-    3.38115e8
-    3.39889e8
-    3.36052e8
-    3.3417e8
-    3.41066e8
-    3.42885e8
-    3.39008e8
-    3.36921e8
-    3.42094e8
+     4.41628e8
+     4.4457548e8
+     4.4363016e8
+     4.4104716e8
+     4.4259016e8
+     4.464104e8
+     4.4553836e8
+     4.429778e8
+     4.4458e8
+     4.4192136e8
+     ⋮
+     3.42009e8
+     3.3811488e8
+     3.3988892e8
+     3.3605176e8
+     3.341696e8
+     3.410656e8
+     3.4288464e8
+     3.390078e8
+     3.369208e8
+     3.4209352e8
+
+Adding two ``YTArrays``s:
+
+.. code-block:: julia
+
+    julia>
 
 Multiplying element-wise one ``YTArray`` by another:
 
 .. code-block:: julia
 
     julia> sp["density"].*sp["temperature"]
-    YTArray [ 1.1558781214352911e-18, 1.1463113109392978e-18, 1.1566705936668994e-18,  ...
-	         1.0980046921024092e-18, 1.0884245260718644e-18, 1.0917299442572327e-18 ] K*g/cm**3
+    325184-element YTArray (K*g/cm**3):
+     1.1558781214352911e-18
+     1.1463113109392978e-18
+     1.1566705936668994e-18
+     1.1466967397517522e-18
+     1.1666788350651973e-18
+     1.145417405259497e-18
+     1.1563451053716595e-18
+     1.1469334957898334e-18
+     1.1669492021235823e-18
+     1.1567950503874187e-18
+     ⋮
+     1.1008085928797365e-18
+     1.1130239877799136e-18
+     1.0918752941511363e-18
+     1.1032713780176403e-18
+     1.0930166680870434e-18
+     1.1070567664611898e-18
+     1.0863212188517341e-18
+     1.0980046921024092e-18
+     1.0884245260718644e-18
+     1.0917299442572327e-18
 
 However, attempting to perform an operation that doesn't make sense will throw an error. For
 example, suppose that you tried to instead `add` ``"density"`` and ``"temperature"``,
@@ -96,13 +126,25 @@ which aren't the same type of physical quantity:
 
     julia> sp["density"]+sp["temperature"]
     ERROR: Not in the same dimensions!
-     in + at /Users/jzuhone/.julia/jt/src/yt_array.jl:68
+     in + at /Users/jzuhone/.julia/jt/src/array.jl:74
 
-It is also possible to create a ``YTArray`` from a regular Julia ``Array``:
+It is also possible to create a ``YTArray`` from a regular Julia ``Array``, like so:
 
 .. code-block:: julia
 
-    julia> a =
+    julia> a = YTArray(randn(10), "erg")
+    10-element YTArray (erg):
+     -0.14854525691731818
+     -0.44315729646073715
+     -1.8669284316708383
+     -1.4228733016999084
+     -0.0934020019569414
+      0.029660552522097813
+      0.4280709348298647
+     -0.05755731738462625
+      1.032874362011772
+      0.17854214710697325
+
 Quantities
 ----------
 
@@ -110,9 +152,25 @@ A ``YTQuantity`` is just a scalar version of a ``YTArray``. They can be manipula
 
 .. code-block:: julia
 
-    julia>
+    julia> a = YTQuantity(3.14159, "radian")
+    3.14159 radian
 
-Changing units
+    julia> b = YTQuantity(12, "cm")
+    12.0 cm
+
+    julia> a/b
+    0.26179916666666664 radian/cm
+
+    julia> a\b
+    3.8197218605865184 cm/radian
+
+    julia> c = YTQuantity(13,"m")
+    13.0 m
+
+    julia> b+c
+    1312.0 cm
+
+Changing Units
 --------------
 
 Occasionally you will want to change the units of an array or quantity to something more
@@ -122,21 +180,56 @@ kiloparsec:
 .. code-block:: julia
 
     julia> a = in_units(sp["density"], "Msun/kpc**3")
-    YTArray [ 193361.43661723754, 190489.69785225237, 192620.74223809008,  ...
-	         239281.3920328031, 238662.9022094481, 235767.96552301125 ] Msun/kpc**3
+    325184-element YTArray (Msun/kpc**3):
+     193361.43661723754
+     190489.69785225237
+     192620.74223809008
+     192078.1521891412
+     194743.95533346717
+     189558.77596412544
+     191741.79371078173
+     191280.49883112026
+     193917.25335152834
+     193386.3647075119
+     ⋮
+     237787.32295826814
+     243195.01114436015
+     237328.8054548747
+     242544.03512482112
+     241643.02694502342
+     239798.46209161723
+     234058.62702232625
+     239281.3920328031
+     238662.9022094481
+     235767.96552301125
 
 We can switch back to cgs units rather easily:
 
 .. code-block:: julia
 
     julia> in_cgs(a)
-    YTArray [ 1.3086558386643183e-26, 1.28922012403754e-26, 1.303642874130672e-26,  ...
-	         1.6194386856326155e-26, 1.6152527924542868e-26, 1.595660076018442e-26 ] g/cm**3
-
-Unit Objects
-------------
-
-The submodule ``jt.units`` contains a number of quantities that are simply
+    325184-element YTArray (g/cm**3):
+     1.3086558386643183e-26
+     1.28922012403754e-26
+     1.303642874130672e-26
+     1.2999706649871096e-26
+     1.318012622631734e-26
+     1.2829197138546696e-26
+     1.297694215792844e-26
+     1.2945722063157944e-26
+     1.3124175650316954e-26
+     1.308824550127447e-26
+     ⋮
+     1.6093269371270004e-26
+     1.64592576904618e-26
+     1.606223724726208e-26
+     1.6415200117053996e-26
+     1.6354220552782833e-26
+     1.622938177378765e-26
+     1.5840914000284966e-26
+     1.6194386856326155e-26
+     1.6152527924542868e-26
+     1.595660076018442e-26
 
 Physical Constants
 ------------------
@@ -151,5 +244,25 @@ quantities and arrays:
     1.3806488e-16 erg/K
 
     julia> kT = in_units(kb*sp["temperature"], "keV") # computing kT in kilo-electronvolts
-    YTArray [ 7.611310547262892, 7.66210937707406, 7.645817103743251,  ...
-	         5.842685798328886, 5.806717052886709, 5.895867148202309 ] keV
+    325184-element YTArray (keV):
+     7.611310547262892
+     7.66210937707406
+     7.645817103743251
+     7.601299964559187
+     7.62789305234897
+     7.6937336082128995
+     7.6787042911187955
+     7.634573897812892
+     7.662187277758966
+     7.616366508529263
+     ⋮
+     5.8944104743332275
+     5.827296621433712
+     5.857871606179393
+     5.791739439787011
+     5.759301043082916
+     5.878151291558838
+     5.909501836220619
+     5.842685798328886
+     5.806717052886709
+     5.895867148202309

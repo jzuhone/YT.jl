@@ -13,7 +13,7 @@ work. These include:
 * Slice, projection, profile, and phase plots
 * Symbolic units, YTArrays, YTQuantities
 
-To install `jt` just, run:
+To install `jt` just run:
 
     Pkg.clone("git://github.com/jzuhone/jt")
 

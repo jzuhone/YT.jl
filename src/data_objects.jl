@@ -97,8 +97,6 @@ type Disk <: DataContainer
     ds::Dataset
     center::YTArray
     normal::Array
-    radius::YTQuantity
-    height::YTQuantity
     field_dict::Dict
     function Disk(ds::Dataset, center::Union(StringOrArray,YTArray), normal::Array,
                   radius::Union(Length,YTQuantity),
@@ -119,8 +117,7 @@ type Disk <: DataContainer
             h = height
         end
         dk = ds.ds[:disk](c, normal, r, h; args...)
-        new(dk, ds, YTArray(dk["center"]), normal, YTQuantity(sp["radius"]),
-            YTQuantity(dk["height"]), Dict())
+        new(dk, ds, YTArray(dk["center"]), normal, Dict())
     end
 end
 
@@ -147,20 +144,6 @@ type Ray <: DataContainer
         ray = ds.ds[:ray](sp, ep; args...)
         new(ray, ds, YTArray(ray["start_point"]),
             YTArray(ray["end_point"]), Dict())
-    end
-end
-
-# Boolean
-
-type Boolean <: DataContainer
-    cont::PyObject
-    ds::Dataset
-    regions::Array
-    field_dict::Dict
-    function Boolean(ds::Dataset, regions::Array; args...)
-        regs = [region.cont for region in regions]
-        bool_reg = ds.ds[:boolean](regs; args...)
-        new(bool_reg, ds, regions, Dict())
     end
 end
 

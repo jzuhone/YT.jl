@@ -1,3 +1,5 @@
+.. _arrays-quantities-units:
+
 Arrays, Quantities, and Units
 =============================
 
@@ -5,6 +7,8 @@ Whenever ``jt`` returns physical data, it is typically associated with certain u
 density in grams per cubic centimeter, temperature in Kelvin, and so on). ``jt`` exposes the
 ``YTArray``, ``YTQuantity``, and units facilities from ``yt`` so that unitful objects may be
 manipulated and operated on.
+
+.. _arrays:
 
 Arrays
 ------
@@ -45,9 +49,7 @@ If we grab the ``"density"`` field from a sphere, it will be returned as a ``YTA
      1.595660076018442e-26
 
 A ``YTArray`` can be manipulated in many of the same ways that normal Julia arrays are, and the
-units are retained.
-
-Examples:
+units are retained. The following are some simple examples of this.
 
 Finding the maximum density:
 
@@ -84,7 +86,7 @@ Multiplying the temperature by a constant unitless number:
      3.369208e8
      3.4209352e8
 
-Adding two ``YTArrays``s:
+Adding two ``YTArrays``:
 
 .. code-block:: julia
 
@@ -145,6 +147,19 @@ It is also possible to create a ``YTArray`` from a regular Julia ``Array``, like
       1.032874362011772
       0.17854214710697325
 
+If your ``YTArray`` needs to know about code units associated with a specific dataset,
+you'll have to create it with a ``Dataset`` object passed in:
+
+.. code-block:: julia
+
+    julia> a = YTArray(ds, [1.0,1.0,1.0], "code_length")
+    3-element YTArray (code_length):
+     1.0
+     1.0
+     1.0
+
+.. _quantities:
+
 Quantities
 ----------
 
@@ -169,6 +184,8 @@ A ``YTQuantity`` is just a scalar version of a ``YTArray``. They can be manipula
 
     julia> b+c
     1312.0 cm
+
+.. _changing-units:
 
 Changing Units
 --------------
@@ -230,6 +247,8 @@ We can switch back to cgs units rather easily:
      1.6194386856326155e-26
      1.6152527924542868e-26
      1.595660076018442e-26
+
+.. _physical-constants:
 
 Physical Constants
 ------------------

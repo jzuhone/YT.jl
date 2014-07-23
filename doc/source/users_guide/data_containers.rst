@@ -1,9 +1,13 @@
+.. _data-containers:
+
 Data Containers
 ===============
 
-The most useful methods for ``Datasets`` are those that create ``DataContainer``s: physically
-meaningful spatial objects that represent the cells or particles within
+The most useful methods for ``Datasets`` are those that create ``DataContainer`` objects:
+physically meaningful spatial objects that represent the cells or particles within
 
+
+.. _all-data:
 
 All Data
 --------
@@ -15,6 +19,8 @@ no parameters to create.
 
   dd = AllData(ds)
 
+.. _spheres:
+
 Spheres
 -------
 
@@ -23,6 +29,7 @@ Spheres
   sp = Sphere(ds)
 
 
+.. _regions:
 
 Regions
 -------
@@ -31,7 +38,7 @@ Regions
 
   reg = Region(ds)
 
-
+.. _disks:
 
 Disks
 -----
@@ -40,12 +47,17 @@ Disks
 
   dk = Disk(ds)
 
+.. _slices:
+
 Slices
 ------
+
+.. _projections:
 
 Projections
 -----------
 
+.. _cut-regions:
 
 Cut Regions
 -----------

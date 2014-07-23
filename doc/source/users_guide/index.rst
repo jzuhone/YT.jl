@@ -8,4 +8,4 @@ jt Users' Guide
    data_containers
    arrays
    profiles
-   plotting
+   plotting_and_images

@@ -1,3 +1,5 @@
+.. _datasets:
+
 Datasets
 ========
 
@@ -25,10 +27,12 @@ be stored on disk, or created in-memory. To load a ``Dataset`` from disk, we use
     yt : [INFO     ] 2014-03-31 23:46:28,342 Loaded magnetic_field (108 new fields)
     "sloshing_nomag2_hdf5_plt_cnt_0100"
 
-Where you can see that the ``yt`` log has been outputted. The ``Dataset`` object ``ds`` now
+where you can see that the ``yt`` log has been outputted. The ``Dataset`` object ``ds`` now
 contains all of the basic metadata about the data stored in the file
 ``"sloshing_nomag2_hdf5_plt_cnt_0100"``. Attached to ``ds`` are several useful attributes, as well
 as a number of methods for creating ``DataContainers``.
+
+.. _parameters:
 
 Parameters
 ----------
@@ -59,6 +63,8 @@ is stored in the ``parameters`` dictionary:
      16
 
 At this time, the ``parameters`` dictionary does not return `unitful quantities`_.
+
+.. _dataset-methods:
 
 Methods
 -------

@@ -62,8 +62,6 @@ is stored in the ``parameters`` dictionary:
     0-dimensional Array{Int32,0}:
      16
 
-At this time, the ``parameters`` dictionary does not return `unitful quantities`_.
-
 .. _dataset-methods:
 
 Methods

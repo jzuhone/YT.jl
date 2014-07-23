@@ -1,3 +1,6 @@
+using Base.Test
+using jt
+
 a = YTArray(randn(10), "cm")
 b = YTArray(randn(10), "g")
 x = YTQuantity(randn(1)[1], "m")

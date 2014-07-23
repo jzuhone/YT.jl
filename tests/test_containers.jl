@@ -1,3 +1,6 @@
+using Base.Test
+using jt
+
 function run_container_tests(dc::DataContainer)
     max_jt = maximum(dc["density"]).value
     min_jt = minimum(dc["density"]).value

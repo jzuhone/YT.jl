@@ -26,15 +26,15 @@ a/x
 a/y
 b/x
 b/y
-x/a
-x/b
-y/a
-y/b
+x./a
+x./b
+y./a
+y./b
 
-a\x
-a\y
-b\x
-b\y
+a.\x
+a.\y
+b.\x
+b.\y
 x\a
 x\b
 y\a
@@ -60,13 +60,13 @@ a/z
 b/z
 x/z
 y/z
-z/a
-z/b
+z./a
+z./b
 z/x
 z/y
 
-a\z
-b\z
+a.\z
+b.\z
 x\z
 y\z
 z\a
@@ -79,7 +79,7 @@ x*y == y*x
 a*y == y*a
 a./b == b.\a
 x/y == y\x
-x/a == a\x
+x./a == a.\x
 
 abs(a) == sqrt(a.*a)
 abs(x) == sqrt(x*x)

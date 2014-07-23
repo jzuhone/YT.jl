@@ -33,6 +33,11 @@ type YTQuantity
         new(yt_quantity, yt_quantity[:ndarray_view]()[1],
             yt_quantity[:units], yt_quantity[:units][:dimensions][:__str__]())
     end
+    function YTQuantity(ds, value::Real, units::String)
+        yt_quantity = pycall(ds.ds["quan"], PyObject, value, units)
+        new(yt_quantity, yt_quantity[:ndarray_view]()[1],
+            yt_quantity[:units], yt_quantity[:units][:dimensions][:__str__]())
+    end
     YTQuantity(value::Real, units::Sym) = YTQuantity(value, units[:__str__]())
     YTQuantity(value::Real, q::YTQuantity) = YTQuantity(value, q.units)
 end
@@ -51,6 +56,10 @@ type YTArray <: AbstractArray
     end
     function YTArray(array::AbstractArray, units::String)
         unit_quantity = YTQuantity(1.0, units)
+        new(array, unit_quantity, unit_quantity.units, unit_quantity.units[:dimensions][:__str__]())
+    end
+    function YTArray(ds, array::AbstractArray, units::String)
+        unit_quantity = YTQuantity(ds, 1.0, units)
         new(array, unit_quantity, unit_quantity.units, unit_quantity.units[:dimensions][:__str__]())
     end
     YTArray(array::AbstractArray, units::Sym) = YTArray(array, units[:__str__]())
@@ -255,10 +264,10 @@ end
 
 *(a::YTQuantity, b::Array) = YTArray(b*a.value, a.units)
 *(a::Array, b::YTQuantity) = *(b, a)
-/(a::YTQuantity, b::Array) = *(a, 1.0/b)
+./(a::YTQuantity, b::Array) = *(a, 1.0./b)
 /(a::Array, b::YTQuantity) = *(a, 1.0/b)
 \(a::YTQuantity, b::Array) = /(b,a)
-\(a::Array, b::YTQuantity) = /(b,a)
+.\(a::Array, b::YTQuantity) = /(b,a)
 
 # YTArray next
 
@@ -277,9 +286,9 @@ end
 *(a::YTArray, b::Real) = YTArray(b*a.array, a.units)
 *(a::Real, b::YTArray) = *(b, a)
 /(a::YTArray, b::Real) = *(a, 1.0/b)
-\(a::YTArray, b::Real) = /(b,a)
+.\(a::YTArray, b::Real) = ./(b,a)
 
-/(a::Real, b::YTArray) = YTArray(a/b.array, 1.0/b.unit_quantity)
+./(a::Real, b::YTArray) = YTArray(a./b.array, 1.0/b.unit_quantity)
 \(a::Real, b::YTArray) = /(b,a)
 
 .\(a::YTArray, b::YTArray) = ./(b, a)
@@ -309,8 +318,8 @@ end
 -(a::YTQuantity, b::YTArray) = -(-(b,a))
 
 *(a::YTQuantity, b::YTArray) = *(b,a)
-/(a::YTQuantity, b::YTArray) = *(a, 1.0/b)
-\(a::YTArray, b::YTQuantity) = /(b,a)
+./(a::YTQuantity, b::YTArray) = *(a, 1.0./b)
+.\(a::YTArray, b::YTQuantity) = ./(b,a)
 \(a::YTQuantity, b::YTArray) = /(b,a)
 
 .==(a::YTQuantity, b::YTArray) = .==(b,a)

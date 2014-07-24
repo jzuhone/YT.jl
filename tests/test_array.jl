@@ -1,5 +1,6 @@
 using Base.Test
 using jt
+import jt.array: YTUnitOperationError
 
 a = YTArray(randn(10), "cm")
 b = YTArray(randn(10), "g")
@@ -91,40 +92,40 @@ abs(x) == cbrt(x^3)
 
 # These should fail
 
-@test_throws a+b
-@test_throws a-b
-@test_throws b+a
-@test_throws b-a
+@test_throws YTUnitOperationError a+b
+@test_throws YTUnitOperationError a-b
+@test_throws YTUnitOperationError b+a
+@test_throws YTUnitOperationError b-a
 
-@test_throws x+y
-@test_throws x-y
-@test_throws y+x
-@test_throws y-x
+@test_throws YTUnitOperationError x+y
+@test_throws YTUnitOperationError x-y
+@test_throws YTUnitOperationError y+x
+@test_throws YTUnitOperationError y-x
 
-@test_throws a+y
-@test_throws a-y
-@test_throws y+a
-@test_throws y-a
+@test_throws YTUnitOperationError a+y
+@test_throws YTUnitOperationError a-y
+@test_throws YTUnitOperationError y+a
+@test_throws YTUnitOperationError y-a
 
-@test_throws b+x
-@test_throws b-x
-@test_throws x+b
-@test_throws x-b
+@test_throws YTUnitOperationError b+x
+@test_throws YTUnitOperationError b-x
+@test_throws YTUnitOperationError x+b
+@test_throws YTUnitOperationError x-b
 
-@test_throws z+a
-@test_throws z-a
-@test_throws a+z
-@test_throws a-z
-@test_throws z+b
-@test_throws z-b
-@test_throws b+z
-@test_throws b-z
+@test_throws YTUnitOperationError z+a
+@test_throws YTUnitOperationError z-a
+@test_throws YTUnitOperationError a+z
+@test_throws YTUnitOperationError a-z
+@test_throws YTUnitOperationError z+b
+@test_throws YTUnitOperationError z-b
+@test_throws YTUnitOperationError b+z
+@test_throws YTUnitOperationError b-z
 
-@test_throws z+x
-@test_throws z-x
-@test_throws x+z
-@test_throws x-z
-@test_throws z+y
-@test_throws z-y
-@test_throws y+z
-@test_throws y-z
+@test_throws YTUnitOperationError z+x
+@test_throws YTUnitOperationError z-x
+@test_throws YTUnitOperationError x+z
+@test_throws YTUnitOperationError x-z
+@test_throws YTUnitOperationError z+y
+@test_throws YTUnitOperationError z-y
+@test_throws YTUnitOperationError y+z
+@test_throws YTUnitOperationError y-z

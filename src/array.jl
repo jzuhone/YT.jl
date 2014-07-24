@@ -1,11 +1,11 @@
 module array
 
 import Base: cbrt, convert, copy, eltype, hypot, maximum, minimum, ndims,
-             similar, show, size, sqrt, exp, log, log10, sin, cos, tan,
+             show, size, sqrt, exp, log, log10, sin, cos, tan,
              expm1, log2, log1p, sinh, cosh, tanh, csc, sec, cot, csch,
              sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan, sum,
              cumsum, cummin, cummax, cumsum_kbn, diff, display, print,
-             showarray
+             showarray, showerror
 
 import SymPy: Sym
 using PyCall
@@ -68,6 +68,17 @@ end
 
 YTObject = Union(YTArray,YTQuantity)
 
+type YTUnitOperationError <: Exception
+    a::YTObject
+    b::YTObject
+    op::Function
+end
+
+function showerror(io::IO, e::YTUnitOperationError)
+    print(io,"The $(e.op) operator for YTArrays with units " *
+    "($(e.a.units)) and ($(e.b.units)) is not well defined.")
+end
+
 # Macros
 
 macro array_same_units(a,b,op)
@@ -80,7 +91,7 @@ macro array_same_units(a,b,op)
                 return YTArray(new_array, ($a.units))
             end
         else
-            error("Not in the same dimensions!")
+            throw(YTUnitOperationError($a,$b,$op))
         end
     end
 end
@@ -109,7 +120,7 @@ macro quantity_same_units(a,b,op)
                 return YTQuantity(new_value, ($a.units))
             end
         else
-            error("Not in the same dimensions!")
+            throw(YTUnitOperationError($a,$b,$op))
         end
     end
 end
@@ -138,7 +149,7 @@ macro arr_quan_same_units(a,b,op)
                 return YTArray(new_array, ($a.units))
             end
         else
-            error("Not in the same dimensions!")
+            throw(YTUnitOperationError($a,$b,$op))
         end
     end
 end
@@ -364,19 +375,23 @@ function showarray(io::IO, a::YTArray; kw...)
 end
 
 function print(io::IO, a::YTArray)
-    for aa in a
-        println(io,aa)
-    end
+    print(io, "$(a.array) $(a.units)")
 end
 
 function print(a::YTArray)
-    for aa in a
-        println(aa)
-    end
+    print(STDOUT,a)
+end
+
+function print(io::IO, q::YTQuantity)
+    print(io, "$(q.value) $(q.units)")
+end
+
+function print(q::YTQuantity)
+    print(STDOUT,q)
 end
 
 display(a::YTArray) = show(STDOUT, a)
-show(io::IO, q::YTQuantity) = print(io,"$(q.value) $(q.units)")
+show(io::IO, q::YTQuantity) = print(io, "$(q.value) $(q.units)")
 
 # Array methods
 

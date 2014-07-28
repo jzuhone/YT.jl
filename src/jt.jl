@@ -8,7 +8,7 @@ export print_stats, get_smallest_dx
 # YTArrays, YTQuantities, units
 
 export YTArray, YTQuantity
-export in_units, in_cgs
+export in_units, in_cgs, in_mks
 
 # load
 
@@ -46,7 +46,7 @@ include("physical_constants.jl")
 include("plots.jl")
 include("profiles.jl")
 
-import .array: YTArray, YTQuantity, in_units, in_cgs
+import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks
 import .data_objects: Dataset, Grids, Sphere, AllData, Projection, Slice,
     CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray,
     CuttingPlane, CutRegion, cut_region, DataContainer, Region

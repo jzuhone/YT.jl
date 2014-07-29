@@ -13,7 +13,7 @@ All Data
 --------
 
 The simplest data container is one that represents all of the data in the ``Dataset``. It requires
-no parameters to create.
+no parameters to create, except the ``Dataset`` object:
 
 .. code-block:: julia
 

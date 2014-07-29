@@ -90,7 +90,29 @@ Adding two ``YTArrays``:
 
 .. code-block:: julia
 
-    julia>
+    julia> sp["velocity_magnitude"]+sp["sound_speed"]
+    325184-element YTArray (cm/s):
+     1.7494106880789694e8
+     1.750480854794736e8
+     1.7491905482683247e8
+     1.7463744560410416e8
+     1.7477896725137833e8
+     1.7498621058854717e8
+     1.7486426825557864e8
+     1.7463176707801563e8
+     1.7473392939487094e8
+     1.7449670611457497e8
+     ⋮
+     1.4691744928089392e8
+     1.448218647261667e8
+     1.4619022766526273e8
+     1.4414687202610317e8
+     1.4354279490019822e8
+     1.4629026827881128e8
+     1.4767689116216296e8
+     1.45570568978103e8
+     1.4486893148240653e8
+     1.471462895473701e8
 
 Multiplying element-wise one ``YTArray`` by another:
 
@@ -127,8 +149,8 @@ which aren't the same type of physical quantity:
 .. code-block:: julia
 
     julia> sp["density"]+sp["temperature"]
-    ERROR: Not in the same dimensions!
-     in + at /Users/jzuhone/.julia/jt/src/array.jl:74
+    ERROR: The + operator for YTArrays with units (g/cm**3) and (K) is not well defined.
+     in + at /Users/jzuhone/.julia/jt/src/array.jl:143
 
 It is also possible to create a ``YTArray`` from a regular Julia ``Array``, like so:
 
@@ -184,6 +206,9 @@ A ``YTQuantity`` is just a scalar version of a ``YTArray``. They can be manipula
 
     julia> b+c
     1312.0 cm
+
+    julia> d = YTQuantity(ds, 1.0, "code_length")
+    1.0 code_length
 
 .. _changing-units:
 
@@ -247,6 +272,34 @@ We can switch back to cgs units rather easily:
      1.6194386856326155e-26
      1.6152527924542868e-26
      1.595660076018442e-26
+
+or to MKS units:
+
+.. code-block:: julia
+
+    julia> in_mks(a)
+    325184-element YTArray (kg/m**3):
+     1.3086558386643184e-23
+     1.2892201240375402e-23
+     1.3036428741306718e-23
+     1.2999706649871097e-23
+     1.3180126226317338e-23
+     1.2829197138546696e-23
+     1.297694215792844e-23
+     1.2945722063157945e-23
+     1.3124175650316956e-23
+     1.3088245501274467e-23
+     ⋮
+     1.6093269371270004e-23
+     1.64592576904618e-23
+     1.6062237247262084e-23
+     1.6415200117053996e-23
+     1.6354220552782833e-23
+     1.6229381773787652e-23
+     1.584091400028497e-23
+     1.6194386856326155e-23
+     1.6152527924542868e-23
+     1.595660076018442e-23
 
 .. _physical-constants:
 

@@ -237,7 +237,7 @@ SliceOrProj = Union(Slice,Projection)
 Resolution = Union(Integer,(Integer,Integer))
 
 function to_frb(obj::SliceOrProj, width::Length, nx::Resolution; args...)
-    FixedResolutionBuffer(obj.cont[:to_frb](width, nx; args...))
+    FixedResolutionBuffer(obj.ds, obj.cont[:to_frb](width, nx; args...))
 end
 
 # Sphere

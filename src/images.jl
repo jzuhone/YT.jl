@@ -11,12 +11,12 @@ type FixedResolutionBuffer
     frb::PyObject
     limits::Dict
     buff_size::Tuple
-    function FixedResolutionBuffer(frb::PyObject)
+    function FixedResolutionBuffer(ds, frb::PyObject)
         limits = frb[:limits]
         for k in keys(limits)
             if limits[k] != nothing
-                limits[k] = (YTQuantity(limits[k][1][1],"code_length"),
-                             YTQuantity(limits[k][end][1],"code_length"))
+                limits[k] = (YTQuantity(ds, limits[k][1][1],"code_length"),
+                             YTQuantity(ds, limits[k][end][1],"code_length"))
             end
         end
         new(frb, limits, frb[:buff_size])
@@ -30,7 +30,6 @@ end
 function getindex(frb::FixedResolutionBuffer, ftype::String, fname::String)
     YTArray(get(frb.frb, PyObject, (ftype,fname)))
 end
-
 
 function show(io::IO, frb::FixedResolutionBuffer)
     println(io,"FixedResolutionBuffer ($(frb.buff_size[1])x$(frb.buff_size[2])):")

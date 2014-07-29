@@ -11,7 +11,7 @@ using PyCall
 function SlicePlot(ds::Dataset, axis::Axis, fields::FieldOrArray;
                    center="c", args...)
     if typeof(center) == YTArray
-        c = convert(PyObject, center)
+        c = convert(PyObject, center, ds)
     else
         c = center
     end
@@ -26,7 +26,7 @@ function ProjectionPlot(ds::Dataset, axis::Axis, fields::FieldOrArray,
         source = pybuiltin("None")
     end
     if typeof(center) == YTArray
-        c = convert(PyObject, center)
+        c = convert(PyObject, center, ds)
     else
         c = center
     end

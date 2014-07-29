@@ -1,7 +1,7 @@
 module data_objects
 
 using PyCall
-import Base: size, show
+import Base: size, show, showarray, display
 import ..array: YTArray, YTQuantity
 import ..utils: Axis, RealOrArray, Length, StringOrArray, Field
 import ..images: FixedResolutionBuffer
@@ -70,17 +70,17 @@ type Region <: DataContainer
     function Region(ds::Dataset, center::Union(StringOrArray,YTArray),
                     left_edge::AbstractArray, right_edge::AbstractArray; args...)
         if typeof(center) == YTArray
-            c = convert(PyObject, center)
+            c = convert(PyObject, center, ds)
         else
             c = center
         end
         if typeof(left_edge) == YTArray
-            le = convert(PyObject, left_edge)
+            le = convert(PyObject, left_edge, ds)
         else
             le = left_edge
         end
         if typeof(right_edge) == YTArray
-            re = convert(PyObject, right_edge)
+            re = convert(PyObject, right_edge, ds)
         else
             re = right_edge
         end
@@ -102,17 +102,17 @@ type Disk <: DataContainer
                   radius::Union(Length,YTQuantity),
                   height::Union(Length,YTQuantity); args...)
         if typeof(center) == YTArray
-            c = convert(PyObject, center)
+            c = convert(PyObject, center, ds)
         else
             c = center
         end
         if typeof(radius) == YTQuantity
-            r = radius.ytquantity
+            r = convert(PyObject, radius, ds)
         else
             r = radius
         end
         if typeof(height) == YTQuantity
-            h = height.ytquantity
+            h = convert(PyObject, height, ds)
         else
             h = height
         end
@@ -132,12 +132,12 @@ type Ray <: DataContainer
     function Ray(ds::Dataset, start_point::AbstractArray,
                  end_point::AbstractArray; args...)
         if typeof(start_point) == YTArray
-            sp = convert(PyObject, start_point)
+            sp = convert(PyObject, start_point, ds)
         else
             sp = start_point
         end
         if typeof(end_point) == YTArray
-            ep = convert(PyObject, end_point)
+            ep = convert(PyObject, end_point, ds)
         else
             ep = end_point
         end
@@ -158,7 +158,7 @@ type CuttingPlane <: DataContainer
     function CuttingPlane(ds::Dataset, normal::Array,
                           center::Union(StringOrArray,YTArray); args...)
         if typeof(center) == YTArray
-            c = convert(PyObject, center)
+            c = convert(PyObject, center, ds)
         else
             c = center
         end
@@ -188,7 +188,7 @@ type Projection <: DataContainer
         if center == nothing
             c = pybuiltin("None")
         elseif typeof(center) == YTArray
-            c = convert(PyObject, center)
+            c = convert(PyObject, center, ds)
         else
             c = nothing
         end
@@ -215,16 +215,16 @@ type Slice <: DataContainer
     function Slice(ds::Dataset, axis::Axis, coord::Union(RealOrArray,YTQuantity,YTArray);
                    center=nothing, args...)
         if typeof(coord) == YTArray
-            cd = convert(PyObject, coord)
+            cd = convert(PyObject, coord, ds)
         elseif typeof(coord) == YTQuantity
-            cd = coord.quantity
+            cd = convert(PyObject, coord, ds)
         else
             cd = coord
         end
         if center == nothing
             c = pybuiltin("None")
         elseif typeof(center) == YTArray
-            c = convert(PyObject, center)
+            c = convert(PyObject, center, ds)
         else
             c = center
         end
@@ -251,12 +251,12 @@ type Sphere <: DataContainer
     function Sphere(ds::Dataset, center::Union(StringOrArray,YTArray),
                     radius::Union(Length,YTQuantity); args...)
         if typeof(center) == YTArray
-            c = convert(PyObject, center)
+            c = convert(PyObject, center, ds)
         else
             c = center
         end
         if typeof(radius) == YTQuantity
-            r = radius.ytquantity
+            r = convert(PyObject, radius, ds)
         else
             r = radius
         end
@@ -381,7 +381,7 @@ getindex(grids::Grids, idxs::Ranges) = Grids(grids.grids[idxs])
 show(io::IO, ds::Dataset) = print(io,ds.ds[:__repr__]())
 show(io::IO, dc::DataContainer) = print(io,dc.cont[:__repr__]())
 
-function show(io::IO, grids::Grids)
+function showarray(io::IO, grids::Grids)
     num_grids = length(grids)
     if num_grids == 0
         print(io, "[]")
@@ -404,5 +404,8 @@ function show(io::IO, grids::Grids)
     end
     print(io, "  $(grids.grids[end][:__repr__]()) ]")
 end
+
+show(io::IO, grids::Grids) = showarray(io, grids)
+display(grids::Grids) = show(STDOUT, grids)
 
 end

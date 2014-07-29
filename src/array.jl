@@ -164,8 +164,14 @@ convert(::Type{YTArray}, o::PyObject) = YTArray(o)
 convert(::Type{YTQuantity}, o::PyObject) = YTQuantity(o)
 convert(::Type{Array}, a::YTArray) = a.value
 convert(::Type{Real}, q::YTQuantity) = q.value
-convert(::Type{PyObject}, a::YTArray) = pycall(bare_array, PyObject, a.value, a.units[:__str__]())
-convert(::Type{PyObject}, a::YTQuantity) = pycall(bare_quan, PyObject, a.value, a.units[:__str__]())
+convert(::Type{PyObject}, a::YTArray) = pycall(bare_array, PyObject, a.value,
+                                               a.units.unit_symbol[:__str__]())
+convert(::Type{PyObject}, a::YTQuantity) = pycall(bare_quan, PyObject, a.value,
+                                                  a.units.unit_symbol[:__str__]())
+convert(::Type{PyObject}, a::YTArray, ds) = pycall(ds.ds["arr"], PyObject, a.value,
+                                                   a.units.unit_symbol[:__str__]())
+convert(::Type{PyObject}, a::YTQuantity, ds) = pycall(ds.ds["quan"], PyObject, a.value,
+                                                      a.units.unit_symbol[:__str__]())
 
 # Indexing, ranges (slicing)
 
@@ -213,7 +219,7 @@ in_units(a::YTObject, b::YTObject) = in_units(a, b.units)
 
 # Arithmetic and comparisons
 
--(a::YTObject) = YTObject(-a.value, a.units)
+-(a::YTObject) = YTArray(-a.value, a.units)
 
 # YTQuantity
 
@@ -305,6 +311,13 @@ end
 .<=(a::YTQuantity, b::YTArray) = .>=(b,a)
 .>(a::YTQuantity, b::YTArray) = .<(b,a)
 .<(a::YTQuantity, b::YTArray) = .>(b,a)
+
+for op = (:+, :-, :hypot)
+    @eval ($op)(a::YTObject,b::Real) = @array_same_units(a,YTQuantity(b,"dimensionless"),($op))
+    @eval ($op)(a::Real,b::YTObject) = ($op)(b,a)
+    @eval ($op)(a::YTObject,b::Array) = @array_same_units(a,YTArray(b,"dimensionless"),($op))
+    @eval ($op)(a::Array,b::YTObject) = ($op)(b,a)
+end
 
 # Mathematical functions
 

@@ -5,7 +5,7 @@ Arrays, Quantities, and Units
 
 Whenever ``jt`` returns physical data, it is typically associated with certain units (e.g.,
 density in grams per cubic centimeter, temperature in Kelvin, and so on). ``jt`` exposes the
-``YTArray``, ``YTQuantity``, and units facilities from ``yt`` so that unitful objects may be
+``YTArray``, ``YTQuantity``, and units facilities from ``yt`` so that "unitful" objects may be
 manipulated and operated on.
 
 .. _arrays:

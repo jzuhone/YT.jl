@@ -4,13 +4,24 @@ Data Containers
 ===============
 
 The most useful methods for ``Datasets`` are those that create ``DataContainer`` objects:
-physically meaningful spatial objects that represent the cells or particles within
+physically meaningful spatial objects that contain cells or particles with field data. ``jt``
+implements a number of the data container objects available in ``yt``,
+and attempts to match the API of these objects as closely as possible. All of these objects can
+be created from a ``Dataset`` object, typically with some additional information supplied.
 
+Supplying ``Length`` and ``Coordinate`` Arguments to Data Containers
+------------------------------------------------------------
+
+A general note will be helpful before diving into the various ``DataContainer`` objects that are
+available.
+
+Available Data Containers
+-------------------------
 
 .. _all-data:
 
 All Data
---------
+++++++++
 
 The simplest data container is one that represents all of the data in the ``Dataset``. It requires
 no parameters to create, except the ``Dataset`` object:
@@ -22,7 +33,9 @@ no parameters to create, except the ``Dataset`` object:
 .. _spheres:
 
 Spheres
--------
++++++++
+
+To create a ``Sphere``, a ``center`` and a ``radius`` should be supplied.
 
 .. code-block:: julia
 
@@ -32,7 +45,7 @@ Spheres
 .. _regions:
 
 Regions
--------
++++++++
 
 .. code-block:: julia
 
@@ -41,7 +54,7 @@ Regions
 .. _disks:
 
 Disks
------
++++++
 
 .. code-block:: julia
 
@@ -50,15 +63,19 @@ Disks
 .. _slices:
 
 Slices
-------
+++++++
 
 .. _projections:
 
 Projections
------------
++++++++++++
 
 .. _cut-regions:
 
 Cut Regions
------------
++++++++++++
+
+Accessing the Data Within Containers
+------------------------------------
+
 

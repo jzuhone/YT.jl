@@ -11,7 +11,12 @@ Plots
 ``jt`` provides an interface to the most common plotting routines in ``yt``: ``SlicePlot``,
 ``ProjectionPlot``, ``ProfilePlot``, and ``PhasePlot``.
 
-Unlike other methods in ``jt``, these return ``PyObject`` objects
+Unlike other methods in ``jt``, these return the native ``yt`` Python-based objects. This is
+mainly for convenience; it allows one to use all of the annotation and plot modification methods
+that hang off these objects. The API for these objects is the same as it is in ``yt``,
+which can be found in the
+`yt Documentation <http://yt-project.org/docs/dev-3.0/visualizing/plots.html>`_. We'll illustrate
+the plotting functionality with a ``SlicePlot`` as an example:
 
 .. code-block:: julia
 
@@ -57,6 +62,21 @@ or the colormap can be changed:
     julia> slc.set_cmap("density", "kamae")
 
 .. image:: ../images/slice_density_colormap.png
+
+.. code-block:: julia
+
+To save a plot:
+
+.. code-block:: julia
+
+    julia> slc.save("my_awesome_plot.png")
+    
+If one is in the `IJulia notebook <http://github.com/JuliaLang/IJulia.jl>`_, the ``show_plot``
+method can be used to display the plot inline:
+
+.. code-block:: julia
+
+    julia> jt.show_plot(slc)
 
 Similar options exist for the other plotting methods. The full set of options for these plots can
 be found in the `yt Documentation <http://yt-project.org/docs/dev-3.0/visualizing/plots.html>`_.

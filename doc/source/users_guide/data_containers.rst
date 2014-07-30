@@ -17,7 +17,7 @@ no parameters to create, except the ``Dataset`` object:
 
 .. code-block:: julia
 
-  dd = AllData(ds)
+  dd = jt.AllData(ds)
 
 .. _spheres:
 
@@ -26,7 +26,7 @@ Spheres
 
 .. code-block:: julia
 
-  sp = Sphere(ds)
+  sp = jt.Sphere(ds)
 
 
 .. _regions:
@@ -36,7 +36,7 @@ Regions
 
 .. code-block:: julia
 
-  reg = Region(ds)
+  reg = jt.Region(ds)
 
 .. _disks:
 
@@ -45,7 +45,7 @@ Disks
 
 .. code-block:: julia
 
-  dk = Disk(ds)
+  dk = jt.Disk(ds)
 
 .. _slices:
 

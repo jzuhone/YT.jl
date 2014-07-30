@@ -18,7 +18,7 @@ If we grab the ``"density"`` field from a sphere, it will be returned as a ``YTA
 
 .. code-block:: julia
 
-    julia> sp = Sphere(ds, "c", (100.,"kpc"))
+    julia> sp = jt.Sphere(ds, "c", (100.,"kpc"))
     YTSphere (sloshing_nomag2_hdf5_plt_cnt_0100): center=[ 0.  0.  0.] code_length,
     radius=100.0 kpc
 
@@ -221,7 +221,7 @@ kiloparsec:
 
 .. code-block:: julia
 
-    julia> a = in_units(sp["density"], "Msun/kpc**3")
+    julia> a = jt.in_units(sp["density"], "Msun/kpc**3")
     325184-element YTArray (Msun/kpc**3):
      193361.43661723754
      190489.69785225237
@@ -249,7 +249,7 @@ We can switch back to cgs units rather easily:
 
 .. code-block:: julia
 
-    julia> in_cgs(a)
+    julia> jt.in_cgs(a)
     325184-element YTArray (g/cm**3):
      1.3086558386643183e-26
      1.28922012403754e-26
@@ -277,7 +277,7 @@ or to MKS units:
 
 .. code-block:: julia
 
-    julia> in_mks(a)
+    julia> jt.in_mks(a)
     325184-element YTArray (kg/m**3):
      1.3086558386643184e-23
      1.2892201240375402e-23
@@ -315,7 +315,7 @@ quantities and arrays:
     julia> kb = jt.physical_constants.kboltz # Boltzmann constant
     1.3806488e-16 erg/K
 
-    julia> kT = in_units(kb*sp["temperature"], "keV") # computing kT in kilo-electronvolts
+    julia> kT = jt.in_units(kb*sp["temperature"], "keV") # computing kT in kilo-electronvolts
     325184-element YTArray (keV):
      7.611310547262892
      7.66210937707406

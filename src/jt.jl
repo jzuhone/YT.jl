@@ -17,7 +17,7 @@ export load, load_uniform_grid, load_amr_grids, load_particles
 # DataContainers
 
 export DataContainer, CutRegion, Disk, Ray, Slice, Region
-export Sphere, AllData, Projection, CoveringGrid, Grids, CuttingPlane
+export Sphere, AllData, Projection, CoveringGrid, Grids, Cutting
 export cut_region
 
 # Fixed resolution
@@ -38,7 +38,6 @@ using PyCall
 @pyimport yt.convenience as ytconv
 @pyimport yt.frontends.stream.api as ytstream
 
-include("utils.jl")
 include("array.jl")
 include("images.jl")
 include("data_objects.jl")
@@ -49,7 +48,7 @@ include("profiles.jl")
 import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks
 import .data_objects: Dataset, Grids, Sphere, AllData, Projection, Slice,
     CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray,
-    CuttingPlane, CutRegion, cut_region, DataContainer, Region
+    Cutting, CutRegion, cut_region, DataContainer, Region
 import .plots: SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot, show_plot
 import .images: FixedResolutionBuffer
 import .profiles: Profile1D, Profile2D, Profile3D, add_fields, set_x_unit,

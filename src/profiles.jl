@@ -3,7 +3,6 @@ module profiles
 using PyCall
 import Base.show
 import ..data_objects: DataContainer
-import ..utils: Field, FieldOrArray
 import ..array: YTArray, YTQuantity, in_units
 @pyimport yt.data_objects.profiles as prof
 
@@ -12,11 +11,11 @@ abstract YTProfile
 type Profile1D <: YTProfile
     profile::PyObject
     source::DataContainer
-    x_field::Field
+    x_field
     x::YTArray
     x_bins::YTArray
     weight_field
-    function Profile1D(data_source::DataContainer, x_field::Field, x_n::Integer,
+    function Profile1D(data_source::DataContainer, x_field, x_n::Integer,
                        x_min::Real, x_max::Real, x_log::Bool; weight_field=nothing)
         if weight_field != nothing
             weight = weight_field
@@ -33,15 +32,15 @@ end
 type Profile2D <: YTProfile
     profile::PyObject
     source::DataContainer
-    x_field::Field
-    y_field::Field
+    x_field
+    y_field
     x::YTArray
     x_bins::YTArray
     y::YTArray
     y_bins::YTArray
     weight_field
-    function Profile2D(data_source::DataContainer, x_field::Field, x_n::Integer,
-                       x_min::Real, x_max::Real, x_log::Bool, y_field::Field,
+    function Profile2D(data_source::DataContainer, x_field, x_n::Integer,
+                       x_min::Real, x_max::Real, x_log::Bool, y_field,
                        y_n::Integer, y_min::Real, y_max::Real, y_log::Bool;
                        weight_field=nothing)
         if weight_field != nothing
@@ -61,9 +60,9 @@ end
 type Profile3D <: YTProfile
     profile::PyObject
     source::DataContainer
-    x_field::Field
-    y_field::Field
-    z_field::Field
+    x_field
+    y_field
+    z_field
     x::YTArray
     x_bins::YTArray
     y::YTArray
@@ -71,10 +70,10 @@ type Profile3D <: YTProfile
     z::YTArray
     z_bins::YTArray
     weight_field
-    function Profile3D(data_source::DataContainer, x_field::Field, x_n::Integer,
-                       x_min::Real, x_max::Real, x_log::Bool, y_field::Field,
+    function Profile3D(data_source::DataContainer, x_field, x_n::Integer,
+                       x_min::Real, x_max::Real, x_log::Bool, y_field,
                        y_n::Integer, y_min::Real, y_max::Real, y_log::Bool,
-                       z_field::Field, z_n::Integer, z_min::Real, z_max::Real,
+                       z_field, z_n::Integer, z_min::Real, z_max::Real,
                        z_log::Bool; weight_field=nothing)
         if weight_field != nothing
             weight = weight_field
@@ -114,7 +113,7 @@ end
 getindex(profile::YTProfile, key::String) = YTArray(get(profile.profile, PyObject, key))
 getindex(profile::YTProfile, ftype::String, fname::String) = YTArray(get(profile.profile,
                                                                          PyObject, (ftype,fname)))
-add_fields(profile::YTProfile, fields::FieldOrArray) = profile.profile[:add_fields](fields)
+add_fields(profile::YTProfile, fields) = profile.profile[:add_fields](fields)
 show(io::IO, profile::YTProfile) = print(io,profile.profile[:__repr__]())
 
 end

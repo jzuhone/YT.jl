@@ -5,7 +5,7 @@ Arrays, Quantities, and Units
 
 Whenever ``jt`` returns physical data, it is typically associated with certain units (e.g.,
 density in grams per cubic centimeter, temperature in Kelvin, and so on). ``jt`` exposes the
-``YTArray``, ``YTQuantity``, and units facilities from ``yt`` so that unitful objects may be
+``YTArray``, ``YTQuantity``, and units facilities from ``yt`` so that "unitful" objects may be
 manipulated and operated on.
 
 .. _arrays:
@@ -21,8 +21,6 @@ If we grab the ``"density"`` field from a sphere, it will be returned as a ``YTA
     julia> sp = jt.Sphere(ds, "c", (100.,"kpc"))
     YTSphere (sloshing_nomag2_hdf5_plt_cnt_0100): center=[ 0.  0.  0.] code_length,
     radius=100.0 kpc
-
-.. code-block:: julia
 
     julia> sp["density"]
     325184-element YTArray (g/cm**3):

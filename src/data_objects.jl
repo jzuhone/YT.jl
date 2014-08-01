@@ -3,8 +3,10 @@ module data_objects
 using PyCall
 import Base: size, show, showarray, display
 import ..array: YTArray, YTQuantity
-import ..utils: Axis, RealOrArray, Length, StringOrArray, Field
 import ..images: FixedResolutionBuffer
+
+Coordinate = Union(String,Array,YTArray)
+Length = Union(Real,Tuple,YTQuantity)
 
 # Dataset
 
@@ -67,20 +69,20 @@ type Region <: DataContainer
     left_edge::YTArray
     right_edge::YTArray
     field_dict::Dict
-    function Region(ds::Dataset, center::Union(StringOrArray,YTArray),
-                    left_edge::AbstractArray, right_edge::AbstractArray; args...)
+    function Region(ds::Dataset, center::Coordinate,
+                    left_edge::Coordinate, right_edge::Coordinate; args...)
         if typeof(center) == YTArray
-            c = convert(PyObject, center, ds)
+            c = convert(PyObject, center)
         else
             c = center
         end
         if typeof(left_edge) == YTArray
-            le = convert(PyObject, left_edge, ds)
+            le = convert(PyObject, left_edge)
         else
             le = left_edge
         end
         if typeof(right_edge) == YTArray
-            re = convert(PyObject, right_edge, ds)
+            re = convert(PyObject, right_edge)
         else
             re = right_edge
         end
@@ -98,21 +100,20 @@ type Disk <: DataContainer
     center::YTArray
     normal::Array
     field_dict::Dict
-    function Disk(ds::Dataset, center::Union(StringOrArray,YTArray), normal::Array,
-                  radius::Union(Length,YTQuantity),
-                  height::Union(Length,YTQuantity); args...)
+    function Disk(ds::Dataset, center::Coordinate, normal::Array,
+                  radius::Length, height::Length; args...)
         if typeof(center) == YTArray
-            c = convert(PyObject, center, ds)
+            c = convert(PyObject, center)
         else
             c = center
         end
         if typeof(radius) == YTQuantity
-            r = convert(PyObject, radius, ds)
+            r = convert(PyObject, radius)
         else
             r = radius
         end
         if typeof(height) == YTQuantity
-            h = convert(PyObject, height, ds)
+            h = convert(PyObject, height)
         else
             h = height
         end
@@ -129,15 +130,15 @@ type Ray <: DataContainer
     start_point::YTArray
     end_point::YTArray
     field_dict::Dict
-    function Ray(ds::Dataset, start_point::AbstractArray,
-                 end_point::AbstractArray; args...)
+    function Ray(ds::Dataset, start_point::Coordinate,
+                 end_point::Coordinate; args...)
         if typeof(start_point) == YTArray
-            sp = convert(PyObject, start_point, ds)
+            sp = convert(PyObject, start_point)
         else
             sp = start_point
         end
         if typeof(end_point) == YTArray
-            ep = convert(PyObject, end_point, ds)
+            ep = convert(PyObject, end_point)
         else
             ep = end_point
         end
@@ -149,21 +150,21 @@ end
 
 # CuttingPlane
 
-type CuttingPlane <: DataContainer
+type Cutting <: DataContainer
     cont::PyObject
     ds::Dataset
     normal::Array
-    center::StringOrArray
+    center::YTArray
     field_dict::Dict
-    function CuttingPlane(ds::Dataset, normal::Array,
-                          center::Union(StringOrArray,YTArray); args...)
+    function Cutting(ds::Dataset, normal::Array,
+                     center::Coordinate; args...)
         if typeof(center) == YTArray
-            c = convert(PyObject, center, ds)
+            c = convert(PyObject, center)
         else
             c = center
         end
         cutting = ds.ds[:cutting](normal, c; args...)
-        new(cutting, ds, normal, center, Dict())
+        new(cutting, ds, cutting[:normal], YTArray(cutting["center"]), Dict())
     end
 end
 
@@ -172,13 +173,12 @@ end
 type Projection <: DataContainer
     cont::PyObject
     ds::Dataset
-    field::String
-    axis::Axis
+    field
+    axis
     weight_field
-    center
     data_source
     field_dict::Dict
-    function Projection(ds::Dataset, field::String, axis::Axis; weight_field=nothing,
+    function Projection(ds::Dataset, field, axis; weight_field=nothing,
                         center=nothing, data_source=nothing, args...)
         if weight_field != nothing
             weight = weight_field
@@ -188,7 +188,7 @@ type Projection <: DataContainer
         if center == nothing
             c = pybuiltin("None")
         elseif typeof(center) == YTArray
-            c = convert(PyObject, center, ds)
+            c = convert(PyObject, center)
         else
             c = nothing
         end
@@ -199,8 +199,7 @@ type Projection <: DataContainer
         end
         prj = ds.ds[:proj](field, axis, weight_field=weight, center=c,
                            data_source=source; args...)
-        new(prj, ds, field, axis, weight_field, center,
-            data_source, Dict())
+        new(prj, ds, field, axis, weight_field, data_source, Dict())
     end
 end
 
@@ -209,27 +208,25 @@ end
 type Slice <: DataContainer
     cont::PyObject
     ds::Dataset
-    axis::Axis
-    center
+    axis
+    coord::Real
     field_dict::Dict
-    function Slice(ds::Dataset, axis::Axis, coord::Union(RealOrArray,YTQuantity,YTArray);
+    function Slice(ds::Dataset, axis, coord::Union(Real,YTQuantity);
                    center=nothing, args...)
-        if typeof(coord) == YTArray
-            cd = convert(PyObject, coord, ds)
-        elseif typeof(coord) == YTQuantity
-            cd = convert(PyObject, coord, ds)
+        if typeof(coord) == YTQuantity
+            cd = convert(PyObject, coord)
         else
             cd = coord
         end
         if center == nothing
             c = pybuiltin("None")
         elseif typeof(center) == YTArray
-            c = convert(PyObject, center, ds)
+            c = convert(PyObject, center)
         else
             c = center
         end
         slc = ds.ds[:slice](axis, cd, center=c; args...)
-        new(slc, ds, axis, center, Dict())
+        new(slc, ds, axis, cd, Dict())
     end
 end
 
@@ -248,15 +245,14 @@ type Sphere <: DataContainer
     center::YTArray
     radius::YTQuantity
     field_dict::Dict
-    function Sphere(ds::Dataset, center::Union(StringOrArray,YTArray),
-                    radius::Union(Length,YTQuantity); args...)
+    function Sphere(ds::Dataset, center::Coordinate, radius::Length; args...)
         if typeof(center) == YTArray
-            c = convert(PyObject, center, ds)
+            c = convert(PyObject, center)
         else
             c = center
         end
         if typeof(radius) == YTQuantity
-            r = convert(PyObject, radius, ds)
+            r = convert(PyObject, radius)
         else
             r = radius
         end
@@ -350,7 +346,7 @@ end
 
 # Indices
 
-function getindex(dc::DataContainer, key::Field)
+function getindex(dc::DataContainer, key)
     if !haskey(dc.field_dict, key)
         dc.field_dict[key] = YTArray(get(dc.cont, PyObject, key))
         dc.cont[:__delitem__](key)

@@ -24,6 +24,7 @@ no parameters to create, except the ``Dataset`` object:
 Spheres
 -------
 
+
 .. code-block:: julia
 
   sp = jt.Sphere(ds)
@@ -57,6 +58,9 @@ Slices
 Projections
 -----------
 
+``Projections`` are integrals of a given quantity along a s
+
+1ight line
 .. _cut-regions:
 
 Cut Regions

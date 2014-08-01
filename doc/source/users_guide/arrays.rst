@@ -336,3 +336,18 @@ quantities and arrays:
      5.842685798328886
      5.806717052886709
      5.895867148202309
+
+The physical constants implemented in ``jt.physical_constants`` are (in cgs units):
+
+* ``G``: Newton's constant of gravitation
+* ``kboltz``: Boltzmann's constant
+* ``clight``: Speed of light in vacuum
+* ``me``: mass of the electron
+* ``mp``: mass of the proton
+* ``qp``: charge of the proton
+* ``hcgs``: Planck's constant
+* ``sigma_thompson``: Thompson cross section
+* ``amu_cgs``: Atomic mass unit
+* ``Na``: Avogadro's number
+* ``Tcmb``: Cosmic microwave background temperature
+* ``stefan_boltzmann``: Stefan-Boltzmann constant

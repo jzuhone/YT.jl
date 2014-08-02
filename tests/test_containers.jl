@@ -13,9 +13,9 @@ function test_container(dc::DataContainer, py_dc::PyObject)
     end
 end
 
-function check_container(dc::DataContainer; args=[])
+function check_container(dc::DataContainer; args=[], kwargs=Dict())
     cont_name = yt_funcs.camelcase_to_underscore(repr(typeof(dc)))
-    py_dc = pycall(dc.ds.ds[cont_name], PyObject, args...)
+    py_dc = pycall(dc.ds.ds[cont_name], PyObject, args...; kwargs...)
     test_container(dc, py_dc)
 end
 
@@ -80,13 +80,18 @@ check_container(slc2, args=args2)
 
 # Projections
 
-#args1 = "density", "z"
-#args2 = ["field"=>"density", "axis"=>0, "weight_field"=>"temperature"]
-#args3 = "density", 1
-#kwargs3 = ["data_source"=>sp1]
-#prj1 = Projection(ds, args1...)
-#prj2 = Projection(ds; args2...)
-#prj3 = Projection(ds, args3...; kwargs3...)
+args1 = "density", "z"
+args2 = "density", 0
+args3 = "density", 1
+kwargs2 = [:weight_field=>"temperature"]
+prj1 = Proj(ds, args1...)
+prj2 = Proj(ds, args2...; kwargs2...)
+prj3 = Proj(ds, args3...; data_source=sp1)
+
+check_container(prj1, args=args1)
+check_container(prj2, args=args2, kwargs=kwargs2)
+pyprj3 = pycall(ds.ds["proj"], PyObject, args3...; data_source=sp1.cont)
+test_container(prj3, pyprj3)
 
 # Cutting Planes
 
@@ -100,7 +105,23 @@ check_container(cp2, args=args2)
 
 # Cut Regions
 
+conditions = ["obj['kT'] > 3.0"]
+
+cr = cut_region(sp1, conditions)
+pycr = sp1.cont[:cut_region](conditions)
+
+test_container(cr, pycr)
+
+kT = YTQuantity(3.0, "keV")
+
+@test all(cr["kT"] .> kT)
+
 # Covering Grids
+
+args = 4, [-3.0e23, -3.0e23, -3.0e23], [100,100,100]
+cg = CoveringGrid(ds, args...)
+
+check_container(cg, args=args)
 
 # Grids
 

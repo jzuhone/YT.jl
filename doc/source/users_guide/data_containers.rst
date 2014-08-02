@@ -28,6 +28,14 @@ A ``Coordinate``-type argument can be one of the following:
   * An ``Array`` of ``Real`` numbers. If so, the assumed units are ``"code_length"``.
   * A ``YTArray``.
 
+.. |yt_cont_docs| replace:: ``yt`` Documentation on data container objects
+.. _yt_cont_docs: http://yt-project.org/docs/dev-3.0/analyzing/objects.html
+
+.. note::
+
+  All of the ``DataContainer`` objects take additional optional arguments,
+  which are not documented here. Information on these can be found in the |yt_cont_docs|_.
+
 Available Data Containers
 -------------------------
 
@@ -54,7 +62,7 @@ Examples:
 Sphere
 ++++++
 
-To create a ``Sphere``, a ``center`` and a ``radius`` should be supplied.
+A ``Sphere`` is an object with a ``center`` and a ``radius``.
 
 .. code-block:: julia
 
@@ -77,18 +85,51 @@ Examples:
 Region
 ++++++
 
+A ``Region`` is a
+
+.. code-block:: julia
+
+  function Region(ds::Dataset, center::Coordinate, left_edge::Coordinate,
+                    right_edge::Coordinate; args...)
+
+Examples:
+
 .. code-block:: jlcon
 
-  reg = jt.Region(ds)
+  julia> reg = jt.Region(ds, "c", [-3.0e23,-3.0e23,-3.0e23], [3.0e23,3.0e23, 3.0e23])
+
+.. code-block:: jlcon
+
+  julia> a = jt.YTArray([-0.5,-0.2,-0.3], "unitary")
+
+  julia> b = jt.YTArray([0.4,0.1,0.4], "unitary")
+
+  julia> reg = jt.Region(ds, [0.0,0.0,0.0], a, b)
 
 .. _disk:
 
-Disks
-+++++
+Disk
+++++
+
+.. code-block:: julia
+
+  function Disk(ds::Dataset, center::Coordinate, normal::Array, radius::Length,
+                  height::Length; args...)
 
 .. code-block:: jlcon
 
   dk = jt.Disk(ds)
+
+.. _ray:
+
+Ray
++++
+
+A ``Ray`` is a 1-dimensional object that starts at one point in space and ends at another.
+
+.. code-block:: julia
+
+  function Ray(ds::Dataset, start_point::Coordinate, end_point::Coordinate; args...)
 
 .. _slice:
 
@@ -109,6 +150,25 @@ CutRegion
 
 Accessing the Data Within Containers
 ------------------------------------
+
+Data can be accessed from containers in ``Dict``-like fashion, the same way as in ``yt``:
+
+.. code-block:: jlcon
+
+  julia> sp["density"]
+
+You can also specify a field names as a ``ftype, fname`` tuple, where the first string is the
+field type. The ``"density"`` field has a field type of ``"gas"``:
+
+.. code-block:: jlcon
+
+  julia> sp["gas","density"]
+
+whereas you could get at the original ``FLASH`` field like this:
+
+.. code-block:: jlcon
+
+  julia> sp["flash","dens"]
 
 Field Parameters
 ----------------

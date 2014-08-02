@@ -14,8 +14,10 @@ This will also install the following dependencies, if you don't have them instal
 * `SymPy <http://github.com/jverzani/SymPy.jl>`_
 * `IJulia <http://github.com/JuliaLang/IJulia.jl>`_
 
-However, for ``jt`` to work, ``yt`` itself must be installed. The best way to install ``yt`` is by
-using Anaconda.
+However, for ``jt`` to work, ``yt`` itself must be installed. ``jt`` requires ``yt`` version 3.0
+or higher. The best ways to install ``yt`` are via the
+`install script <http://yt-project.org/#getyt>`_ or via the
+`Anaconda Python Distribution <https://store.continuum.io/cshop/anaconda/>`_.
 
 Once ``jt`` is installed, either
 

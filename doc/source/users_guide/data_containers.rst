@@ -10,7 +10,7 @@ and attempts to match the API of these objects as closely as possible. All of th
 be created from a ``Dataset`` object, typically with some additional information supplied.
 
 Supplying ``Length`` and ``Coordinate`` Arguments to Data Containers
-------------------------------------------------------------
+--------------------------------------------------------------------
 
 A general note will be helpful before diving into the various ``DataContainer`` objects that are
 available.

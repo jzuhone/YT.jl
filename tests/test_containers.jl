@@ -4,15 +4,19 @@ using PyCall
 
 @pyimport yt.funcs as yt_funcs
 
-function check_container(dc::DataContainer; args=[], kwargs=[])
-    cont_name = yt_funcs.camelcase_to_underscore(repr(typeof(dc)))
-    py_dc = pycall(dc.ds.ds[cont_name], PyObject, args...)
+function test_container(dc::DataContainer, py_dc::PyObject)
     for field in ["density", "temperature", "velocity_magnitude"]
         a = dc[field]
         b = pycall(py_dc["__getitem__"], PyObject, field)
         @test all(a.value .== PyArray(b))
         @test a.units.unit_symbol == b[:units]
     end
+end
+
+function check_container(dc::DataContainer; args=[])
+    cont_name = yt_funcs.camelcase_to_underscore(repr(typeof(dc)))
+    py_dc = pycall(dc.ds.ds[cont_name], PyObject, args...)
+    test_container(dc, py_dc)
 end
 
 ds = load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
@@ -59,6 +63,11 @@ check_container(dk2, args=args2)
 
 # Rays
 
+args = [0.0,3.0856e22,3.0856e23], [1.0e24,-3.0e23,5.0e22]
+ray = Ray(ds, args...)
+
+check_container(ray, args=args)
+
 # Slices
 
 args1 = "z", 4e23
@@ -71,9 +80,13 @@ check_container(slc2, args=args2)
 
 # Projections
 
-prj1 = Projection(ds, "density", "z")
-prj2 = Projection(ds, "density", 0, weight_field="temperature")
-prj3 = Projection(ds, "density", 1, data_source=sp1)
+#args1 = "density", "z"
+#args2 = ["field"=>"density", "axis"=>0, "weight_field"=>"temperature"]
+#args3 = "density", 1
+#kwargs3 = ["data_source"=>sp1]
+#prj1 = Projection(ds, args1...)
+#prj2 = Projection(ds; args2...)
+#prj3 = Projection(ds, args3...; kwargs3...)
 
 # Cutting Planes
 
@@ -90,3 +103,11 @@ check_container(cp2, args=args2)
 # Covering Grids
 
 # Grids
+
+grids = Grids(ds)
+num_grids = length(grids)
+pygrids = ds.ds[:index][:grids]
+
+for i in 1:num_grids
+    test_container(grids[i], pygrids[i])
+end

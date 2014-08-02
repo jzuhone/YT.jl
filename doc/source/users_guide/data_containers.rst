@@ -13,12 +13,25 @@ Supplying ``Length`` and ``Coordinate`` Arguments to Data Containers
 --------------------------------------------------------------------
 
 A general note will be helpful before diving into the various ``DataContainer`` objects that are
-available.
+available. ``Length`` and ``Coordinate`` types have been defined for the various methods below for
+creating different objects.
+
+A ``Length``-type argument can be one of the following:
+
+  * A ``Real`` number. If so, the assumed units are ``"code_length"``.
+  * A ``(value, unit)`` tuple, e.g., ``(1.5,"Mpc")``.
+  * A ``YTQuantity``.
+
+A ``Coordinate``-type argument can be one of the following:
+
+  * A ``String``, e.g., ``"max"`` (or ``"m"``), ``"center"`` (or ``"c"``).
+  * An ``Array`` of ``Real`` numbers. If so, the assumed units are ``"code_length"``.
+  * A ``YTArray``.
 
 Available Data Containers
 -------------------------
 
-.. _all-data:
+.. _all_data:
 
 All Data
 ++++++++
@@ -26,33 +39,49 @@ All Data
 The simplest data container is one that represents all of the data in the ``Dataset``. It requires
 no parameters to create, except the ``Dataset`` object:
 
+.. code-block:: julia
+
+  function AllData(ds::Dataset; args...)
+
+Examples:
+
 .. code-block:: jlcon
 
-  dd = jt.AllData(ds)
+  julia> dd = jt.AllData(ds)
 
-.. _spheres:
+.. _sphere:
 
-Spheres
-+++++++
+Sphere
+++++++
 
 To create a ``Sphere``, a ``center`` and a ``radius`` should be supplied.
 
+.. code-block:: julia
+
+  function Sphere(ds::Dataset, center::Coordinate, radius::Length; args...)
+
+Examples:
 
 .. code-block:: jlcon
 
-  sp = jt.Sphere(ds)
+  julia> sp = jt.Sphere(ds, "max", (100.,"kpc"))
 
+.. code-block:: jlcon
 
-.. _regions:
+  julia> R = jt.YTQuantity(200.,"kpc")
 
-Regions
-+++++++
+  julia> sp = jt.Sphere(ds, [0.0,0.0,0.0], R)
+
+.. _region:
+
+Region
+++++++
 
 .. code-block:: jlcon
 
   reg = jt.Region(ds)
 
-.. _disks:
+.. _disk:
 
 Disks
 +++++
@@ -61,24 +90,26 @@ Disks
 
   dk = jt.Disk(ds)
 
-.. _slices:
+.. _slice:
 
-Slices
-++++++
+Slice
++++++
 
-.. _projections:
+.. _proj:
 
-Projections
-+++++++++++
+Proj
+++++
 
-``Projections`` are integrals of a given quantity along a sight line
+A ``Proj`` is an integral of a given quantity along a sight line.
 
-.. _cut-regions:
+.. _cut_region:
 
-Cut Regions
-+++++++++++
+CutRegion
++++++++++
 
 Accessing the Data Within Containers
 ------------------------------------
 
+Field Parameters
+----------------
 

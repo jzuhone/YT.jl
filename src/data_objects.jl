@@ -170,7 +170,7 @@ end
 
 # Projection
 
-type Projection <: DataContainer
+type Proj <: DataContainer
     cont::PyObject
     ds::Dataset
     field
@@ -178,8 +178,8 @@ type Projection <: DataContainer
     weight_field
     data_source
     field_dict::Dict
-    function Projection(ds::Dataset, field, axis; weight_field=nothing,
-                        center=nothing, data_source=nothing, args...)
+    function Proj(ds::Dataset, field, axis; weight_field=nothing,
+                  center=nothing, data_source=nothing, args...)
         if weight_field != nothing
             weight = weight_field
         else
@@ -230,7 +230,7 @@ type Slice <: DataContainer
     end
 end
 
-SliceOrProj = Union(Slice,Projection)
+SliceOrProj = Union(Slice,Proj)
 Resolution = Union(Integer,(Integer,Integer))
 
 function to_frb(obj::SliceOrProj, width::Length, nx::Resolution; args...)

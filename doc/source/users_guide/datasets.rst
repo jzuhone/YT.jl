@@ -6,7 +6,7 @@ Datasets
 The most basic ``jt`` object is the ``Dataset``. This is a collection of volumetric data that may
 be stored on disk, or created in-memory. To load a ``Dataset`` from disk, we use ``load``:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> ds = jt.load("sloshing_nomag2_hdf5_plt_cnt_0100")
     yt : [WARNING  ] 2014-03-31 23:46:27,765 integer runtime parameter checkpointfilenumber overwrites a simulation scalar of the same name
@@ -40,7 +40,7 @@ Parameters
 Each simulation ``Dataset`` normally has a number of runtime parameters associated with it. This
 is stored in the ``parameters`` dictionary:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> collect(keys(ds.parameters))
     293-element Array{Any,1}:
@@ -70,7 +70,7 @@ Methods
 ``print_stats`` may be used to get a quick synopsis of the structure of the ``Dataset``. In this case,
 it is a FLASH AMR dataset, so statistics regarding the grids and cells are printed:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> jt.print_stats(ds)
     level	# grids	       # cells	     # cells^3
@@ -96,7 +96,7 @@ it is a FLASH AMR dataset, so statistics regarding the grids and cells are print
 
 ``get_smallest_dx`` returns the length scale of the smallest cell or SPH smoothing length:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> jt.get_smallest_dx(ds)
     7.231875e21 code_length

@@ -16,7 +16,7 @@ Arrays
 If we grab the ``"density"`` field from a sphere, it will be returned as a ``YTArray`` in
 :math:`\rm{g}/\rm{cm}^3`:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> sp = jt.Sphere(ds, "c", (100.,"kpc"))
     YTSphere (sloshing_nomag2_hdf5_plt_cnt_0100): center=[ 0.  0.  0.] code_length,
@@ -51,14 +51,14 @@ units are retained. The following are some simple examples of this.
 
 Finding the maximum density:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> maximum(sp["density"])
     9.256136409265674e-26 g/cm**3
 
 Multiplying the temperature by a constant unitless number:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> sp["temperature"]*5
     325184-element YTArray (K):
@@ -86,7 +86,7 @@ Multiplying the temperature by a constant unitless number:
 
 Adding two ``YTArrays``:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> sp["velocity_magnitude"]+sp["sound_speed"]
     325184-element YTArray (cm/s):
@@ -114,7 +114,7 @@ Adding two ``YTArrays``:
 
 Multiplying element-wise one ``YTArray`` by another:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> sp["density"].*sp["temperature"]
     325184-element YTArray (K*g/cm**3):
@@ -144,7 +144,7 @@ However, attempting to perform an operation that doesn't make sense will throw a
 example, suppose that you tried to instead `add` ``"density"`` and ``"temperature"``,
 which aren't the same type of physical quantity:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> sp["density"]+sp["temperature"]
     ERROR: The + operator for YTArrays with units (g/cm**3) and (K) is not well defined.
@@ -152,7 +152,7 @@ which aren't the same type of physical quantity:
 
 It is also possible to create a ``YTArray`` from a regular Julia ``Array``, like so:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> a = YTArray(randn(10), "erg")
     10-element YTArray (erg):
@@ -170,7 +170,7 @@ It is also possible to create a ``YTArray`` from a regular Julia ``Array``, like
 If your ``YTArray`` needs to know about code units associated with a specific dataset,
 you'll have to create it with a ``Dataset`` object passed in:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> a = YTArray(ds, [1.0,1.0,1.0], "code_length")
     3-element YTArray (code_length):
@@ -185,7 +185,7 @@ Quantities
 
 A ``YTQuantity`` is just a scalar version of a ``YTArray``. They can be manipulated in the same way:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> a = YTQuantity(3.14159, "radian")
     3.14159 radian
@@ -217,7 +217,7 @@ Occasionally you will want to change the units of an array or quantity to someth
 appropriate. Taking density as the example, we can change it to units of solar masses per
 kiloparsec:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> a = jt.in_units(sp["density"], "Msun/kpc**3")
     325184-element YTArray (Msun/kpc**3):
@@ -245,7 +245,7 @@ kiloparsec:
 
 We can switch back to cgs units rather easily:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> jt.in_cgs(a)
     325184-element YTArray (g/cm**3):
@@ -273,7 +273,7 @@ We can switch back to cgs units rather easily:
 
 or to MKS units:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> jt.in_mks(a)
     325184-element YTArray (kg/m**3):
@@ -308,7 +308,7 @@ Some physical constants are represented in ``jt``. They are available via the
 ``jt.physical_constants`` submodule, and are unitful quantities which can be used with other
 quantities and arrays:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> kb = jt.physical_constants.kboltz # Boltzmann constant
     1.3806488e-16 erg/K

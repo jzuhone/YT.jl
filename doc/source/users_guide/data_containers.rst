@@ -26,7 +26,7 @@ All Data
 The simplest data container is one that represents all of the data in the ``Dataset``. It requires
 no parameters to create, except the ``Dataset`` object:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
   dd = jt.AllData(ds)
 
@@ -38,7 +38,7 @@ Spheres
 To create a ``Sphere``, a ``center`` and a ``radius`` should be supplied.
 
 
-.. code-block:: julia
+.. code-block:: jlcon
 
   sp = jt.Sphere(ds)
 
@@ -48,7 +48,7 @@ To create a ``Sphere``, a ``center`` and a ``radius`` should be supplied.
 Regions
 +++++++
 
-.. code-block:: julia
+.. code-block:: jlcon
 
   reg = jt.Region(ds)
 
@@ -57,7 +57,7 @@ Regions
 Disks
 +++++
 
-.. code-block:: julia
+.. code-block:: jlcon
 
   dk = jt.Disk(ds)
 
@@ -71,9 +71,8 @@ Slices
 Projections
 +++++++++++
 
-``Projections`` are integrals of a given quantity along a s
+``Projections`` are integrals of a given quantity along a sight line
 
-1ight line
 .. _cut-regions:
 
 Cut Regions

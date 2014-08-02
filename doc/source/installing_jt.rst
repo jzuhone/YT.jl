@@ -3,7 +3,7 @@ Installing jt
 
 ``jt`` may be installed just like any other Julia package:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> Pkg.add("jt")
 
@@ -19,13 +19,13 @@ using Anaconda.
 
 Once ``jt`` is installed, either
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> import jt
 
 to use it as a library, or
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> using jt
 

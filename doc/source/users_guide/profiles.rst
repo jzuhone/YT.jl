@@ -5,4 +5,4 @@ Profiles
 
 For example, to construct a 1D profile:
 
-.. code-block::
+.. code-block:: jlcon

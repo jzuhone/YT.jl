@@ -18,7 +18,7 @@ which can be found in the
 `yt Documentation <http://yt-project.org/docs/dev-3.0/visualizing/plots.html>`_. We'll illustrate
 the plotting functionality with a ``SlicePlot`` as an example:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> slc = jt.SlicePlot(ds, "z", ["density","temperature"], width=(500.,"kpc"))
 
@@ -29,7 +29,7 @@ the plotting functionality with a ``SlicePlot`` as an example:
 which produces a ``SlicePlot`` ``PyObject`` which has all the methods for annotating the plot
 that one would have access to in ``yt`` available. For example, one can annotate grids:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> slc.annotate_grids()
 
@@ -39,7 +39,7 @@ that one would have access to in ``yt`` available. For example, one can annotate
 
 or velocity vectors:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> slc.annotate_velocity()
 
@@ -49,7 +49,7 @@ or velocity vectors:
 
 Logging can be set for specific fields:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> slc.set_log("temperature", false)
 
@@ -57,24 +57,24 @@ Logging can be set for specific fields:
 
 or the colormap can be changed:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> slc.set_cmap("density", "kamae")
 
 .. image:: ../images/slice_density_colormap.png
 
-.. code-block:: julia
+.. code-block:: jlcon
 
 To save a plot:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> slc.save("my_awesome_plot.png")
     
 If one is in the `IJulia notebook <http://github.com/JuliaLang/IJulia.jl>`_, the ``show_plot``
 method can be used to display the plot inline:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> jt.show_plot(slc)
 
@@ -89,7 +89,7 @@ Images
 To create a raw 2D image from a ``Slice`` or ``Projection`` object,
 one can create a ``FixedResolutionBuffer`` object using the ``to_frb`` method:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> slc = jt.Slice(ds, "z", 0.0)
     YTSlice (sloshing_nomag2_hdf5_plt_cnt_0100): axis=2, coord=0.0
@@ -102,7 +102,7 @@ one can create a ``FixedResolutionBuffer`` object using the ``to_frb`` method:
 which can be plotted with a plotting package such as
 `PyPlot <http://github.com/stevengj/PyPlot.jl>`_ or `Winston <http://github.com/nolta/Winston.jl>`_:
 
-.. code-block:: julia
+.. code-block:: jlcon
 
     julia> using Winston
 

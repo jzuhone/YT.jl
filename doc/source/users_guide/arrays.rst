@@ -147,8 +147,9 @@ which aren't the same type of physical quantity:
 .. code-block:: jlcon
 
     julia> sp["density"]+sp["temperature"]
-    ERROR: The + operator for YTArrays with units (g/cm**3) and (K) is not well defined.
-     in + at /Users/jzuhone/.julia/jt/src/array.jl:143
+    ERROR: The + operator for YTArrays with units
+    (g/cm**3) and (K) is not well defined.
+     in + at /Users/jzuhone/.julia/jt/src/array.jl:141
 
 It is also possible to create a ``YTArray`` from a regular Julia ``Array``, like so:
 

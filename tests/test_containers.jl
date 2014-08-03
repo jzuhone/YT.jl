@@ -43,8 +43,8 @@ check_container(sp3, args=args3)
 
 # Regions
 
-args1 = "c", [-3.0856e23,-3.0856e23,-3.0856e23], [3.0856e23,3.0856e23,3.0856e23]
-args2 = "max", [-3.0856e23,-3.0856e24,-6.1712e23], [6.1712e23, 3.0856e23, 3.0856e24]
+args1 = [-3.0856e23,-3.0856e23,-3.0856e23], [3.0856e23,3.0856e23,3.0856e23]
+args2 = YTArray([-100,-100,-100], "kpc"), YTArray([100,100,100], "kpc")
 reg1 = Region(ds, args1...)
 reg2 = Region(ds, args2...)
 
@@ -107,7 +107,7 @@ check_container(cp2, args=args2)
 
 conditions = ["obj['kT'] > 3.0"]
 
-cr = cut_region(sp1, conditions)
+cr = CutRegion(sp1, conditions)
 pycr = sp1.cont[:cut_region](conditions)
 
 test_container(cr, pycr)

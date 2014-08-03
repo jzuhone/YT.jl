@@ -18,7 +18,6 @@ export load, load_uniform_grid, load_amr_grids, load_particles
 
 export DataContainer, CutRegion, Disk, Ray, Slice, Region
 export Sphere, AllData, Proj, CoveringGrid, Grids, Cutting
-export cut_region
 
 # Fixed resolution
 
@@ -48,7 +47,7 @@ include("profiles.jl")
 import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks
 import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray,
-    Cutting, CutRegion, cut_region, DataContainer, Region
+    Cutting, CutRegion, DataContainer, Region
 import .plots: SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot, show_plot
 import .images: FixedResolutionBuffer
 import .profiles: Profile1D, Profile2D, Profile3D, add_fields, set_x_unit,

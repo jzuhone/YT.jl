@@ -126,8 +126,8 @@ type YTUnitOperationError <: Exception
 end
 
 function showerror(io::IO, e::YTUnitOperationError)
-    print(io,"The $(e.op) operator for YTArrays with units " *
-    "($(e.a.units)) and ($(e.b.units)) is not well defined.")
+    println(io,"The $(e.op) operator for YTArrays with units ")
+    print(io,"($(e.a.units)) and ($(e.b.units)) is not well defined.")
 end
 
 # Macros

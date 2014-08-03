@@ -2,7 +2,7 @@ module data_objects
 
 using PyCall
 import Base: size, show, showarray, display, showerror
-import ..array: YTArray, YTQuantity
+import ..array: YTArray, YTQuantity, in_units
 import ..images: FixedResolutionBuffer
 
 Center = Union(String,Array,YTArray)
@@ -65,22 +65,32 @@ end
 type Region <: DataContainer
     cont::PyObject
     ds::Dataset
+    center::YTArray
     left_edge::YTArray
     right_edge::YTArray
     field_dict::Dict
-    function Region(ds::Dataset, left_edge::Union(Array,YTArray),
+    function Region(ds::Dataset, center::Center, left_edge::Union(Array,YTArray),
                     right_edge::Union(Array,YTArray); args...)
+        if typeof(center) == YTArray
+            c = convert(PyObject, center)
+        else
+            c = center
+        end
         if typeof(left_edge) == YTArray
-            le = convert(PyObject, left_edge)
+            le = in_units(YTArray(ds, left_edge.value,
+                          repr(left_edge.units.unit_symbol)),
+                          "code_length").value
         else
             le = left_edge
         end
         if typeof(right_edge) == YTArray
-            re = convert(PyObject, right_edge)
+            re = in_units(YTArray(ds, right_edge.value,
+                          repr(right_edge.units.unit_symbol)),
+                          "code_length").value
         else
             re = right_edge
         end
-        reg = ds.ds[:region](0.5*(le+re), le, re; args...)
+        reg = ds.ds[:region](c, le, re; args...)
         new(reg, ds, YTArray(reg["center"]), YTArray(reg["left_edge"]),
             YTArray(reg["right_edge"]), Dict())
     end
@@ -176,7 +186,7 @@ type Proj <: DataContainer
         end
         prj = ds.ds[:proj](field, axis, weight_field=weight,
                            data_source=source; args...)
-        new(prj, ds, field, axis, weight_field, data_source, Dict())
+        new(prj, ds, field, prj["axis"], weight_field, data_source, Dict())
     end
 end
 
@@ -191,7 +201,7 @@ type Slice <: DataContainer
     function Slice(ds::Dataset, axis::Union(Integer,String),
                    coord::Real; args...)
         slc = ds.ds[:slice](axis, coord; args...)
-        new(slc, ds, axis, cd, Dict())
+        new(slc, ds, slc["axis"], slc["coord"], Dict())
     end
 end
 

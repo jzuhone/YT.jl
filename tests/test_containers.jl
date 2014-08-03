@@ -15,6 +15,7 @@ end
 
 function check_container(dc::DataContainer; args=[], kwargs=Dict())
     cont_name = yt_funcs.camelcase_to_underscore(repr(typeof(dc)))
+
     py_dc = pycall(dc.ds.ds[cont_name], PyObject, args...; kwargs...)
     test_container(dc, py_dc)
 end
@@ -43,13 +44,17 @@ check_container(sp3, args=args3)
 
 # Regions
 
-args1 = [-3.0856e23,-3.0856e23,-3.0856e23], [3.0856e23,3.0856e23,3.0856e23]
-args2 = YTArray([-100,-100,-100], "kpc"), YTArray([100,100,100], "kpc")
+args1 = "c", [-3.0856e23,-3.0856e23,-3.0856e23], [3.0856e23,3.0856e23,3.0856e23]
+args2 = "max", YTArray(ds, [-100.,-100.,-100.], "kpc"), YTArray(ds, [100.,100.,100.], "kpc")
 reg1 = Region(ds, args1...)
 reg2 = Region(ds, args2...)
 
+le = pycall(ds.ds["arr"], PyObject, [-100., -100., -100.], "kpc")
+re = pycall(ds.ds["arr"], PyObject, [100., 100., 100.], "kpc")
+
+pyargs2 = "max", le, re
 check_container(reg1, args=args1)
-check_container(reg2, args=args2)
+check_container(reg2, args=pyargs2)
 
 # Disks
 

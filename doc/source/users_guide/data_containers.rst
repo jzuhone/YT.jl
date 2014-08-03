@@ -86,11 +86,13 @@ Examples:
 Region
 ++++++
 
-A ``Region`` is a
+A ``Region`` is a rectangular prism with a ``left_edge``, a ``right_edge``, and a ``center``
+(that can be anywhere in the domain). The edges can be ``YTArray``s, or ``Array``s of ``Real``s,
+in which case they will be assumed to be in units of ``code_length``.
 
 .. code-block:: julia
 
-  function Region(ds::Dataset, left_edge::Union(YTArray,Array),
+  function Region(ds::Dataset, center::Center, left_edge::Union(YTArray,Array),
                     right_edge::Union(YTArray,Array); args...)
 
 Examples:
@@ -196,7 +198,7 @@ Examples:
 .. code-block:: jlcon
 
   julia> c = jt.YTArray([100.,100.,100], "kpc")
-  
+
   julia> ct = jt.Cutting(ds, [1.0,1.0,1.0], c)
 
 The ``normal`` vector will be normalized to unity if it isn't already.
@@ -228,6 +230,57 @@ CoveringGrid
 
 Grids
 +++++
+
+If your simulation is grid-based, you can also get at the data in the individual grids using the
+``Grids`` object:
+
+.. code-block:: julia
+
+  function Grids(ds::Dataset)
+
+``Grids`` objects are ``Array``s, so the ``length`` can be determined and they can be indexed.
+You can access the individual fields of a single ``Grid`` object as well:
+
+.. code-block:: jlcon
+
+  julia> grids = Grids(ds)
+  [ FLASHGrid_0001 ([16 16 16]),
+    FLASHGrid_0002 ([16 16 16]),
+    FLASHGrid_0003 ([16 16 16]),
+    FLASHGrid_0004 ([16 16 16]),
+    ...
+    FLASHGrid_1350 ([16 16 16]),
+    FLASHGrid_1351 ([16 16 16]),
+    FLASHGrid_1352 ([16 16 16]),
+    FLASHGrid_1353 ([16 16 16]) ]
+
+  julia> length(grids)
+  1353
+
+  julia> my_grid = grids[1000]
+  FLASHGrid_1000 ([16 16 16])
+
+  julia> my_grid["velocity_x"]
+  my_grid["velocity_x"]
+  16x16x16 YTArray (cm/s):
+  [:, :, 1] =
+       -1.2075387e7         -1.241014e7     …       -1.4580984e7
+       -1.021574e7          -1.0516409e7            -1.2799518e7
+       -8.3335155e6         -8.598048e6             -1.124706e7
+       -6.415593e6          -6.70807e6              -9.730029e6
+       -4.564453e6          -4.8659225e6            -8.137291e6
+       -2.8466195e6         -3.1491e6       …       -6.434752e6
+       -1.0172061875e6      -1.354249625e6          -4.6243535e6
+        888777.875           529686.875             -2.786557e6
+        3.043072e6           2.6330015e6            -957876.25
+        5.1807975e6          4.7515225e6             861985.0
+        7.287667e6           6.905605e6     …        2.82106475e6
+        9.428427e6           9.098705e6              4.970872e6
+        1.1547637e7          1.1276032e7             7.188712e6
+        1.3600865e7          1.3346243e7             9.288022e6
+        1.5679473e7          1.5354482e7             1.1403412e7
+        1.7878244e7          1.7464842e7    …        1.3652711e7
+  ...
 
 .. _accessing_container_data:
 

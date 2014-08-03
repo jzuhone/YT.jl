@@ -12,7 +12,6 @@ using PyCall
 @pyimport yt.units as units
 
 IntOrRange = Union(Int,Range,Range1,Array{Int,1})
-RealOrArray = Union(Real,Array)
 
 # Grab the classes for creating YTArrays and YTQuantities
 
@@ -57,7 +56,7 @@ show(io::IO, u::YTUnit) = show(io, u.unit_symbol)
 # YTQuantity definition
 
 type YTQuantity
-    value::Real
+    value::Float64
     units::YTUnit
     function YTQuantity(yt_quantity::PyObject)
         yt_units = YTUnit(yt_quantity["unit_quantity"],
@@ -65,16 +64,18 @@ type YTQuantity
                           yt_quantity[:units][:dimensions])
         new(yt_quantity[:ndarray_view]()[1], yt_units)
     end
-    function YTQuantity(value::Real, units::String; registry=pybuiltin("None"))
+    function YTQuantity(value::Float64, units::String; registry=pybuiltin("None"))
         unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
         yt_units = YTUnit(unitary_quan,
                           unitary_quan[:units],
                           unitary_quan[:units][:dimensions])
-        new(value, yt_units)
+        new(convert(Float64, value), yt_units)
     end
+    YTQuantity(value::Real, units::String; args...) = YTQuantity(convert(Float64, value),
+                                                                 units; args...)
     YTQuantity(ds, value::Real, units::String) = YTQuantity(value, units,
                                                             registry=ds.ds["unit_registry"])
-    YTQuantity(value::Real, units::Sym) = YTQuantity(value, units[:__str__]())
+    YTQuantity(value::Real, units::Sym; args...) = YTQuantity(value, units[:__str__](); args...)
     YTQuantity(value::Real, units::YTUnit) = YTQuantity(value,
                                                         units.unit_symbol[:__str__](),
                                                         registry=units.yt_unit["units"]["registry"])
@@ -86,7 +87,7 @@ end
 # YTArray definition
 
 type YTArray <: AbstractArray
-    value::Array
+    value::Array{Float64}
     units::YTUnit
     function YTArray(yt_array::PyObject)
         yt_units = YTUnit(yt_array["unit_quantity"],
@@ -94,24 +95,26 @@ type YTArray <: AbstractArray
                           yt_array[:units][:dimensions])
         new(yt_array[:ndarray_view](), yt_units)
     end
-    function YTArray(value::AbstractArray, units::String; registry=pybuiltin("None"))
+    function YTArray(value::Array{Float64}, units::String; registry=pybuiltin("None"))
         unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
         yt_units = YTUnit(unitary_quan,
                           unitary_quan[:units],
                           unitary_quan[:units][:dimensions])
         new(value, yt_units)
     end
-    YTArray(ds, value::AbstractArray, units::String) = YTArray(value, units,
-                                                               registry=ds.ds["unit_registry"])
-    YTArray(value::AbstractArray, units::Sym) = YTArray(value, units[:__str__]())
-    YTArray(value::AbstractArray, units::YTUnit) = YTArray(value,
-                                                           units.unit_symbol[:__str__](),
-                                                           registry=units.yt_unit["units"]["registry"])
-    YTArray(value::Real, units::String) = YTQuantity(value, units)
+    YTArray(value::Array, units::String; args...) = YTArray(convert(Array{Float64}, value),
+                                                            units; args...)
+    YTArray(ds, value::Array, units::String) = YTArray(value, units,
+                                                       registry=ds.ds["unit_registry"])
+    YTArray(value::Array, units::Sym; args...) = YTArray(value, units[:__str__](); args...)
+    YTArray(value::Array, units::YTUnit) = YTArray(value,
+                                                   units.unit_symbol[:__str__](),
+                                                   registry=units.yt_unit["units"]["registry"])
+    YTArray(value::Real, units::String; args...) = YTQuantity(value, units; args...)
     YTArray(ds, value::Real, units::String) = YTQuantity(value, units,
                                                          registry=ds.ds["unit_registry"])
-    YTArray(value::Real, units::Sym) = YTQuantity(value, units)
-    YTArray(value::Real, units::YTUnit) = YTQuantity(value, units)
+    YTArray(value::Real, units::Sym; args...) = YTQuantity(value, units; args...)
+    YTArray(value::Real, units::YTUnit; args...) = YTQuantity(value, units; args...)
     YTArray(value::BitArray, units::String) = value
     YTArray(value::BitArray, units::Sym) = value
     YTArray(value::BitArray, units::YTUnit) = value
@@ -160,8 +163,8 @@ copy(a::YTArray) = YTArray(a.value, a.units)
 
 convert(::Type{YTArray}, o::PyObject) = YTArray(o)
 convert(::Type{YTQuantity}, o::PyObject) = YTQuantity(o)
-convert(::Type{Array}, a::YTArray) = a.value
-convert(::Type{Real}, q::YTQuantity) = q.value
+convert(::Type{Array{Float64}}, a::YTArray) = a.value
+convert(::Type{Float64}, q::YTQuantity) = q.value
 convert(::Type{PyObject}, a::YTArray) = pycall(bare_array, PyObject, a.value,
                                                a.units.unit_symbol[:__str__](),
                                                a.units.yt_unit["units"]["registry"])
@@ -175,14 +178,21 @@ getindex(a::YTArray, idxs::Array{Int,1}) = YTArray(getindex(a.value, idxs), a.un
 getindex(a::YTArray, idxs::Ranges) = YTArray(getindex(a.value, idxs), a.units)
 
 function setindex!(a::YTArray, x::Real, i::Int)
-    a.value[i] = x
+    a.value[i] = convert(Float64, x)
 end
-function setindex!(a::YTArray, x::RealOrArray, idxs::Ranges)
-    YTArray(setindex!(a.value, x, idxs), a.units)
+function setindex!(a::YTArray, x::Array, idxs::Ranges)
+    YTArray(setindex!(a.value, convert(Array{Float64}, x), idxs), a.units)
 end
-function setindex!(a::YTArray, x::RealOrArray, idxs::Array{Int,1})
-    YTArray(setindex!(a.value, x, idxs), a.units)
+function setindex!(a::YTArray, x::Array, idxs::Array{Int,1})
+    YTArray(setindex!(a.value, convert(Array{Float64}, x), idxs), a.units)
 end
+function setindex!(a::YTArray, x::Real, idxs::Ranges)
+    YTArray(setindex!(a.value, convert(Float64, x), idxs), a.units)
+end
+function setindex!(a::YTArray, x::Real, idxs::Array{Int,1})
+    YTArray(setindex!(a.value, convert(Float64, x), idxs), a.units)
+end
+
 
 # For grids
 function getindex(a::YTArray, i::IntOrRange, j::IntOrRange, k::IntOrRange)

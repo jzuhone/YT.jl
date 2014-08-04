@@ -26,6 +26,9 @@ type YTProfile
         if typeof(bin_fields) <: String
             bin_fields = [bin_fields]
         end
+        if typeof(fields) <: String
+            fields = [fields]
+        end
         profile = prof.create_profile(data_source.cont, bin_fields, fields;
                                       n_bins=n_bins, extrema=extrema,
                                       logs=logs, units=units,

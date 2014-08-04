@@ -5,6 +5,7 @@ jt Users' Guide
    :maxdepth: 1
 
    datasets
+   in_memory_datasets
    data_containers
    arrays
    profiles

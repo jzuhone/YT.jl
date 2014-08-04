@@ -100,8 +100,3 @@ it is a FLASH AMR dataset, so statistics regarding the grids and cells are print
 
     julia> jt.get_smallest_dx(ds)
     7.231875e21 code_length
-
-.. _in_memory_datasets:
-
-In-Memory Datasets
-------------------

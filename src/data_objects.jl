@@ -200,7 +200,7 @@ type Slice <: DataContainer
     end
 end
 
-function to_frb(cont::Union(Slice,Proj), width::Length,
+function to_frb(cont::Union(Slice,Proj), width::Union(Length,(Length,Length)),
                 nx::Union(Integer,(Integer,Integer)); args...)
     FixedResolutionBuffer(cont.ds, cont.cont[:to_frb](width, nx; args...))
 end

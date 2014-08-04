@@ -103,14 +103,15 @@ Images
 To create a raw 2D image from a ``Slice`` or ``Proj`` object,
 one can create a ``FixedResolutionBuffer`` object using the ``to_frb`` method:
 
-.. code-block:: juila
+.. code-block:: julia
 
-    function to_frb(cont::Union(Slice,Proj), width::Length, nx::Union(Integer,(Integer,Integer)); args...)
+    function to_frb(cont::Union(Slice,Proj), width::Union(Length,(Length,Length)),
+                    nx::Union(Integer,(Integer,Integer)); args...)
 
 where ``cont`` is the ``Slice`` or ``Proj`` object, ``width`` is the width of the plot,
-and ``nx`` is the resolution of the plot, which can either be a single integer or a tuple of two
-integers, depending on how you want to set the width and height in pixels. This is an example of
-how to create a ``FixedResolutionBuffer`` from a ``Slice``:
+and ``nx`` is the resolution of the plot. Both the ``width`` and the resolution ``nx`` can
+either be a single value or a tuple of two values, depending on how you want to set the width and
+height. This is an example of how to create a ``FixedResolutionBuffer`` from a ``Slice``:
 
 .. code-block:: jlcon
 

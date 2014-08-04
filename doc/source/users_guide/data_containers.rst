@@ -379,3 +379,4 @@ which in the case of FLASH datasets is trivial because code units are equivalent
 Field Parameters
 ----------------
 
+Some complex fields rely on "field parameters" in their definitions.

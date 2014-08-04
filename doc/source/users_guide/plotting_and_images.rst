@@ -36,7 +36,8 @@ We'll illustrate the plotting functionality with a ``SlicePlot`` as an example:
 .. image:: ../images/slice_temperature.png
 
 which produces a ``SlicePlot`` ``PyObject`` of the ``fields`` "density" and "temperature",
-along the "z" ``axis``. The ``SlicePlot`` object has available to it all of the methods for
+along the "z" ``axis``. The optional argument ``width`` has been used to zoom on on the central
+500 kpc of the domain. The ``SlicePlot`` object has available to it all of the methods for
 annotating the plot that one would have access to in ``yt``. For example, one can annotate grids:
 
 .. code-block:: jlcon

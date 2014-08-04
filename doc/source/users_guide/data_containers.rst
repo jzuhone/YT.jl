@@ -87,8 +87,9 @@ Region
 ++++++
 
 A ``Region`` is a rectangular prism with a ``left_edge``, a ``right_edge``, and a ``center``
-(that can be anywhere in the domain). The edges can be ``YTArray``s, or ``Array``s of ``Real``s,
-in which case they will be assumed to be in units of ``code_length``.
+(that can be anywhere in the domain). The edges can be ``YTArray``\ s,
+or ``Array``\ s of ``Real``\ s, in which case they will be assumed to be in units of
+``code_length``.
 
 .. code-block:: julia
 
@@ -238,7 +239,7 @@ If your simulation is grid-based, you can also get at the data in the individual
 
   function Grids(ds::Dataset)
 
-``Grids`` objects are ``Array``s, so the ``length`` can be determined and they can be indexed.
+``Grids`` objects are ``Array``\ s, so the ``length`` can be determined and they can be indexed.
 You can access the individual fields of a single ``Grid`` object as well:
 
 .. code-block:: jlcon

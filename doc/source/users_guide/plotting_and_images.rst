@@ -27,7 +27,7 @@ Plots
 Unlike other methods in ``jt``, these return the native ``yt`` Python-based objects. This is
 mainly for convenience; it allows one to use all of the annotation and plot modification methods
 that hang off these objects. The API for these objects is the same as it is in ``yt``,
-which can be found in the |yt_plotting_docs|_.   
+which can be found in the |yt_plotting_docs|_.
 
 We'll illustrate the plotting functionality with a ``SlicePlot`` as an example:
 
@@ -39,8 +39,9 @@ We'll illustrate the plotting functionality with a ``SlicePlot`` as an example:
 
 .. image:: ../images/slice_temperature.png
 
-which produces a ``SlicePlot`` ``PyObject`` which has all the methods for annotating the plot
-that one would have access to in ``yt`` available. For example, one can annotate grids:
+which produces a ``SlicePlot`` ``PyObject`` of the ``fields`` "density" and "temperature",
+along the "z" ``axis``. The ``SlicePlot`` object has available to it all of the methods for
+annotating the plot that one would have access to in ``yt``. For example, one can annotate grids:
 
 .. code-block:: jlcon
 
@@ -99,8 +100,17 @@ be found in the |yt_plotting_docs|_.
 Images
 ------
 
-To create a raw 2D image from a ``Slice`` or ``Projection`` object,
+To create a raw 2D image from a ``Slice`` or ``Proj`` object,
 one can create a ``FixedResolutionBuffer`` object using the ``to_frb`` method:
+
+.. code-block:: juila
+
+    function to_frb(cont::Union(Slice,Proj), width::Length, nx::Union(Integer,(Integer,Integer)); args...)
+
+where ``cont`` is the ``Slice`` or ``Proj`` object, ``width`` is the width of the plot,
+and ``nx`` is the resolution of the plot, which can either be a single integer or a tuple of two
+integers, depending on how you want to set the width and height in pixels. This is an example of
+how to create a ``FixedResolutionBuffer`` from a ``Slice``:
 
 .. code-block:: jlcon
 

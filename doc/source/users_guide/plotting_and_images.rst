@@ -27,8 +27,9 @@ Plots
 Unlike other methods in ``jt``, these return the native ``yt`` Python-based objects. This is
 mainly for convenience; it allows one to use all of the annotation and plot modification methods
 that hang off these objects. The API for these objects is the same as it is in ``yt``,
-which can be found in the |yt_plotting_docs|_. We'll illustrate the plotting functionality with a
- ``SlicePlot`` as an example:
+which can be found in the |yt_plotting_docs|_.
+
+We'll illustrate the plotting functionality with a ``SlicePlot`` as an example:
 
 .. code-block:: jlcon
 

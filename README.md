@@ -1,8 +1,7 @@
 # jt
 
-`jt` is a Julia interface to the Python-based [`yt` analysis toolkit](http://yt-project.org). Currently,
-`jt` is in a very experimental state, but most functions seem to
-work. These include:
+`jt` is a Julia interface to the Python-based [`yt` analysis toolkit](http://yt-project.org). `jt`
+exposes a number of functionalities from `yt`. These include:
 
 * Loading of `yt` datasets
 * Some basic `yt` data objects, such as spheres, regions, covering grids,
@@ -10,10 +9,10 @@ work. These include:
 * Creating in-memory datasets (`load_uniform_grid`, `load_amr_grids`,
   etc.)
 * Profile objects
-* Slice, projection, profile, and phase plots
+* Slice and projection plots
 * Symbolic units, YTArrays, YTQuantities
 
-To install `jt` just run:
+`jt` can be installed in Julia version 0.3 or higher. To install it, just run:
 
     Pkg.clone("git://github.com/jzuhone/jt")
 
@@ -22,23 +21,19 @@ which will also install the following dependencies (if you don't already have th
 * [PyCall](http://github.com/stevengj/PyCall.jl)
 * [PyPlot](http://github.com/stevengj/PyPlot.jl)
 * [SymPy](http://github.com/jverzani/SymPy.jl)
+* [IJulia](http://github.com/JuliaLang/IJulia.jl)
 
-As well, you need to have a working installation of `yt` 3.0, which is currently
-in alpha state. In order to get the required version, issue this set
-of commands:
+However, for `jt` to work, `yt` itself must be installed. `jt` requires `yt` version 3.0 or higher.
+The best ways to install `yt` are via the [install script](http://yt-project.org/#getyt) or via the
+[Anaconda Python Distribution](https://store.continuum.io/cshop/anaconda).
 
-	hg clone http://bitbucket.org/yt_analysis/yt
-	cd yt
-    hg up yt-3.0
-	python setup.py install
+Once ``jt`` is installed, either
 
-If you already have a `yt` installation, change that last line to
-`python setup.py develop`.
+    julia> import jt
 
-Once all of this is working, the `jt` module can be loaded from
-within a Julia environment or script:
+to use it as a library, or
 
-	using jt
+    julia> using jt
 
-More detailed documentation is forthcoming...
+to use it as an application, loading its methods into the current session's namespace.
 

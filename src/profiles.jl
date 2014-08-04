@@ -17,11 +17,8 @@ type Profile1D <: YTProfile
     weight_field
     function Profile1D(data_source::DataContainer, x_field, x_n::Integer,
                        x_min::Real, x_max::Real, x_log::Bool; weight_field=nothing)
-        if weight_field != nothing
-            weight = weight_field
-        end
         profile = prof.Profile1D(data_source.cont, x_field, x_n, x_min, x_max,
-                                 x_log, weight_field=weight)
+                                 x_log, weight_field=weight_field)
         new(profile, data_source, x_field, YTArray(profile["x"]),
             YTArray(profile["x_bins"]), weight_field)
     end
@@ -41,12 +38,9 @@ type Profile2D <: YTProfile
                        x_min::Real, x_max::Real, x_log::Bool, y_field,
                        y_n::Integer, y_min::Real, y_max::Real, y_log::Bool;
                        weight_field=nothing)
-        if weight_field != nothing
-            weight = weight_field
-        end
         profile = prof.Profile2D(data_source.cont, x_field, x_n, x_min, x_max,
                                  x_log, y_field, y_n, y_min, y_max, y_log,
-                                 weight_field=weight)
+                                 weight_field=weight_field)
         new(profile, data_source, x_field, y_field, YTArray(profile["x"]),
             YTArray(profile["x_bins"]), YTArray(profile["y"]),
             YTArray(profile["y_bins"]), weight_field)
@@ -71,12 +65,9 @@ type Profile3D <: YTProfile
                        y_n::Integer, y_min::Real, y_max::Real, y_log::Bool,
                        z_field, z_n::Integer, z_min::Real, z_max::Real,
                        z_log::Bool; weight_field=nothing)
-        if weight_field != nothing
-            weight = weight_field
-        end
         profile = prof.Profile3D(data_source.cont, x_field, x_n, x_min, x_max,
                                  x_log, y_field, y_n, y_min, y_max, y_log,
-                                 z_field, z_n, z_min, z_max, z_log, weight_field=weight)
+                                 z_field, z_n, z_min, z_max, z_log, weight_field=weight_field)
         new(profile, data_source, x_field, y_field, z_field, YTArray(profile["x"]),
             YTArray(profile["x_bins"]), YTArray(profile["y"]),
             YTArray(profile["y_bins"]), YTArray(profile["z"]),

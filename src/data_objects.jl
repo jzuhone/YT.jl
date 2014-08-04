@@ -174,13 +174,12 @@ type Proj <: DataContainer
     field_dict::Dict
     function Proj(ds::Dataset, field, axis::Union(Integer,String);
                   weight_field=nothing, data_source=nothing, args...)
-        if weight_field != nothing
-            weight = weight_field
-        end
         if data_source != nothing
             source = data_source.cont
+        else
+            source = nothing
         end
-        prj = ds.ds[:proj](field, axis, weight_field=weight,
+        prj = ds.ds[:proj](field, axis, weight_field=weight_field,
                            data_source=source; args...)
         new(prj, ds, field, prj["axis"], weight_field, data_source, Dict())
     end

@@ -146,8 +146,8 @@ Examples:
 Slice
 +++++
 
-A ``Slice`` is a 2-dimensional slice perpendicular to an ``axis`` (which can be either a
-string, ``"x"``,``"y"``,``"z"``, or an integer, 0,1,2) centered at some coordinate
+A ``Slice`` is a 2-dimensional slice perpendicular to an ``axis``, which can be either a
+string ("x","y","z") or an integer (0,1,2), centered at some coordinate
 ``coord`` along that axis in ``code_length`` units.
 
 .. code-block:: julia
@@ -261,7 +261,6 @@ You can access the individual fields of a single ``Grid`` object as well:
   FLASHGrid_1000 ([16 16 16])
 
   julia> my_grid["velocity_x"]
-  my_grid["velocity_x"]
   16x16x16 YTArray (cm/s):
   [:, :, 1] =
        -1.2075387e7         -1.241014e7     …       -1.4580984e7

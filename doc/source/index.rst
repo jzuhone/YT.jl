@@ -1,5 +1,5 @@
-jt: A Julia interface to yt
-===========================
+``jt``: A Julia interface to ``yt``
+===================================
 
 .. toctree::
    :maxdepth: 1

@@ -1,5 +1,5 @@
-What is jt?
-===========
+What is ``jt``?
+===============
 
 .. |yt-docs| replace:: ``yt`` Documentation
 .. _yt-docs: http://yt-project.org/doc
@@ -8,8 +8,8 @@ What is jt?
 visualization of volumetric simulation data. For more information about yt,
 check out http://yt-project.org.
 
-What jt Does
-------------
+What ``jt`` Does
+----------------
 
 ``jt`` exposes a number of the essential features of ``yt`` from within a Julia environment. These
 include:
@@ -22,8 +22,8 @@ include:
 ``jt`` enables the end-user to "ask" physically-motivated questions of volumetric data and work
 with the "answers" from within a Julia environment.
 
-What jt Doesn't Do (and Probably Won't)
----------------------------------------
+What ``jt`` Doesn't Do (and Probably Won't)
+-------------------------------------------
 
 ``jt`` is not intended to be a full exposure of everything ``yt`` does. ``yt`` boasts many
 features, and exposing all of them would be somewhat redundant, especially those features that

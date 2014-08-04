@@ -1,5 +1,8 @@
 .. _plotting-and-images:
 
+.. |yt_plotting_docs| replace:: ``yt`` plotting documentation
+.. _yt_plotting_docs: http://yt-project.org/doc
+
 Plotting and Images
 ===================
 
@@ -14,9 +17,8 @@ Plots
 Unlike other methods in ``jt``, these return the native ``yt`` Python-based objects. This is
 mainly for convenience; it allows one to use all of the annotation and plot modification methods
 that hang off these objects. The API for these objects is the same as it is in ``yt``,
-which can be found in the
-`yt Documentation <http://yt-project.org/docs/dev-3.0/visualizing/plots.html>`_. We'll illustrate
-the plotting functionality with a ``SlicePlot`` as an example:
+which can be found in the |yt_plotting_docs|_. We'll illustrate the plotting functionality with a
+ ``SlicePlot`` as an example:
 
 .. code-block:: jlcon
 
@@ -79,7 +81,7 @@ method can be used to display the plot inline:
     julia> jt.show_plot(slc)
 
 Similar options exist for the other plotting methods. The full set of options for these plots can
-be found in the `yt Documentation <http://yt-project.org/docs/dev-3.0/visualizing/plots.html>`_.
+be found in the |yt_plotting_docs|_
 
 .. _images:
 

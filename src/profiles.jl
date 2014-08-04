@@ -19,8 +19,6 @@ type Profile1D <: YTProfile
                        x_min::Real, x_max::Real, x_log::Bool; weight_field=nothing)
         if weight_field != nothing
             weight = weight_field
-        else
-            weight = pybuiltin("None")
         end
         profile = prof.Profile1D(data_source.cont, x_field, x_n, x_min, x_max,
                                  x_log, weight_field=weight)
@@ -45,8 +43,6 @@ type Profile2D <: YTProfile
                        weight_field=nothing)
         if weight_field != nothing
             weight = weight_field
-        else
-            weight = pybuiltin("None")
         end
         profile = prof.Profile2D(data_source.cont, x_field, x_n, x_min, x_max,
                                  x_log, y_field, y_n, y_min, y_max, y_log,
@@ -77,8 +73,6 @@ type Profile3D <: YTProfile
                        z_log::Bool; weight_field=nothing)
         if weight_field != nothing
             weight = weight_field
-        else
-            weight = pybuiltin("None")
         end
         profile = prof.Profile3D(data_source.cont, x_field, x_n, x_min, x_max,
                                  x_log, y_field, y_n, y_min, y_max, y_log,

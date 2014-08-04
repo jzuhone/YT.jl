@@ -176,13 +176,9 @@ type Proj <: DataContainer
                   weight_field=nothing, data_source=nothing, args...)
         if weight_field != nothing
             weight = weight_field
-        else
-            weight = pybuiltin("None")
         end
         if data_source != nothing
             source = data_source.cont
-        else
-            source = pybuiltin("None")
         end
         prj = ds.ds[:proj](field, axis, weight_field=weight,
                            data_source=source; args...)

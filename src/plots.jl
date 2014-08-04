@@ -20,8 +20,6 @@ function ProjectionPlot(ds::Dataset, axis, fields; center="c",
                         data_source=nothing, args...)
     if data_source != nothing
         source = data_source.cont
-    else
-        source = pybuiltin("None")
     end
     if typeof(center) == YTArray
         c = convert(PyObject, center)

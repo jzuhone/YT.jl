@@ -64,7 +64,7 @@ type YTQuantity
                           yt_quantity[:units][:dimensions])
         new(yt_quantity[:ndarray_view]()[1], yt_units)
     end
-    function YTQuantity(value::Float64, units::String; registry=pybuiltin("None"))
+    function YTQuantity(value::Float64, units::String; registry=nothing)
         unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
         yt_units = YTUnit(unitary_quan,
                           unitary_quan[:units],
@@ -95,7 +95,7 @@ type YTArray <: AbstractArray
                           yt_array[:units][:dimensions])
         new(yt_array[:ndarray_view](), yt_units)
     end
-    function YTArray(value::Array{Float64}, units::String; registry=pybuiltin("None"))
+    function YTArray(value::Array{Float64}, units::String; registry=nothing)
         unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
         yt_units = YTUnit(unitary_quan,
                           unitary_quan[:units],

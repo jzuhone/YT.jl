@@ -47,7 +47,8 @@ include("profiles.jl")
 import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks
 import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray,
-    Cutting, CutRegion, DataContainer, Region
+    Cutting, CutRegion, DataContainer, Region, has_field_parameter,
+    set_field_parameter, get_field_parameter, get_field_parameters
 import .plots: SlicePlot, ProjectionPlot, show_plot
 import .images: FixedResolutionBuffer
 import .profiles: YTProfile, add_fields, set_x_unit,

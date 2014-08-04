@@ -303,7 +303,8 @@ end
 # Field parameters
 
 function set_field_parameter(dc::DataContainer, key::String, value)
-    dc.cont[:set_field_parameter](key, value)
+    v = convert(PyObject, value)
+    dc.cont[:set_field_parameter](key, v)
 end
 
 function has_field_parameter(dc::DataContainer, key::String)
@@ -311,7 +312,22 @@ function has_field_parameter(dc::DataContainer, key::String)
 end
 
 function get_field_parameter(dc::DataContainer, key::String)
-    dc.cont[:get_field_parameter](key)
+    v = pycall(dc.cont["get_field_parameter"], PyObject, key)
+    pytype = repr(pycall(pybuiltin("type"), PyObject, v))
+    if contains(pytype, "YTArray")
+        v = YTArray(v)
+    else
+        v = dc.cont[:get_field_parameter](key)
+    end
+    return v
+end
+
+function get_field_parameters(dc::DataContainer)
+    fp = Dict()
+    for k in collect(keys(dc.cont[:field_parameters]))
+        fp[k] = get_field_parameter(dc, k)
+    end
+    return fp
 end
 
 # Indices

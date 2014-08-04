@@ -106,7 +106,7 @@ one can create a ``FixedResolutionBuffer`` object using the ``to_frb`` method:
 .. code-block:: julia
 
     function to_frb(cont::Union(Slice,Proj), width::Union(Length,(Length,Length)),
-                    nx::Union(Integer,(Integer,Integer)); args...)
+                      nx::Union(Integer,(Integer,Integer)); args...)
 
 where ``cont`` is the ``Slice`` or ``Proj`` object, ``width`` is the width of the plot,
 and ``nx`` is the resolution of the plot. Both the ``width`` and the resolution ``nx`` can

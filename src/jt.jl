@@ -59,17 +59,17 @@ load(fn::String; args...) = Dataset(ytconv.load(fn; args...))
 
 function load_uniform_grid(data::Dict, domain_dimensions::Array; args...)
     ds = ytstream.load_uniform_grid(data, domain_dimensions; args...)
-    return DataSet(ds)
+    return Dataset(ds)
 end
 
-function load_amr_grids(data::Dict, domain_dimensions::Array; args...)
+function load_amr_grids(data::Array, domain_dimensions::Array; args...)
     ds = ytstream.load_amr_grids(data, domain_dimensions; args...)
-    return DataSet(ds)
+    return Dataset(ds)
 end
 
 function load_particles(data::Dict; args...)
     ds = ytstream.load_particles(data; args...)
-    return DataSet(ds)
+    return Dataset(ds)
 end
 
 end

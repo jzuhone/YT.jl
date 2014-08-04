@@ -201,8 +201,11 @@ type Slice <: DataContainer
 end
 
 function to_frb(cont::Union(Slice,Proj), width::Union(Length,(Length,Length)),
-                nx::Union(Integer,(Integer,Integer)); args...)
-    FixedResolutionBuffer(cont.ds, cont.cont[:to_frb](width, nx; args...))
+                nx::Union(Integer,(Integer,Integer)); center=nothing,
+                height=nothing, args...)
+    FixedResolutionBuffer(cont.ds, cont.cont[:to_frb](width, nx;
+                                                      center=center,
+                                                      height=height, args...))
 end
 
 # Sphere

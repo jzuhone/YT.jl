@@ -105,13 +105,16 @@ one can create a ``FixedResolutionBuffer`` object using the ``to_frb`` method:
 
 .. code-block:: julia
 
-    function to_frb(cont::Union(Slice,Proj), width::Union(Length,(Length,Length)),
-                      nx::Union(Integer,(Integer,Integer)); args...)
+    function to_frb(cont::Union(Slice,Proj), width::Length,
+                      nx::Union(Integer,(Integer,Integer)); center=nothing, height=nothing,
+                      args...)
 
 where ``cont`` is the ``Slice`` or ``Proj`` object, ``width`` is the width of the plot,
-and ``nx`` is the resolution of the plot. Both the ``width`` and the resolution ``nx`` can
-either be a single value or a tuple of two values, depending on how you want to set the width and
-height. This is an example of how to create a ``FixedResolutionBuffer`` from a ``Slice``:
+``nx`` is the resolution of the image, ``center`` is the center of the image (defaults to the
+``center`` of the ``cont``), and ``height`` is the height of the image (defaults to the
+``width``). The resolution ``nx`` can either be a single value or a tuple of two values,
+depending on how you want to set the width and height. This is an example of how to create a
+``FixedResolutionBuffer`` from a ``Slice``:
 
 .. code-block:: jlcon
 

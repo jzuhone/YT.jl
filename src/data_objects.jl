@@ -313,8 +313,7 @@ end
 
 function get_field_parameter(dc::DataContainer, key::String)
     v = pycall(dc.cont["get_field_parameter"], PyObject, key)
-    pytype = repr(pycall(pybuiltin("type"), PyObject, v))
-    if contains(pytype, "YTArray")
+    if contains(v[:__repr__](), "YTArray")
         v = YTArray(v)
     else
         v = dc.cont[:get_field_parameter](key)

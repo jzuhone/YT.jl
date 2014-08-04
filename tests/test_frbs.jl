@@ -5,7 +5,7 @@ using PyCall
 ds = load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
 
 slc = Slice(ds, "z", 0.0)
-prj = Projection(ds, "density", "z")
+prj = Proj(ds, "density", "z")
 
 py_slc = ds.ds[:slice]("z", 0.0)
 py_prj = ds.ds[:proj]("density", "z")

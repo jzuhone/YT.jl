@@ -25,7 +25,7 @@ export FixedResolutionBuffer, to_frb
 
 # Profiles
 
-export Profile1D, Profile2D, Profile3D, add_fields, variance
+export YTProfile, add_fields, variance
 export set_field_unit, set_x_unit, set_y_unit, set_z_unit
 
 # Plotting
@@ -50,7 +50,7 @@ import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     Cutting, CutRegion, DataContainer, Region
 import .plots: SlicePlot, ProjectionPlot, show_plot
 import .images: FixedResolutionBuffer
-import .profiles: Profile1D, Profile2D, Profile3D, add_fields, set_x_unit,
+import .profiles: YTProfile, add_fields, set_x_unit,
     set_y_unit, set_z_unit, set_field_unit, variance
 
 load(fn::String; args...) = Dataset(ytconv.load(fn; args...))

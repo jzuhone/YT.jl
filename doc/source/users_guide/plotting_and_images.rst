@@ -12,7 +12,7 @@ Plots
 -----
 
 ``jt`` provides an interface to two of the most common plotting routines in ``yt``: ``SlicePlot``
-and ``ProjectionPlot`:
+and ``ProjectionPlot``:
 
 .. code-block:: julia
 

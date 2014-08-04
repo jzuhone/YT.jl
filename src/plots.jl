@@ -32,14 +32,6 @@ function ProjectionPlot(ds::Dataset, axis, fields; center="c",
                              data_source=source; args...))
 end
 
-function PhasePlot(dc::DataContainer, x_field, y_field, z_fields; args...)
-    pywrap(pp.PhasePlot(dc.cont, x_field, y_field, z_fields; args...))
-end
-
-function ProfilePlot(dc::DataContainer, x_field, y_fields; args...)
-    pywrap(pp.ProfilePlot(dc.cont, x_field, y_fields; args...))
-end
-
 # Show plot
 
 function show_plot(plot)

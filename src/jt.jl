@@ -30,7 +30,7 @@ export set_field_unit, set_x_unit, set_y_unit, set_z_unit
 
 # Plotting
 
-export SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot
+export SlicePlot, ProjectionPlot
 export show_plot
 
 using PyCall
@@ -48,7 +48,7 @@ import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks
 import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray,
     Cutting, CutRegion, DataContainer, Region
-import .plots: SlicePlot, ProjectionPlot, PhasePlot, ProfilePlot, show_plot
+import .plots: SlicePlot, ProjectionPlot, show_plot
 import .images: FixedResolutionBuffer
 import .profiles: Profile1D, Profile2D, Profile3D, add_fields, set_x_unit,
     set_y_unit, set_z_unit, set_field_unit, variance

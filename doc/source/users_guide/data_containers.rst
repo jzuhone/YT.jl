@@ -30,7 +30,7 @@ A ``Center``-type argument is for the ``center`` of an object and can be one of 
   * A ``YTArray``.
 
 .. |yt_cont_docs| replace:: ``yt`` Documentation on data container objects
-.. _yt_cont_docs: http://yt-project.org/docs/dev-3.0/analyzing/objects.html
+.. _yt_cont_docs: http://yt-project.org/docs/3.0/analyzing/objects.html
 
 .. note::
 

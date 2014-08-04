@@ -1,7 +1,7 @@
 .. _plotting-and-images:
 
 .. |yt_plotting_docs| replace:: ``yt`` plotting documentation
-.. _yt_plotting_docs: http://yt-project.org/doc
+.. _yt_plotting_docs: http://yt-project.org/docs/3.0/visualizing/plots.html
 
 Plotting and Images
 ===================

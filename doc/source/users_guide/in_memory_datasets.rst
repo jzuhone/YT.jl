@@ -1,13 +1,13 @@
 .. _in_memory_datasets:
 
 .. |yt-docs| replace:: ``yt`` Documentation
-.. _yt-docs: http://yt-project.org/doc
+.. _yt-docs: http://yt-project.org/docs/3.0
 
 .. |generic_array_data| replace:: Loading Generic Array Data
-.. _generic_array_data: http://yt-project.org/docs/dev-3.0/examining/generic_array_data.html
+.. _generic_array_data: http://yt-project.org/docs/3.0/examining/generic_array_data.html
 
 .. |generic_particle_data| replace:: Loading Generic Particle Data
-.. _generic_particle_data: http://yt-project.org/docs/dev-3.0/examining/generic_particle_data.html
+.. _generic_particle_data: http://yt-project.org/docs/3.0/examining/generic_particle_data.html
 
 
 In-Memory Datasets

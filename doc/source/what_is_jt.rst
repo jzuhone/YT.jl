@@ -2,7 +2,7 @@ What is ``jt``?
 ===============
 
 .. |yt-docs| replace:: ``yt`` Documentation
-.. _yt-docs: http://yt-project.org/doc
+.. _yt-docs: http://yt-project.org/docs/3.0
 
 ``jt`` is a Julia interface to ``yt``. ``yt`` is a Python package for the analysis and
 visualization of volumetric simulation data. For more information about yt,
@@ -17,7 +17,7 @@ include:
 * Datasets
 * Data objects (e.g., spheres, rectangular regions, slices, projections, profiles, etc.)
 * Unit-aware quantities and arrays
-* Simple visualization tools (e.g., ``SlicePlot``, ``ProjectionPlot``, ``ProfilePlot``, etc.)
+* Simple visualization tools (e.g., ``SlicePlot``, ``ProjectionPlot``, ``FixedResolutionBuffer``)
 
 ``jt`` enables the end-user to "ask" physically-motivated questions of volumetric data and work
 with the "answers" from within a Julia environment.

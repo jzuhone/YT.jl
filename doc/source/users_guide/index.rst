@@ -1,5 +1,5 @@
-jt Users' Guide
-===========================
+``jt`` Users' Guide
+===================
 
 .. toctree::
    :maxdepth: 1

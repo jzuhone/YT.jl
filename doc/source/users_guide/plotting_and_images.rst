@@ -12,7 +12,17 @@ Plots
 -----
 
 ``jt`` provides an interface to the most common plotting routines in ``yt``: ``SlicePlot``,
-``ProjectionPlot``, ``ProfilePlot``, and ``PhasePlot``.
+``ProjectionPlot``, ``ProfilePlot``, and ``PhasePlot``:
+
+.. code-block:: julia
+
+    function SlicePlot(ds::Dataset, axis, fields; center="c", args...)
+
+    function ProjectionPlot(ds::Dataset, axis, fields; center="c", data_source=nothing, args...)
+
+    function PhasePlot(dc::DataContainer, x_field, y_field, z_fields; args...)
+
+    function ProfilePlot(dc::DataContainer, x_field, y_fields; args...)
 
 Unlike other methods in ``jt``, these return the native ``yt`` Python-based objects. This is
 mainly for convenience; it allows one to use all of the annotation and plot modification methods
@@ -81,7 +91,7 @@ method can be used to display the plot inline:
     julia> jt.show_plot(slc)
 
 Similar options exist for the other plotting methods. The full set of options for these plots can
-be found in the |yt_plotting_docs|_
+be found in the |yt_plotting_docs|_.
 
 .. _images:
 

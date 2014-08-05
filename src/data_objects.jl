@@ -240,8 +240,8 @@ type CutRegion <: DataContainer
     ds::Dataset
     conditions::Array
     field_dict::Dict
-    function CutRegion(dc::DataContainer, conditions::Array)
-        cut_reg = dc.cont[:cut_region](conditions)
+    function CutRegion(dc::DataContainer, conditions::Array; args...)
+        cut_reg = dc.cont[:cut_region](conditions; args...)
         new(cut_reg, dc.ds, conditions, Dict())
     end
 end

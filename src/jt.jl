@@ -51,8 +51,8 @@ import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     set_field_parameter, get_field_parameter, get_field_parameters
 import .plots: SlicePlot, ProjectionPlot, show_plot
 import .images: FixedResolutionBuffer
-import .profiles: YTProfile, add_fields, set_x_unit,
-    set_y_unit, set_z_unit, set_field_unit, variance
+import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,
+    set_field_unit, variance
 
 load(fn::String; args...) = Dataset(ytconv.load(fn; args...))
 

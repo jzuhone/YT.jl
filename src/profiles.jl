@@ -91,7 +91,6 @@ function variance(profile::YTProfile, key::String)
     variance(profile, field[1][1], field[1][2])
 end
 
-add_fields(profile::YTProfile, fields) = profile.profile[:add_fields](fields)
 show(io::IO, profile::YTProfile) = print(io,profile.profile[:__repr__]())
 
 end

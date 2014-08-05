@@ -130,7 +130,7 @@ Examples:
 
 .. code-block:: jlcon
 
-  dk = jt.Disk(ds, "c", [1.0,0.2,-0.3], (100,"kpc"), (0.5,"Mpc"))
+  julia> dk = jt.Disk(ds, "c", [1.0,0.2,-0.3], (100,"kpc"), (0.5,"Mpc"))
 
 .. _ray:
 

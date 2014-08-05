@@ -1,7 +1,7 @@
 Installing ``jt``
 =================
 
-``jt`` requires Julia version 3.0 or later, and may be installed just like any other Julia package:
+``jt`` requires Julia version 0.3 or later, and may be installed just like any other Julia package:
 
 .. code-block:: jlcon
 

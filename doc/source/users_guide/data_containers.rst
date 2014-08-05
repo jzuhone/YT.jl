@@ -330,7 +330,7 @@ If your simulation is grid-based, you can also get at the data in the individual
 
   function Grids(ds::Dataset)
 
-``Grids`` objects are ``Array``\ s, so the ``length`` can be determined and they can be indexed.
+``Grids`` objects are ``Array``\ s, so the ``length()`` can be determined and they can be indexed.
 You can access the individual fields of a single ``Grid`` object as well:
 
 .. code-block:: jlcon

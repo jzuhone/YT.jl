@@ -50,8 +50,9 @@ and with the units of the radius in kpc:
 
    julia> logs=["radius"=>false]
 
-   julia> profile = jt.YTProfile(sp, "radius", ["density","temperature"], n_bins=100, units=units,
-                                 logs=logs)
+   julia> fields=["density","temperature"]
+   
+   julia> profile = jt.YTProfile(sp, "radius", fields, n_bins=100, units=units, logs=logs)
 
 The ``bin_fields`` can be accessed from the ``YTProfile`` object as attributes, e.g.:
 

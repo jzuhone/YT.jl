@@ -32,6 +32,9 @@ A ``Center``-type argument is for the ``center`` of an object and can be one of 
 .. |yt_cont_docs| replace:: ``yt`` Documentation on data container objects
 .. _yt_cont_docs: http://yt-project.org/docs/3.0/analyzing/objects.html
 
+.. |yt_fp_docs| replace:: ``yt`` Documentation on field parameters
+.. _yt_fp_docs: http://yt-project.org/doc/analyzing/fields.html#field-parameters
+
 .. note::
 
   All of the ``DataContainer`` objects take additional optional arguments,
@@ -467,4 +470,46 @@ which in the case of FLASH datasets is trivial because code units are equivalent
 Field Parameters
 ----------------
 
-Some complex fields rely on "field parameters" in their definitions.
+Some complex fields rely on "field parameters" in their definitions. Field parameters can be
+literally anything, including strings, integers, real numbers, ``YTArray``\ s,
+etc. To set a field parameter for a particular ``DataContainer``, use ``set_field_parameter``:
+
+.. code-block:: jlcon
+
+  julia> sp = jt.Sphere(ds, "max", (100.,"kpc"))
+
+  julia> bulk_velocity = jt.YTArray(ds, [100.,-200.,300.], "km/s")
+
+  julia> jt.set_field_parameter(sp, "bulk_velocity", bulk_velocity)
+
+Similarly, ``get_field_parameter`` returns a specific parameter based on its key:
+
+.. code-block:: jlcon
+
+  julia> jt.get_field_parameter(sp, "bulk_velocity")
+  3-element YTArray (km/s):
+    100.0
+   -200.0
+    300.0
+
+``has_field_parameter`` can be used to check for the existence of a parameter:
+
+.. code-block:: jlcon
+
+  julia> jt.has_field_parameter(sp, "center")
+  true
+
+To get a dictionary containing all of the field parameters for a dataset,
+use ``get_field_parameters``:
+
+.. code-block:: jlcon
+
+  julia> fp = jt.get_field_parameters(sp)
+
+  julia> fp["center"]
+  3-element YTArray (code_length):
+   -1.08478e22
+    3.61594e21
+    3.61594e21
+
+For more information about field parameters, consult the |yt_fp_docs|_.

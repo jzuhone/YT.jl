@@ -115,14 +115,19 @@ Examples:
 Disk
 ++++
 
+A ``Disk`` is a disk or cylinder-shaped region with the z-axis of the cylinder pointing along a
+``normal`` vector, with a ``radius``, a ``center``, and a ``height``:
+
 .. code-block:: julia
 
   function Disk(ds::Dataset, center::Center, normal::Array, radius::Length,
                   height::Length; args...)
 
+Examples:
+
 .. code-block:: jlcon
 
-  dk = jt.Disk(ds)
+  dk = jt.Disk(ds, "c", [1.0,0.2,-0.3], (100,"kpc"), (0.5,"Mpc"))
 
 .. _ray:
 
@@ -167,12 +172,27 @@ Examples:
 Proj
 ++++
 
-A ``Proj`` is an integral of a given quantity along a sight line.
+A ``Proj`` is an integral of a given ``field`` along a sight line corresponding to ``axis``.
 
 .. code-block:: julia
 
   function Proj(ds::Dataset, field, axis::Union(Integer,String);
                   weight_field=nothing, data_source=nothing, args...)
+
+The optional arguments ``weight_field`` (a field name) and ``data_source`` (a ``DataContainer``)
+allow the projection to be weighted and a subselection of the domain to be projected.
+
+Examples:
+
+.. code-block:: jlcon
+
+  julia> prj = jt.Proj(ds, "density", "z")
+
+.. code-block:: jlcon
+
+  julia> sp = jt.Sphere(ds, "max", (100.,"kpc"))
+
+  julia> prj = jt.Proj(ds, "temperature", 1, weight_field="density", data_source=sp)
 
 .. _cutting:
 
@@ -210,22 +230,90 @@ CutRegion
 +++++++++
 
 A ``CutRegion`` is a subset of another ``DataContainer`` ``dc``,
-which is determined by an array of boolean ``conditions`` on fields in the container.
+which is determined by an array of ``conditions`` on fields in the container.
 
 .. code-block:: julia
 
-  function CutRegion(dc::DataContainer, conditions::Array)
+  function CutRegion(dc::DataContainer, conditions::Array; args...)
+
+``conditions`` is a list of conditionals that will be evaluated. In the namespace available,
+these conditionals will have access to ‘obj’ which is a data object of unknown shape, and they
+must generate a boolean array. For instance, ``conditionals = [“obj[‘temperature’] < 1e3”]``
 
 Examples:
 
 .. code-block:: jlcon
 
-  julia>
+  julia> sp = jt.Sphere(ds, "max", (100.,"kpc"))
+
+  julia> cr = jt.CutRegion(sp, ["obj['temperature'] > 4.0e7", "obj['temperature'] < 5.0e7"])
+
+where it can be easily verified that this produces a ``DataContainer`` with ``"temperature"`` in
+between those limits:
+
+.. code-block:: jlcon
+
+  julia> minimum(cr["temperature"])
+  4.0000196e7 K
+
+  julia> maximum(cr["temperature"])
+  4.9999116e7 K
 
 .. _covering_grid:
 
 CoveringGrid
 ++++++++++++
+
+A ``CoveringGrid`` is a 3D ``DataContainer`` of cells extracted at a fixed resolution.
+
+.. code-block:: julia
+
+  function CoveringGrid(ds::Dataset, level::Integer, left_edge::Array, dims::Array; args...)
+
+``level`` is the refinement level at which to extract the data, ``left_edge`` is the left edge of
+the grid in ``code_length`` units, and ``dims`` is the number of cells on a side.
+
+Examples:
+
+.. code-block:: jlcon
+
+  julia> cg = jt.CoveringGrid(ds, 5, [-3.0856e23,-3.0856e23,-3.0856e23], [64,64,64])
+
+The fields of this ``DataContainer`` are 3D ``YTArray``\ s:
+
+.. code-block:: jlcon
+
+  julia> cg["velocity_x"]
+  64x64x64 YTArray (cm/s):
+   [:, :, 1] =
+   -9.45944e6  -9.22163e6  -8.97506e6  …       -4.54556e6       -5.2798e6
+   -9.64798e6  -9.40576e6  -9.14971e6          -4.38682e6       -5.13215e6
+   -9.82901e6  -9.57772e6  -9.30941e6          -4.25022e6       -5.00537e6
+   -9.9932e6   -9.72978e6  -9.45173e6          -4.13942e6       -4.90191e6
+   -1.01421e7  -9.86609e6  -9.57824e6          -4.04788e6       -4.81652e6
+   -1.02767e7  -9.99092e6  -9.69512e6  …       -3.98365e6       -4.75448e6
+   -1.03932e7  -1.01006e7  -9.79921e6          -3.9392e6        -4.71177e6
+   -1.04856e7  -1.01875e7  -9.87844e6          -3.92483e6       -4.69586e6
+   -1.05589e7  -1.02484e7  -9.92279e6          -3.93876e6       -4.70134e6
+   -1.06159e7  -1.0293e7   -9.94764e6          -3.98234e6       -4.73101e6
+   -1.06488e7  -1.03028e7  -9.94144e6  …       -4.05713e6       -4.79151e6
+   -1.06532e7  -1.02881e7  -9.90535e6          -4.1667e6        -4.88172e6
+   -1.06367e7  -1.0246e7   -9.84756e6          -4.30115e6       -4.99339e6
+    ⋮                                  ⋱
+   -1.07594e7  -1.00079e7  -9.23378e6          -2.4916e6        -2.63372e6
+   -1.10205e7  -1.02792e7  -9.51947e6          -1.95956e6       -2.26497e6
+   -1.12805e7  -1.05476e7  -9.79831e6          -1.95956e6       -2.26497e6
+   -1.15351e7  -1.08149e7  -1.0073e7   …       -1.24862e6       -1.56333e6
+   -1.17823e7  -1.10766e7  -1.03451e7          -1.24862e6       -1.56333e6
+   -1.20202e7  -1.13275e7  -1.06126e7     -567435.0        -850258.0
+   -1.22529e7  -1.15684e7  -1.08709e7     -567435.0        -850258.0
+   -1.24835e7  -1.18055e7  -1.11232e7       26094.7        -200632.0
+   -1.27079e7  -1.20408e7  -1.13734e7  …    26094.7        -200632.0
+   -1.2922e7   -1.22686e7  -1.16157e7      537401.0         358841.0
+   -1.31273e7  -1.24859e7  -1.1844e7       537401.0         358841.0
+   -1.33282e7  -1.26955e7  -1.20595e7      973392.0         829474.0
+
+   ...
 
 .. _grids:
 

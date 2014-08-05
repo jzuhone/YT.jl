@@ -33,7 +33,7 @@ random floating-point data:
 
     arr = rand(64,64,64)
 
-To load this data into ``jt``, we need associate it with a field. The
+To load this data into ``jt``, we need to associate it with a field. The
 data dictionary consists of one or more fields, each consisting of a
 tuple of an ``Array`` and a unit string. Then, we can call
 ``load_uniform_grid``:

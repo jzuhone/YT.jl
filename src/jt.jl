@@ -18,6 +18,8 @@ export load, load_uniform_grid, load_amr_grids, load_particles
 
 export DataContainer, CutRegion, Disk, Ray, Slice, Region
 export Sphere, AllData, Proj, CoveringGrid, Grids, Cutting
+export set_field_parameter, get_field_parameter, get_field_parameters,
+       has_field_parameter
 
 # Fixed resolution
 

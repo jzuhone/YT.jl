@@ -139,6 +139,8 @@ The resulting profile data can be plotted with a plotting program like
 
    julia> ylabel("density")
 
+.. image:: ../images/density_profile.png
+
 The ``variance`` of a given field can be computed as well:
 
 .. code-block:: jlcon

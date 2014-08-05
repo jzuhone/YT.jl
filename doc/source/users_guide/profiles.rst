@@ -88,7 +88,7 @@ The ``bin_fields`` can be accessed from the ``YTProfile`` object as attributes, 
 
 where the attributes ``x``, ``y``, and ``z`` correspond to the ``bin_fields`` of 1D, 2D,
 and 3D profiles. The ``fields`` of the profile are accessed in the same way as ``DataContainer``\
- s:
+s:
 
 .. code-block:: jlcon
 
@@ -170,7 +170,7 @@ The ``variance`` of a given field can be computed as well:
     1.20124e-28
     1.18991e-28
     1.18264e-28
-    
+
 The units of the ``bin_fields`` can be changed using one of the ``set_x_unit``, ``set_y_unit``,
 or ``set_z_unit`` methods:
 

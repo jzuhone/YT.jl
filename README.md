@@ -14,7 +14,7 @@ exposes a number of functionalities from `yt`. These include:
 
 `jt` can be installed in Julia version 0.3 or higher. To install it, just run:
 
-    Pkg.clone("git://github.com/jzuhone/jt")
+    Pkg.add("jt")
 
 which will also install the following dependencies (if you don't already have them):
 

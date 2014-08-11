@@ -9,5 +9,5 @@ before_install:
   - sudo apt-get update -qq -y
   - sudo apt-get install libpcre3-dev julia -y
 script:
-  - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("jt"))`); Pkg.pin("jt"); Pkg.resolve()'
-  - julia -e 'using jt; @assert isdefined(:jt); @assert typeof(jt) === Module'
+  - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("YT"))`); Pkg.pin("YT"); Pkg.resolve()'
+  - julia -e 'using YT; @assert isdefined(:YT); @assert typeof(YT) === Module'

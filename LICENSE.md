@@ -1,4 +1,4 @@
-The jt.jl package is licensed under the Simplified BSD License:
+The YT.jl package is licensed under the Simplified BSD License:
 
 > Copyright (c) 2014: John ZuHone .
 >

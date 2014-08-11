@@ -1,5 +1,5 @@
 using Base.Test
-using jt
+using YT
 using PyCall
 
 @pyimport yt.funcs as yt_funcs

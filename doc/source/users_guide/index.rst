@@ -1,4 +1,4 @@
-``jt`` Users' Guide
+``YT`` Users' Guide
 ===================
 
 .. toctree::

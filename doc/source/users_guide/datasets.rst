@@ -3,12 +3,12 @@
 Datasets
 ========
 
-The most basic ``jt`` object is the ``Dataset``. This is a collection of volumetric data that may
+The most basic ``YT`` object is the ``Dataset``. This is a collection of volumetric data that may
 be stored on disk, or created in-memory. To load a ``Dataset`` from disk, we use ``load``:
 
 .. code-block:: jlcon
 
-    julia> ds = jt.load("sloshing_nomag2_hdf5_plt_cnt_0100")
+    julia> ds = YT.load("sloshing_nomag2_hdf5_plt_cnt_0100")
     yt : [WARNING  ] 2014-03-31 23:46:27,765 integer runtime parameter checkpointfilenumber overwrites a simulation scalar of the same name
     yt : [WARNING  ] 2014-03-31 23:46:27,765 integer runtime parameter plotfilenumber overwrites a simulation scalar of the same name
     yt : [INFO     ] 2014-03-31 23:46:27,768 Parameters: current_time              = 7.89058001997e+16
@@ -72,7 +72,7 @@ it is a FLASH AMR dataset, so statistics regarding the grids and cells are print
 
 .. code-block:: jlcon
 
-    julia> jt.print_stats(ds)
+    julia> YT.print_stats(ds)
     level	# grids	       # cells	     # cells^3
     ----------------------------------------------
       0	         1	          4096	            15
@@ -98,7 +98,7 @@ it is a FLASH AMR dataset, so statistics regarding the grids and cells are print
 
 .. code-block:: jlcon
 
-    julia> jt.get_smallest_dx(ds)
+    julia> YT.get_smallest_dx(ds)
     7.231875e21 code_length
 
 .. note::

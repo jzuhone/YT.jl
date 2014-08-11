@@ -14,13 +14,13 @@ In-Memory Datasets
 ==================
 
 This section shows how to load generic array (grid-based) and particle data that resides in
-memory into ``jt`` to create ``Dataset`` objects.
+memory into ``YT`` to create ``Dataset`` objects.
 
 .. note::
 
    This section is essentially a copy of the IPython notebooks |generic_array_data|_ and
    |generic_particle_data|_ from the |yt-docs|_. They have been reproduced here using Julia code
-   to show how to generate generic ``Dataset``\ s for use with ``jt``.
+   to show how to generate generic ``Dataset``\ s for use with ``YT``.
 
 Generic Unigrid Data
 --------------------
@@ -33,7 +33,7 @@ random floating-point data:
 
     arr = rand(64,64,64)
 
-To load this data into ``jt``, we need to associate it with a field. The
+To load this data into ``YT``, we need to associate it with a field. The
 data dictionary consists of one or more fields, each consisting of a
 tuple of an ``Array`` and a unit string. Then, we can call
 ``load_uniform_grid``:
@@ -43,7 +43,7 @@ tuple of an ``Array`` and a unit string. Then, we can call
     data = Dict()
     data["density"] = (arr, "g/cm**3")
     bbox = [-1.5 1.5; -1.5 1.5; -1.5 1.5]
-    ds = jt.load_uniform_grid(data, [64,64,64]; length_unit="Mpc", bbox=bbox, nprocs=64)
+    ds = YT.load_uniform_grid(data, [64,64,64]; length_unit="Mpc", bbox=bbox, nprocs=64)
 
 ``load_uniform_grid`` takes the following arguments and optional
 keywords:
@@ -82,15 +82,15 @@ dataset to be set. They can be:
 In the latter case, the unit is assumed to be cgs.
 
 The resulting ``ds`` functions exactly like a dataset like any other
-``jt`` can handle--it can be sliced, and we can show the grid
+``YT`` can handle--it can be sliced, and we can show the grid
 boundaries:
 
 .. code:: jlcon
 
-    slc = jt.SlicePlot(ds, "z", ["density"])
+    slc = YT.SlicePlot(ds, "z", ["density"])
     slc.set_cmap("density", "Blues")
     slc.annotate_grids(cmap=nothing)
-    jt.show_plot(slc)
+    YT.show_plot(slc)
 
 .. image:: ../images/unigrid.png
 
@@ -114,7 +114,7 @@ manner as the three-dimensional grid fields:
     bbox = [-1.5 1.5; -1.5 1.5; -1.5 1.5]
     lu = (1.0,"Mpc")
     mu = (1.0,"Msun")
-    ds = jt.load_uniform_grid(data, [64,64,64]; length_unit=lu, mass_unit=mu, bbox=bbox, nprocs=4)
+    ds = YT.load_uniform_grid(data, [64,64,64]; length_unit=lu, mass_unit=mu, bbox=bbox, nprocs=4)
 
 In this example only the particle position fields have been assigned.
 ``number_of_particles`` must be the same size as the particle arrays. If
@@ -123,10 +123,10 @@ to be zero. Take a slice, and overlay particle positions:
 
 .. code:: jlcon
 
-    slc = jt.SlicePlot(ds, "z", ["density"])
+    slc = YT.SlicePlot(ds, "z", ["density"])
     slc.set_cmap("density", "Blues")
     slc.annotate_particles(0.25, p_size=12.0, col="Red")
-    jt.show_plot(slc)
+    YT.show_plot(slc)
 
 .. image:: ../images/unigrid_particles.png
 
@@ -134,7 +134,7 @@ Generic AMR Data
 ----------------
 
 In a similar fashion to unigrid data, data gridded into rectangular
-patches at varying levels of resolution may also be loaded into ``jt``.
+patches at varying levels of resolution may also be loaded into ``YT``.
 In this case, a list of grid dictionaries should be provided, with the
 requisite information about each grid's properties. This example sets up
 two grids: a top-level grid (``level == 0``) covering the entire domain
@@ -192,7 +192,7 @@ Then, call ``load_amr_grids``:
 
 .. code:: jlcon
 
-    ds = jt.load_amr_grids(grid_data, [32, 32, 32]; field_units=field_units)
+    ds = YT.load_amr_grids(grid_data, [32, 32, 32]; field_units=field_units)
 
 ``load_amr_grids`` also takes the same keywords ``bbox`` and
 ``sim_time`` as ``load_uniform_grid``. We could have also specified the
@@ -201,9 +201,9 @@ Let's take a slice:
 
 .. code:: jlcon
 
-    slc = jt.SlicePlot(ds, "z", ["density"])
+    slc = YT.SlicePlot(ds, "z", ["density"])
     slc.annotate_particles(0.25, p_size=15.0, col="Pink")
-    jt.show_plot(slc)
+    YT.show_plot(slc)
 
 .. image:: ../images/amr_grid.png
 
@@ -211,7 +211,7 @@ Caveats for Loading Generic Array Data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Particles may be difficult to integrate.
--  Data must already reside in memory before loading it in to ``jt``,
+-  Data must already reside in memory before loading it in to ``YT``,
    whether it is generated at runtime or loaded from disk.
 -  No consistency checks are performed on the hierarchy
 -  Consistency between particle positions and grids is not checked;
@@ -223,7 +223,7 @@ Generic Particle Data
 ---------------------
 
 This example creates a fake in-memory particle dataset and then loads it
-as a ``jt`` dataset using the ``load_particles`` function.
+as a ``YT`` dataset using the ``load_particles`` function.
 
 Our "fake" dataset will be ``Array``\ s filled with normally distributed
 random particle positions and uniform particle masses. Since real data
@@ -248,8 +248,8 @@ be ``'particle_position_x'``, ``'particle_position_y'``,
 particle field provided by one of the particle frontends.
 
 The ``load_particles`` function transforms the ``data`` dictionary into
-an in-memory ``jt`` ``Dataset`` object, providing an interface for
-further analysis with ``jt``. The example below illustrates how to load
+an in-memory ``YT`` ``Dataset`` object, providing an interface for
+further analysis with ``YT``. The example below illustrates how to load
 the data dictionary we created above.
 
 .. code:: jlcon
@@ -258,7 +258,7 @@ the data dictionary we created above.
         minimum(data["particle_position_y"]) maximum(data["particle_position_y"]);
         minimum(data["particle_position_z"]) maximum(data["particle_position_z"])]
 
-    ds = jt.load_particles(data, length_unit="pc", mass_unit=(1e8, "Msun"), n_ref=256, bbox=bbox)
+    ds = YT.load_particles(data, length_unit="pc", mass_unit=(1e8, "Msun"), n_ref=256, bbox=bbox)
 
 The ``length_unit`` and ``mass_unit`` are the conversion from the units
 used in the ``data`` dictionary to CGS. I've arbitrarily chosen one
@@ -272,13 +272,13 @@ Finally, the ``bbox`` parameter is a bounding box in the units of the
 dataset that contains all of the particles. This is used to set the size
 of the base octree block.
 
-This new dataset acts like any other ``jt`` ``Dataset`` object, and can
-be used to create data objects and query for ``jt`` fields. This example
+This new dataset acts like any other ``YT`` ``Dataset`` object, and can
+be used to create data objects and query for ``YT`` fields. This example
 shows how to access "deposit" fields:
 
 .. code:: jlcon
 
-    ad = jt.AllData(ds)
+    ad = YT.AllData(ds)
     cic_density = ad["deposit", "all_cic"]
     nn_density = ad["deposit", "all_density"]
     nn_deposited_mass = ad["deposit", "all_mass"]
@@ -288,8 +288,8 @@ Finally, we'll slice through the ``"all_cic"`` deposited particle field:
 
 .. code:: jlcon
 
-    slc = jt.SlicePlot(ds, 2, ("deposit", "all_cic"))
+    slc = YT.SlicePlot(ds, 2, ("deposit", "all_cic"))
     slc.set_width((8, "Mpc"))
-    jt.show_plot(slc)
+    YT.show_plot(slc)
 
 .. image:: ../images/octree_particles.png

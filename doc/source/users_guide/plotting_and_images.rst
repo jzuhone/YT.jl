@@ -11,7 +11,7 @@ Plotting and Images
 Plots
 -----
 
-``jt`` provides an interface to two of the most common plotting routines in ``yt``: ``SlicePlot``
+``YT`` provides an interface to two of the most common plotting routines in ``yt``: ``SlicePlot``
 and ``ProjectionPlot``:
 
 .. code-block:: julia
@@ -20,7 +20,7 @@ and ``ProjectionPlot``:
 
     function ProjectionPlot(ds::Dataset, axis, fields; center="c", data_source=nothing, args...)
 
-Unlike other methods in ``jt``, these return the native ``yt`` Python-based objects. This is
+Unlike other methods in ``YT``, these return the native ``yt`` Python-based objects. This is
 mainly for convenience; it allows one to use all of the annotation and plot modification methods
 that hang off these objects. The API for these objects is the same as it is in ``yt``,
 which can be found in the |yt_plotting_docs|_.
@@ -29,7 +29,7 @@ We'll illustrate the plotting functionality with a ``SlicePlot`` as an example:
 
 .. code-block:: jlcon
 
-    julia> slc = jt.SlicePlot(ds, "z", ["density","temperature"], width=(500.,"kpc"))
+    julia> slc = YT.SlicePlot(ds, "z", ["density","temperature"], width=(500.,"kpc"))
 
 .. image:: ../images/slice_density.png
 
@@ -87,7 +87,7 @@ method can be used to display the plot inline:
 
 .. code-block:: jlcon
 
-    julia> jt.show_plot(slc)
+    julia> YT.show_plot(slc)
 
 The full set of options for these plots can be found in the |yt_plotting_docs|_.
 
@@ -114,10 +114,10 @@ depending on how you want to set the width and height. This is an example of how
 
 .. code-block:: jlcon
 
-    julia> slc = jt.Slice(ds, "z", 0.0)
+    julia> slc = YT.Slice(ds, "z", 0.0)
     YTSlice (sloshing_nomag2_hdf5_plt_cnt_0100): axis=2, coord=0.0
 
-    julia> frb = jt.to_frb(slc, (500.,"kpc"), 800)
+    julia> frb = YT.to_frb(slc, (500.,"kpc"), 800)
     FixedResolutionBuffer (800x800):
         -7.714193952405812e23 code_length <= x < 7.714193952405812e23 code_length
         -7.714193952405812e23 code_length <= y < 7.714193952405812e23 code_length

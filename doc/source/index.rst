@@ -1,4 +1,4 @@
-``jt``: A Julia interface to ``yt``
+``YT``: A Julia interface to ``yt``
 ===================================
 
 .. toctree::

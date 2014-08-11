@@ -2,7 +2,7 @@ Profiles
 ========
 
 ``yt`` allows for data container objects to be binned up into profiles along some dimension defined
-by a field. These can be in 1D, 2D, or 3D. ``jt`` reproduces this functionality via the
+by a field. These can be in 1D, 2D, or 3D. ``YT`` reproduces this functionality via the
 ``YTProfile`` type:
 
 .. code-block:: julia
@@ -44,7 +44,7 @@ and with the units of the radius in kpc:
 
 .. code-block:: jlcon
 
-   julia> sp = jt.Sphere(ds, "max", (1.0,"Mpc"))
+   julia> sp = YT.Sphere(ds, "max", (1.0,"Mpc"))
 
    julia> units=["radius"=>"kpc"]
 
@@ -52,7 +52,7 @@ and with the units of the radius in kpc:
 
    julia> fields=["density","temperature"]
    
-   julia> profile = jt.YTProfile(sp, "radius", fields, n_bins=100, units=units, logs=logs)
+   julia> profile = YT.YTProfile(sp, "radius", fields, n_bins=100, units=units, logs=logs)
 
 The ``bin_fields`` can be accessed from the ``YTProfile`` object as attributes, e.g.:
 
@@ -179,7 +179,7 @@ or ``set_z_unit`` methods:
 
 .. code-block:: jlcon
 
-   julia> jt.set_x_unit(profile, "Mpc")
+   julia> YT.set_x_unit(profile, "Mpc")
 
    julia> profile.x
    100-element YTArray (Mpc):
@@ -214,7 +214,7 @@ Similarly, the units of the ``fields`` can be changed with ``set_field_unit``:
 
 .. code-block:: jlcon
 
-   julia> jt.set_field_unit(profile, "density", "Msun/kpc**3")
+   julia> YT.set_field_unit(profile, "density", "Msun/kpc**3")
 
    julia> profile["density"]
    100-element YTArray (Msun/kpc**3):

@@ -1,6 +1,6 @@
-# jt
+# YT
 
-`jt` is a Julia interface to the Python-based [`yt` analysis toolkit](http://yt-project.org). `jt`
+`YT` is a Julia interface to the Python-based [`yt` analysis toolkit](http://yt-project.org). `YT`
 exposes a number of functionalities from `yt`. These include:
 
 * Loading of `yt` datasets
@@ -12,9 +12,9 @@ exposes a number of functionalities from `yt`. These include:
 * Slice and projection plots
 * Symbolic units, YTArrays, YTQuantities
 
-`jt` can be installed in Julia version 0.3 or higher. To install it, just run:
+`YT` can be installed in Julia version 0.3 or higher. To install it, just run:
 
-    Pkg.add("jt")
+    Pkg.add("YT")
 
 which will also install the following dependencies (if you don't already have them):
 
@@ -23,17 +23,17 @@ which will also install the following dependencies (if you don't already have th
 * [SymPy](http://github.com/jverzani/SymPy.jl)
 * [IJulia](http://github.com/JuliaLang/IJulia.jl)
 
-However, for `jt` to work, `yt` itself must be installed. `jt` requires `yt` version 3.0 or higher.
+However, for `YT` to work, `yt` itself must be installed. `YT` requires `yt` version 3.0 or higher.
 The best ways to install `yt` are via the [install script](http://yt-project.org/#getyt) or via the
 [Anaconda Python Distribution](https://store.continuum.io/cshop/anaconda).
 
-Once ``jt`` is installed, either
+Once ``YT`` is installed, either
 
-    julia> import jt
+    julia> import YT
 
 to use it as a library, or
 
-    julia> using jt
+    julia> using YT
 
 to use it as an application, loading its methods into the current session's namespace.
 

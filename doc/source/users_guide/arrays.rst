@@ -3,8 +3,8 @@
 Arrays, Quantities, and Units
 =============================
 
-Whenever ``jt`` returns physical data, it is typically associated with certain units (e.g.,
-density in grams per cubic centimeter, temperature in Kelvin, and so on). ``jt`` exposes the
+Whenever ``YT`` returns physical data, it is typically associated with certain units (e.g.,
+density in grams per cubic centimeter, temperature in Kelvin, and so on). ``YT`` exposes the
 ``YTArray``, ``YTQuantity``, and units facilities from ``yt`` so that "unitful" objects may be
 manipulated and operated on.
 
@@ -18,7 +18,7 @@ If we grab the ``"density"`` field from a sphere, it will be returned as a ``YTA
 
 .. code-block:: jlcon
 
-    julia> sp = jt.Sphere(ds, "c", (100.,"kpc"))
+    julia> sp = YT.Sphere(ds, "c", (100.,"kpc"))
     YTSphere (sloshing_nomag2_hdf5_plt_cnt_0100): center=[ 0.  0.  0.] code_length,
     radius=100.0 kpc
 
@@ -149,7 +149,7 @@ which aren't the same type of physical quantity:
     julia> sp["density"]+sp["temperature"]
     ERROR: The + operator for YTArrays with units
     (g/cm**3) and (K) is not well defined.
-     in + at /Users/jzuhone/.julia/jt/src/array.jl:141
+     in + at /Users/jzuhone/.julia/YT/src/array.jl:141
 
 It is also possible to create a ``YTArray`` from a regular Julia ``Array``, like so:
 
@@ -173,7 +173,7 @@ you'll have to create it with a ``Dataset`` object passed in:
 
 .. code-block:: jlcon
 
-    julia> a = YTArray(ds, [1.0,1.0,1.0], "code_length")
+    julia> a = YT.YTArray(ds, [1.0,1.0,1.0], "code_length")
     3-element YTArray (code_length):
      1.0
      1.0
@@ -188,10 +188,10 @@ A ``YTQuantity`` is just a scalar version of a ``YTArray``. They can be manipula
 
 .. code-block:: jlcon
 
-    julia> a = YTQuantity(3.14159, "radian")
+    julia> a = YT.YTQuantity(3.14159, "radian")
     3.14159 radian
 
-    julia> b = YTQuantity(12, "cm")
+    julia> b = YT.YTQuantity(12, "cm")
     12.0 cm
 
     julia> a/b
@@ -200,13 +200,13 @@ A ``YTQuantity`` is just a scalar version of a ``YTArray``. They can be manipula
     julia> a\b
     3.8197218605865184 cm/radian
 
-    julia> c = YTQuantity(13,"m")
+    julia> c = YT.YTQuantity(13,"m")
     13.0 m
 
     julia> b+c
     1312.0 cm
 
-    julia> d = YTQuantity(ds, 1.0, "code_length")
+    julia> d = YT.YTQuantity(ds, 1.0, "code_length")
     1.0 code_length
 
 .. _changing-units:
@@ -220,7 +220,7 @@ kiloparsec:
 
 .. code-block:: jlcon
 
-    julia> a = jt.in_units(sp["density"], "Msun/kpc**3")
+    julia> a = YT.in_units(sp["density"], "Msun/kpc**3")
     325184-element YTArray (Msun/kpc**3):
      193361.43661723754
      190489.69785225237
@@ -248,7 +248,7 @@ We can switch back to cgs units rather easily:
 
 .. code-block:: jlcon
 
-    julia> jt.in_cgs(a)
+    julia> YT.in_cgs(a)
     325184-element YTArray (g/cm**3):
      1.3086558386643183e-26
      1.28922012403754e-26
@@ -276,7 +276,7 @@ or to MKS units:
 
 .. code-block:: jlcon
 
-    julia> jt.in_mks(a)
+    julia> YT.in_mks(a)
     325184-element YTArray (kg/m**3):
      1.3086558386643184e-23
      1.2892201240375402e-23
@@ -305,16 +305,16 @@ or to MKS units:
 Physical Constants
 ------------------
 
-Some physical constants are represented in ``jt``. They are available via the
-``jt.physical_constants`` submodule, and are unitful quantities which can be used with other
+Some physical constants are represented in ``YT``. They are available via the
+``YT.physical_constants`` submodule, and are unitful quantities which can be used with other
 quantities and arrays:
 
 .. code-block:: jlcon
 
-    julia> kb = jt.physical_constants.kboltz # Boltzmann constant
+    julia> kb = YT.physical_constants.kboltz # Boltzmann constant
     1.3806488e-16 erg/K
 
-    julia> kT = jt.in_units(kb*sp["temperature"], "keV") # computing kT in kilo-electronvolts
+    julia> kT = YT.in_units(kb*sp["temperature"], "keV") # computing kT in kilo-electronvolts
     325184-element YTArray (keV):
      7.611310547262892
      7.66210937707406
@@ -338,7 +338,7 @@ quantities and arrays:
      5.806717052886709
      5.895867148202309
 
-The physical constants implemented in ``jt.physical_constants`` are (in cgs units):
+The physical constants implemented in ``YT.physical_constants`` are (in cgs units):
 
 * ``G``: Newton's constant of gravitation
 * ``kboltz``: Boltzmann's constant

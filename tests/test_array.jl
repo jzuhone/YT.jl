@@ -1,6 +1,6 @@
 using Base.Test
-using jt
-import jt.array: YTUnitOperationError
+using YT
+import YT.array: YTUnitOperationError
 
 a = YTArray(randn(10), "cm")
 b = YTArray(randn(10), "g")

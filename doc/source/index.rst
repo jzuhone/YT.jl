@@ -4,8 +4,8 @@
 .. toctree::
    :maxdepth: 1
 
-   what_is_jt
-   installing_jt
+   what_is_yt
+   installing_yt
    users_guide/index
 
 Indices and tables

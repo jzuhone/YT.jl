@@ -1,5 +1,7 @@
 # YT
 
+[![Build Status](https://travis-ci.org/jzuhone/YT.jl.svg?branch=master)](https://travis-ci.org/jzuhone/YT.jl) [![Coverage Status](https://coveralls.io/repos/jzuhone/YT.jl/badge.png)](https://coveralls.io/r/jzuhone/YT.jl)
+
 `YT` is a Julia interface to the Python-based [`yt` analysis toolkit](http://yt-project.org). `YT`
 exposes a number of functionalities from `yt`. These include:
 

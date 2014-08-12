@@ -17,6 +17,11 @@ before_install:
   - sudo rm -rf /dev/shm
   - sudo ln -s /run/shm /dev/shm
   - conda install --yes ipython yt
+  - wget http://yt-project.org/data/GasSloshing.tar.gz
+  - tar -zxvf GasSloshing.tar.gz
 script:
   - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("YT"))`); Pkg.pin("YT"); Pkg.resolve()'
   - julia -e 'using YT; @assert isdefined(:YT); @assert typeof(YT) === Module'
+  - julia --code-coverage test/runtests.jl
+after_success:
+  - julia -e 'cd(Pkg.dir("YT")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'

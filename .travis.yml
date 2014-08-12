@@ -9,7 +9,7 @@ before_install:
   - sudo apt-get update -qq -y
   - sudo apt-get install libpcre3-dev julia -y
   - curl http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh
-  - bash Miniconda-latest-Linux-x86_64.sh
+  - bash Miniconda-latest-Linux-x86_64.sh -b
   - export PATH=$PATH:./miniconda
   - conda install ipython yt
 script:

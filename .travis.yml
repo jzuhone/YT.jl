@@ -8,6 +8,10 @@ before_install:
   - sudo add-apt-repository ppa:staticfloat/julianightlies -y
   - sudo apt-get update -qq -y
   - sudo apt-get install libpcre3-dev julia -y
+  - curl http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh
+  - bash Miniconda-latest-Linux-x86_64.sh
+  - export PATH=$PATH:./miniconda
+  - conda install ipython yt
 script:
   - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("YT"))`); Pkg.pin("YT"); Pkg.resolve()'
   - julia -e 'using YT; @assert isdefined(:YT); @assert typeof(YT) === Module'

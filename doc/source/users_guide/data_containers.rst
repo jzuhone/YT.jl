@@ -4,7 +4,7 @@ Data Containers
 ===============
 
 The most useful methods for ``Datasets`` are those that create ``DataContainer`` objects:
-physically meaningful spatial objects that contain cells or particles with field data. ``Yt``
+physically meaningful spatial objects that contain cells or particles with field data. ``YT``
 implements a number of the data container objects available in ``yt``,
 and attempts to match the API of these objects as closely as possible. All of these objects can
 be created from a ``Dataset`` object, typically with some additional information supplied.
@@ -59,7 +59,7 @@ Examples:
 
 .. code-block:: jlcon
 
-  julia> dd = Yt.AllData(ds)
+  julia> dd = YT.AllData(ds)
 
 .. _sphere:
 
@@ -76,13 +76,13 @@ Examples:
 
 .. code-block:: jlcon
 
-  julia> sp = Yt.Sphere(ds, "max", (100.,"kpc"))
+  julia> sp = YT.Sphere(ds, "max", (100.,"kpc"))
 
 .. code-block:: jlcon
 
-  julia> R = Yt.YTQuantity(200.,"kpc")
+  julia> R = YT.YTQuantity(200.,"kpc")
 
-  julia> sp = Yt.Sphere(ds, [0.0,0.0,0.0], R)
+  julia> sp = YT.Sphere(ds, [0.0,0.0,0.0], R)
 
 .. _region:
 
@@ -103,15 +103,15 @@ Examples:
 
 .. code-block:: jlcon
 
-  julia> reg = Yt.Region(ds, "c", [-3.0e23,-3.0e23,-3.0e23], [3.0e23,3.0e23, 3.0e23])
+  julia> reg = YT.Region(ds, "c", [-3.0e23,-3.0e23,-3.0e23], [3.0e23,3.0e23, 3.0e23])
 
 .. code-block:: jlcon
 
-  julia> a = Yt.YTArray([-0.5,-0.2,-0.3], "unitary")
+  julia> a = YT.YTArray([-0.5,-0.2,-0.3], "unitary")
 
-  julia> b = Yt.YTArray([0.4,0.1,0.4], "unitary")
+  julia> b = YT.YTArray([0.4,0.1,0.4], "unitary")
 
-  julia> reg = Yt.Region(ds, [0.0,0.0,0.0], a, b)
+  julia> reg = YT.Region(ds, [0.0,0.0,0.0], a, b)
 
 .. _disk:
 
@@ -130,7 +130,7 @@ Examples:
 
 .. code-block:: jlcon
 
-  julia> dk = Yt.Disk(ds, "c", [1.0,0.2,-0.3], (100,"kpc"), (0.5,"Mpc"))
+  julia> dk = YT.Disk(ds, "c", [1.0,0.2,-0.3], (100,"kpc"), (0.5,"Mpc"))
 
 .. _ray:
 
@@ -168,7 +168,7 @@ Examples:
 
 .. code-block:: jlcon
 
-  julia> slc = Yt.Slice(ds, 2, 0.0)
+  julia> slc = YT.Slice(ds, 2, 0.0)
 
 .. _proj:
 
@@ -189,13 +189,13 @@ Examples:
 
 .. code-block:: jlcon
 
-  julia> prj = Yt.Proj(ds, "density", "z")
+  julia> prj = YT.Proj(ds, "density", "z")
 
 .. code-block:: jlcon
 
-  julia> sp = Yt.Sphere(ds, "max", (100.,"kpc"))
+  julia> sp = YT.Sphere(ds, "max", (100.,"kpc"))
 
-  julia> prj = Yt.Proj(ds, "temperature", 1, weight_field="density", data_source=sp)
+  julia> prj = YT.Proj(ds, "temperature", 1, weight_field="density", data_source=sp)
 
 .. _cutting:
 
@@ -213,17 +213,17 @@ Examples:
 
 .. code-block:: jlcon
 
-  julia> ct = Yt.Cutting(ds, [1.0,0.2,-0.3], "c")
+  julia> ct = YT.Cutting(ds, [1.0,0.2,-0.3], "c")
 
 .. code-block:: jlcon
 
-  julia> ct = Yt.Cutting(ds, [-1.0,3.0,-4.0], [3.0e23,1.0e23,0.0])
+  julia> ct = YT.Cutting(ds, [-1.0,3.0,-4.0], [3.0e23,1.0e23,0.0])
 
 .. code-block:: jlcon
 
-  julia> c = Yt.YTArray([100.,100.,100], "kpc")
+  julia> c = YT.YTArray([100.,100.,100], "kpc")
 
-  julia> ct = Yt.Cutting(ds, [1.0,1.0,1.0], c)
+  julia> ct = YT.Cutting(ds, [1.0,1.0,1.0], c)
 
 The ``normal`` vector will be normalized to unity if it isn't already.
 
@@ -247,9 +247,9 @@ Examples:
 
 .. code-block:: jlcon
 
-  julia> sp = Yt.Sphere(ds, "max", (100.,"kpc"))
+  julia> sp = YT.Sphere(ds, "max", (100.,"kpc"))
 
-  julia> cr = Yt.CutRegion(sp, ["obj['temperature'] > 4.0e7", "obj['temperature'] < 5.0e7"])
+  julia> cr = YT.CutRegion(sp, ["obj['temperature'] > 4.0e7", "obj['temperature'] < 5.0e7"])
 
 where it can be easily verified that this produces a ``DataContainer`` with ``"temperature"`` in
 between those limits:
@@ -280,7 +280,7 @@ Examples:
 
 .. code-block:: jlcon
 
-  julia> cg = Yt.CoveringGrid(ds, 5, [-3.0856e23,-3.0856e23,-3.0856e23], [64,64,64])
+  julia> cg = YT.CoveringGrid(ds, 5, [-3.0856e23,-3.0856e23,-3.0856e23], [64,64,64])
 
 The fields of this ``DataContainer`` are 3D ``YTArray``\ s:
 
@@ -476,17 +476,17 @@ etc. To set a field parameter for a particular ``DataContainer``, use ``set_fiel
 
 .. code-block:: jlcon
 
-  julia> sp = Yt.Sphere(ds, "max", (100.,"kpc"))
+  julia> sp = YT.Sphere(ds, "max", (100.,"kpc"))
 
-  julia> bulk_velocity = Yt.YTArray(ds, [100.,-200.,300.], "km/s")
+  julia> bulk_velocity = YT.YTArray(ds, [100.,-200.,300.], "km/s")
 
-  julia> Yt.set_field_parameter(sp, "bulk_velocity", bulk_velocity)
+  julia> YT.set_field_parameter(sp, "bulk_velocity", bulk_velocity)
 
 Similarly, ``get_field_parameter`` returns a specific parameter based on its key:
 
 .. code-block:: jlcon
 
-  julia> Yt.get_field_parameter(sp, "bulk_velocity")
+  julia> YT.get_field_parameter(sp, "bulk_velocity")
   3-element YTArray (km/s):
     100.0
    -200.0
@@ -496,7 +496,7 @@ Similarly, ``get_field_parameter`` returns a specific parameter based on its key
 
 .. code-block:: jlcon
 
-  julia> Yt.has_field_parameter(sp, "center")
+  julia> YT.has_field_parameter(sp, "center")
   true
 
 To get a dictionary containing all of the field parameters for a dataset,
@@ -504,7 +504,7 @@ use ``get_field_parameters``:
 
 .. code-block:: jlcon
 
-  julia> fp = Yt.get_field_parameters(sp)
+  julia> fp = YT.get_field_parameters(sp)
 
   julia> fp["center"]
   3-element YTArray (code_length):

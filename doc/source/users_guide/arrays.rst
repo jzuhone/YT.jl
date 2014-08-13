@@ -155,7 +155,7 @@ It is also possible to create a ``YTArray`` from a regular Julia ``Array``, like
 
 .. code-block:: jlcon
 
-    julia> a = YTArray(randn(10), "erg")
+    julia> a = YT.YTArray(randn(10), "erg")
     10-element YTArray (erg):
      -0.14854525691731818
      -0.44315729646073715

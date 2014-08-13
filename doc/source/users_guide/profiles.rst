@@ -145,7 +145,7 @@ The ``variance`` of a given field can be computed as well:
 
 .. code-block:: jlcon
 
-   julia> variance(profile, "density")
+   julia> YT.variance(profile, "density")
    100-element YTArray (g/cm**3):
     8.88606e-27
     1.00439e-26

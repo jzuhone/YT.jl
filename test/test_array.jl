@@ -2,11 +2,11 @@ using Base.Test
 using YT
 import YT.array: YTUnitOperationError
 
-a = YTArray(randn(10), "cm")
-b = YTArray(randn(10), "g")
-x = YTQuantity(randn(1)[1], "m")
-y = YTQuantity(randn(1)[1], "Msun")
-z = randn(1)[1]
+a = YTArray(rand(10), "cm")
+b = YTArray(rand(10), "g")
+x = YTQuantity(rand(), "m")
+y = YTQuantity(rand(), "Msun")
+z = rand()
 
 # These should pass
 
@@ -78,17 +78,33 @@ z\b
 z\x
 z\y
 
-a.*b == b.*a
-x*y == y*x
-a*y == y*a
-a./b == b.\a
-x/y == y\x
-x./a == a.\x
+@test a.*b == b.*a
+@test x*y == y*x
+@test a*y == y*a
+@test a./b == b.\a
+@test x/y == y\x
+@test x./a == a.\x
 
-abs(a) == sqrt(a.*a)
-abs(x) == sqrt(x*x)
-abs(a) == cbrt(a.^3)
-abs(x) == cbrt(x^3)
+@test_approx_eq abs(a).value sqrt(a.*a).value
+@test_approx_eq abs(x).value sqrt(x*x).value
+@test_approx_eq abs(a).value cbrt(a.^3).value
+@test_approx_eq abs(x).value cbrt(x^3).value
+
+@test abs(a).units == sqrt(a.*a).units
+@test abs(x).units == sqrt(x*x).units
+@test abs(a).units == cbrt(a.^3).units
+@test abs(x).units == cbrt(x^3).units
+
+@test_approx_eq in_cgs(x).value x.value*100.0
+@test_approx_eq in_mks(b).value b.value/1000.0
+
+@test_approx_eq in_cgs(in_units(a, "mile")).value a.value
+@test_approx_eq in_cgs(in_units(b, "Msun")).value b.value
+
+@test in_cgs(in_units(a, "mile")).units == a.units
+@test in_cgs(in_units(b, "Msun")).units == b.units
+
+@test_approx_eq in_mks(in_units(x, "ly")).value x.value
 
 # These should fail
 

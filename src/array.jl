@@ -51,8 +51,8 @@ function ^(u::YTUnit, v::Real)
     YTUnit(yt_unit, yt_unit[:units], yt_unit[:units][:dimensions])
 end
 
-==(u::YTUnit, v::YTUnit) = ==(u.units.unit_symbol, v.units.unit_symbol)
-!=(u::YTUnit, v::YTUnit) = !=(u.units.unit_symbol, v.units.unit_symbol)
+==(u::YTUnit, v::YTUnit) = ==(u.unit_symbol, v.unit_symbol)
+!=(u::YTUnit, v::YTUnit) = !=(u.unit_symbol, v.unit_symbol)
 
 show(io::IO, u::YTUnit) = show(io, u.unit_symbol)
 

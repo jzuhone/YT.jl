@@ -51,6 +51,9 @@ function ^(u::YTUnit, v::Real)
     YTUnit(yt_unit, yt_unit[:units], yt_unit[:units][:dimensions])
 end
 
+==(u::YTUnit, v::YTUnit) = ==(u.units.unit_symbol, v.units.unit_symbol)
+!=(u::YTUnit, v::YTUnit) = !=(u.units.unit_symbol, v.units.unit_symbol)
+
 show(io::IO, u::YTUnit) = show(io, u.unit_symbol)
 
 # YTQuantity definition
@@ -71,18 +74,18 @@ type YTQuantity
                           unitary_quan[:units][:dimensions])
         new(convert(Float64, value), yt_units)
     end
-    YTQuantity(value::Real, units::String; args...) = YTQuantity(convert(Float64, value),
-                                                                 units; args...)
-    YTQuantity(ds, value::Real, units::String) = YTQuantity(value, units,
-                                                            registry=ds.ds["unit_registry"])
-    YTQuantity(value::Real, units::Sym; args...) = YTQuantity(value, units[:__str__](); args...)
-    YTQuantity(value::Real, units::YTUnit) = YTQuantity(value,
-                                                        units.unit_symbol[:__str__](),
-                                                        registry=units.yt_unit["units"]["registry"])
-    YTQuantity(value::Bool, units::String) = value
-    YTQuantity(value::Bool, units::Sym) = value
-    YTQuantity(value::Bool, units::YTUnit) = value
 end
+
+YTQuantity(value::Real, units::String; args...) = YTQuantity(convert(Float64, value),
+                                                             units; args...)
+YTQuantity(ds, value::Real, units::String) = YTQuantity(value, units,
+                                                        registry=ds.ds["unit_registry"])
+YTQuantity(value::Real, units::Sym; args...) = YTQuantity(value, units[:__str__](); args...)
+YTQuantity(value::Real, units::YTUnit) = YTQuantity(value, units.unit_symbol[:__str__](),
+                                                    registry=units.yt_unit["units"]["registry"])
+YTQuantity(value::Bool, units::String) = value
+YTQuantity(value::Bool, units::Sym) = value
+YTQuantity(value::Bool, units::YTUnit) = value
 
 # YTArray definition
 
@@ -102,23 +105,21 @@ type YTArray <: AbstractArray
                           unitary_quan[:units][:dimensions])
         new(value, yt_units)
     end
-    YTArray(value::Array, units::String; args...) = YTArray(convert(Array{Float64}, value),
-                                                            units; args...)
-    YTArray(ds, value::Array, units::String) = YTArray(value, units,
-                                                       registry=ds.ds["unit_registry"])
-    YTArray(value::Array, units::Sym; args...) = YTArray(value, units[:__str__](); args...)
-    YTArray(value::Array, units::YTUnit) = YTArray(value,
-                                                   units.unit_symbol[:__str__](),
-                                                   registry=units.yt_unit["units"]["registry"])
-    YTArray(value::Real, units::String; args...) = YTQuantity(value, units; args...)
-    YTArray(ds, value::Real, units::String) = YTQuantity(value, units,
-                                                         registry=ds.ds["unit_registry"])
-    YTArray(value::Real, units::Sym; args...) = YTQuantity(value, units; args...)
-    YTArray(value::Real, units::YTUnit; args...) = YTQuantity(value, units; args...)
-    YTArray(value::BitArray, units::String) = value
-    YTArray(value::BitArray, units::Sym) = value
-    YTArray(value::BitArray, units::YTUnit) = value
 end
+YTArray(value::Array, units::String; args...) = YTArray(convert(Array{Float64}, value),
+                                                        units; args...)
+YTArray(ds, value::Array, units::String) = YTArray(value, units,
+                                                   registry=ds.ds["unit_registry"])
+YTArray(value::Array, units::Sym; args...) = YTArray(value, units[:__str__](); args...)
+YTArray(value::Array, units::YTUnit) = YTArray(value, units.unit_symbol[:__str__](),
+                                               registry=units.yt_unit["units"]["registry"])
+YTArray(value::Real, units::String; args...) = YTQuantity(value, units; args...)
+YTArray(ds, value::Real, units::String) = YTQuantity(value, units, registry=ds.ds["unit_registry"])
+YTArray(value::Real, units::Sym; args...) = YTQuantity(value, units; args...)
+YTArray(value::Real, units::YTUnit; args...) = YTQuantity(value, units; args...)
+YTArray(value::BitArray, units::String) = value
+YTArray(value::BitArray, units::Sym) = value
+YTArray(value::BitArray, units::YTUnit) = value
 
 YTObject = Union(YTArray,YTQuantity)
 
@@ -192,7 +193,6 @@ end
 function setindex!(a::YTArray, x::Real, idxs::Array{Int,1})
     YTArray(setindex!(a.value, convert(Float64, x), idxs), a.units)
 end
-
 
 # For grids
 function getindex(a::YTArray, i::IntOrRange, j::IntOrRange, k::IntOrRange)

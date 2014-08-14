@@ -16,7 +16,7 @@ before_install:
   # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
   - sudo rm -rf /dev/shm
   - sudo ln -s /run/shm /dev/shm
-  - conda install --yes ipython yt
+  - conda install --yes yt
   - wget http://yt-project.org/data/GasSloshing.tar.gz
   - tar -zxvf GasSloshing.tar.gz
 script:

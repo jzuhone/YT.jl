@@ -23,7 +23,6 @@ which will also install the following dependencies (if you don't already have th
 * [PyCall](http://github.com/stevengj/PyCall.jl)
 * [PyPlot](http://github.com/stevengj/PyPlot.jl)
 * [SymPy](http://github.com/jverzani/SymPy.jl)
-* [IJulia](http://github.com/JuliaLang/IJulia.jl)
 
 However, for `YT` to work, `yt` itself must be installed. `YT` requires `yt` version 3.0 or higher.
 The best ways to install `yt` are via the [install script](http://yt-project.org/#getyt) or via the

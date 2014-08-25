@@ -145,3 +145,8 @@ z\y
 @test_throws YTUnitOperationError z-y
 @test_throws YTUnitOperationError y+z
 @test_throws YTUnitOperationError y-z
+
+write_hdf5(a, "test.h5")
+b = from_hdf5("test.h5")
+@test a == b
+@test a.units == b.units

@@ -35,7 +35,18 @@ export set_field_unit, set_x_unit, set_y_unit, set_z_unit
 export SlicePlot, ProjectionPlot
 export show_plot
 
-using PyCall
+import PyCall: @pyimport, PyError
+
+try
+    @pyimport yt
+catch err
+    if isa(err, PyError)
+        throw(ErrorException("It looks like you don't have the yt Python package installed. Visit http://yt-project.org."))
+    else
+        throw(err)
+    end
+end
+
 @pyimport yt.convenience as ytconv
 @pyimport yt.frontends.stream.api as ytstream
 

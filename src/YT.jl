@@ -16,7 +16,7 @@ export load, load_uniform_grid, load_amr_grids, load_particles
 
 # DataContainers
 
-export DataContainer, CutRegion, Disk, Ray, Slice, Region
+export DataContainer, CutRegion, Disk, Ray, Slice, Region, Point
 export Sphere, AllData, Proj, CoveringGrid, Grids, Cutting
 export set_field_parameter, get_field_parameter, get_field_parameters,
        has_field_parameter
@@ -61,7 +61,8 @@ import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks, YTUnit
 import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray,
     Cutting, CutRegion, DataContainer, Region, has_field_parameter,
-    set_field_parameter, get_field_parameter, get_field_parameters
+    set_field_parameter, get_field_parameter, get_field_parameters,
+    Point
 import .plots: SlicePlot, ProjectionPlot, show_plot
 import .images: FixedResolutionBuffer
 import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,

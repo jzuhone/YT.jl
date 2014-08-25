@@ -60,6 +60,19 @@ type AllData <: DataContainer
     end
 end
 
+# Point
+
+type Point <: DataContainer
+    cont::PyObject
+    ds::Dataset
+    coord::Array
+    field_dict::Dict
+    function Point(ds::Dataset, coord::Array; args...)
+        pt = ds.ds[:point](coord; args...)
+        new(pt, ds, pt[:p], Dict())
+    end
+end
+
 # Region
 
 type Region <: DataContainer

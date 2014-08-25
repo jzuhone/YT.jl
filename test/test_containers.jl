@@ -22,6 +22,13 @@ end
 
 ds = load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
 
+# Point
+
+args = ([0.0, 3.0e22, -1.0e23],)
+pt = Point(ds, args...)
+
+check_container(pt, args=args)
+
 # AllData
 
 dd = AllData(ds)

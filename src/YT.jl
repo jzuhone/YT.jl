@@ -8,7 +8,7 @@ export print_stats, get_smallest_dx
 # YTArrays, YTQuantities, units
 
 export YTArray, YTQuantity, YTUnit
-export in_units, in_cgs, in_mks
+export in_units, in_cgs, in_mks, from_hdf5, write_hdf5
 
 # load
 
@@ -57,7 +57,8 @@ include("physical_constants.jl")
 include("plots.jl")
 include("profiles.jl")
 
-import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks, YTUnit
+import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks, YTUnit,
+    from_hdf5, write_hdf5
 import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray,
     Cutting, CutRegion, DataContainer, Region, has_field_parameter,

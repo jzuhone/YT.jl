@@ -398,4 +398,15 @@ cummax(a::YTArray, dim::Integer) = YTArray(cummax(a.value, dim), a.units)
 diff(a::YTArray) = YTArray(diff(a.value), a.units)
 diff(a::YTArray, dim::Integer) = YTArray(diff(a.value, dim), a.units)
 
+# To/from HDF5
+
+function write_hdf5(o::YTObject, filename::String; args...)
+    arr = convert(PyObject, o)
+    arr[:write_hdf5](filename, args...)
+end
+
+function from_hdf5(filename::String; args...)
+    YTArray(pycall(bare_array["from_hdf5"], PyObject, filename; args...))
+end
+
 end

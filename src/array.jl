@@ -8,7 +8,7 @@ import Base: cbrt, convert, copy, eltype, hypot, maximum, minimum, ndims,
              showarray, showerror
 
 import SymPy: Sym
-using PyCall
+import PyCall: @pyimport, PyObject, pycall
 @pyimport yt.units as units
 
 IntOrRange = Union(Int,Range,Range1,Array{Int,1})

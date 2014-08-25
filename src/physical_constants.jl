@@ -2,7 +2,7 @@ module physical_constants
 
 import ..array: YTQuantity
 
-using PyCall
+import PyCall: @pyimport
 
 @pyimport yt.utilities as ytutils
 

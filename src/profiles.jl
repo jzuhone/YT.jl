@@ -1,6 +1,6 @@
 module profiles
 
-using PyCall
+import PyCall: @pyimport, PyObject
 import Base.show
 import ..data_objects: DataContainer
 import ..array: YTArray

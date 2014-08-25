@@ -1,6 +1,6 @@
 module data_objects
 
-using PyCall
+import PyCall: PyObject, PyDict
 import Base: size, show, showarray, display, showerror
 import ..array: YTArray, YTQuantity, in_units
 import ..images: FixedResolutionBuffer

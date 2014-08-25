@@ -2,8 +2,8 @@ module plots
 
 import ..data_objects: Dataset, DataContainer
 import ..array: YTArray
+import PyCall: @pyimport, PyObject, pywrap
 
-using PyCall
 @pyimport yt.visualization.plot_window as pw
 @pyimport yt.visualization.profile_plotter as pp
 

@@ -1,6 +1,6 @@
 module images
 
-using PyCall
+import PyCall: PyObject
 
 import ..array: YTArray, YTQuantity
 import Base.show

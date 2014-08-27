@@ -355,7 +355,7 @@ end
 getindex(dc::DataContainer, ftype::String,
          fname::String) = getindex(dc, (ftype, fname))
 
-function getindex(grids::Grids, i::Int)
+function getindex(grids::Grids, i::Integer)
     if !haskey(grids.grid_dict, i)
         g = grids.grids[i]
         grids.grid_dict[i] = Grid(g,

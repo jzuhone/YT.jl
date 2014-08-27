@@ -11,7 +11,7 @@ import SymPy: Sym
 import PyCall: @pyimport, PyObject, pycall
 @pyimport yt.units as units
 
-IntOrRange = Union(Int,Range,Range1,Array{Int,1})
+IntOrRange = Union(Integer,Range,Range1,Array{Int,1})
 
 # Grab the classes for creating YTArrays and YTQuantities
 
@@ -174,11 +174,11 @@ convert(::Type{PyObject}, a::YTQuantity) = pycall(bare_quan, PyObject, a.value,
                                                   a.units.yt_unit["units"]["registry"])
 # Indexing, ranges (slicing)
 
-getindex(a::YTArray, i::Int) = YTQuantity(a.value[i], a.units)
+getindex(a::YTArray, i::Integer) = YTQuantity(a.value[i], a.units)
 getindex(a::YTArray, idxs::Array{Int,1}) = YTArray(getindex(a.value, idxs), a.units)
 getindex(a::YTArray, idxs::Ranges) = YTArray(getindex(a.value, idxs), a.units)
 
-function setindex!(a::YTArray, x::Real, i::Int)
+function setindex!(a::YTArray, x::Real, i::Integer)
     a.value[i] = convert(Float64, x)
 end
 function setindex!(a::YTArray, x::Array, idxs::Ranges)

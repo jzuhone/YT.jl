@@ -31,3 +31,13 @@ to use it as a library, or
     julia> using YT
 
 to use it as an application, loading its methods into the current session's namespace.
+
+Recommended Packages
+--------------------
+
+While not required, the following Julia packages are useful when working with data in ``YT``:
+
+* `Winston <https://github.com/nolta/Winston.jl>`_ (a plotting package)
+* `IJulia <https://github.com/JuliaLang/IJulia.jl>`_ (Julia backend for IPython/Jupyter)
+* `Glob <https://github.com/vtjnash/Glob.jl>`_ (find pathnames matching specified patterns, useful for constructing arrays of filenames)
+

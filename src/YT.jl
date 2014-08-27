@@ -35,6 +35,10 @@ export set_field_unit, set_x_unit, set_y_unit, set_z_unit
 export SlicePlot, ProjectionPlot
 export show_plot
 
+# DatasetSeries
+
+export DatasetSeries
+
 import PyCall: @pyimport, PyError
 
 try
@@ -56,6 +60,7 @@ include("data_objects.jl")
 include("physical_constants.jl")
 include("plots.jl")
 include("profiles.jl")
+include("dataset_series.jl")
 
 import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks, YTUnit,
     from_hdf5, write_hdf5
@@ -68,6 +73,7 @@ import .plots: SlicePlot, ProjectionPlot, show_plot
 import .images: FixedResolutionBuffer
 import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,
     set_field_unit, variance
+import .dataset_series: DatasetSeries
 
 load(fn::String; args...) = Dataset(ytconv.load(fn; args...))
 

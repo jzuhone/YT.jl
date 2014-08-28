@@ -1,6 +1,7 @@
 module plots
 
 import ..data_objects: Dataset, DataContainer
+import ..dataset_series: DatasetSeries
 import ..array: YTArray
 import PyCall: @pyimport, PyObject, pywrap
 

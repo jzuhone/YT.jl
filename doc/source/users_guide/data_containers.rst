@@ -61,6 +61,24 @@ Examples:
 
   julia> dd = YT.AllData(ds)
 
+.. _point:
+
+Point
++++++
+
+The ``Point`` data container represents the data at a single point in the computational domain,
+located at a coordinate ``coord`` in units of ``code_length``:
+
+.. code-block:: julia
+
+  function Point(ds::Dataset, coord::Array; args...)
+
+Examples:
+
+.. code-block:: jlcon
+
+  julia> p = YT.Point(ds, [3.0e22,0,-1.0e23])
+
 .. _sphere:
 
 Sphere

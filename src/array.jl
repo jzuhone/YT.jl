@@ -400,13 +400,13 @@ diff(a::YTArray, dim::Integer) = YTArray(diff(a.value, dim), a.units)
 
 # To/from HDF5
 
-function write_hdf5(a::YTArray, filename::String; args...)
+function write_hdf5(a::YTArray, filename::String; dataset_name=nothing, info=nothing)
     arr = convert(PyObject, a)
-    arr[:write_hdf5](filename, args...)
+    arr[:write_hdf5](filename; dataset_name=dataset_name, info=info)
 end
 
-function from_hdf5(filename::String; args...)
-    YTArray(pycall(bare_array["from_hdf5"], PyObject, filename; args...))
+function from_hdf5(filename::String; dataset_name=nothing)
+    YTArray(pycall(bare_array["from_hdf5"], PyObject, filename; dataset_name=dataset_name))
 end
 
 end

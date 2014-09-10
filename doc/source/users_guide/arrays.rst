@@ -179,6 +179,58 @@ you'll have to create it with a ``Dataset`` object passed in:
      1.0
      1.0
 
+A ``YTArray`` can be saved to an `HDF5 <http://www.hdfgroup.org>`_ file for re-loading later. For this, one can use
+``write_hdf5``:
+
+.. code-block:: julia
+
+    function write_hdf5(a::YTArray, filename::String; dataset_name=nothing, info=nothing)
+
+where ``dataset_name`` is the name of the dataset to store the array in (defaults to ``"array_data"``), and ``info``
+is an optional dictionary which can be stored as dataset attributes to provide additional information:
+
+.. code-block:: jlcon
+
+    julia> a = YT.YTArray(rand(10,10), "kpc/Myr")
+    10x10 YTArray (kpc/Myr):
+     0.8888545184475427   0.29464950894597686  …  0.4256777232565485
+     0.7469690649893874   0.7553969983155757      0.8044874171101348
+     0.583046720365916    0.3767748808429836      0.7449196090549277
+     0.09988510481900925  0.8528910610569467      0.5702756152900481
+     0.8016480624694218   0.803297393530946       0.04164033322639149
+     0.21639598504942836  0.8902582922168041   …  0.3908148074495865
+     0.3552211934011673   0.42675416182273995     0.03558079698568162
+     0.4431574771660278   0.4837529146082904      0.22880655307572217
+     0.7789837638416921   0.4639426067506691      0.14832697895106595
+     0.6460553973501566   0.04338617942933576     0.6935626833634565
+
+    julia> myinfo = ["field"=>"velocity_magnitude", "source"=>"galaxy cluster"]
+
+    julia> YT.write_hdf5(a, "my_file.h5", dataset_name="cluster", info=myinfo)
+
+The data can be read back into a ``YTArray`` using ``from_hdf5``:
+
+.. code-block:: julia
+
+    function from_hdf5(filename::String; dataset_name=nothing)
+
+.. code-block:: jlcon
+
+    julia> b = YT.from_hdf5("my_file.h5", dataset_name="cluster")
+    10x10 YTArray (kpc/Myr):
+     0.8888545184475427   0.29464950894597686  …  0.4256777232565485
+     0.7469690649893874   0.7553969983155757      0.8044874171101348
+     0.583046720365916    0.3767748808429836      0.7449196090549277
+     0.09988510481900925  0.8528910610569467      0.5702756152900481
+     0.8016480624694218   0.803297393530946       0.04164033322639149
+     0.21639598504942836  0.8902582922168041   …  0.3908148074495865
+     0.3552211934011673   0.42675416182273995     0.03558079698568162
+     0.4431574771660278   0.4837529146082904      0.22880655307572217
+     0.7789837638416921   0.4639426067506691      0.14832697895106595
+     0.6460553973501566   0.04338617942933576     0.6935626833634565
+
+which is obviously the same array.
+
 .. _quantities:
 
 Quantities

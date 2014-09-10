@@ -6,7 +6,7 @@ function check_for_yt()
     try
         @pyimport yt
     catch
-        throw(ErrorException("Cannot import import yt! Is it installed in the current Python?"))
+        error("Cannot import yt! Is it installed in the current Python?")
     end
 
     @pyimport yt
@@ -15,7 +15,7 @@ function check_for_yt()
         err_msg = ("Your version of yt is not up to date. " *
                    "You need at least version $min_version, " *
                    "but your current version is $yt_version.")
-        throw(ErrorException(err_msg))
+        error(err_msg)
     end
     return yt_version
 end

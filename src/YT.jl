@@ -37,15 +37,9 @@ export show_plot
 
 import PyCall: @pyimport, PyError
 
-try
-    @pyimport yt
-catch err
-    if isa(err, PyError)
-        throw(ErrorException("It looks like you don't have the yt Python package installed. Visit http://yt-project.org."))
-    else
-        throw(err)
-    end
-end
+include("../deps/yt_check.jl")
+
+check_for_yt()
 
 @pyimport yt.convenience as ytconv
 @pyimport yt.frontends.stream.api as ytstream

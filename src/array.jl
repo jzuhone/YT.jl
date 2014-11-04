@@ -65,7 +65,7 @@ type YTQuantity
         yt_units = YTUnit(yt_quantity["unit_quantity"],
                           yt_quantity[:units],
                           yt_quantity[:units][:dimensions])
-        new(yt_quantity[:ndarray_view]()[1], yt_units)
+        new(yt_quantity[:d][1], yt_units)
     end
     function YTQuantity(value::Float64, units::String; registry=nothing)
         unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
@@ -86,6 +86,7 @@ YTQuantity(value::Real, units::YTUnit) = YTQuantity(value, units.unit_symbol[:__
 YTQuantity(value::Bool, units::String) = value
 YTQuantity(value::Bool, units::Sym) = value
 YTQuantity(value::Bool, units::YTUnit) = value
+YTQuantity(value::Real) = YTQuantity(value, "dimensionless")
 
 # YTArray definition
 
@@ -96,7 +97,7 @@ type YTArray <: AbstractArray
         yt_units = YTUnit(yt_array["unit_quantity"],
                           yt_array[:units],
                           yt_array[:units][:dimensions])
-        new(yt_array[:ndarray_view](), yt_units)
+        new(yt_array[:d], yt_units)
     end
     function YTArray(value::Array{Float64}, units::String; registry=nothing)
         unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
@@ -120,6 +121,8 @@ YTArray(value::Real, units::YTUnit; args...) = YTQuantity(value, units; args...)
 YTArray(value::BitArray, units::String) = value
 YTArray(value::BitArray, units::Sym) = value
 YTArray(value::BitArray, units::YTUnit) = value
+YTArray(value::Array) = YTArray(value, "dimensionless")
+YTArray(value::Real) = YTQuantity(value, "dimensionless")
 
 YTObject = Union(YTArray,YTQuantity)
 
@@ -407,6 +410,33 @@ end
 
 function from_hdf5(filename::String; dataset_name=nothing)
     YTArray(pycall(bare_array["from_hdf5"], PyObject, filename; dataset_name=dataset_name))
+end
+
+# Unit equivalencies
+
+function to_equivalent(a::YTObject, unit::String, equiv::String; args...)
+    arr = convert(PyObject, a)
+    equ = pycall(arr["to_equivalent"], PyObject, unit, equiv; args...)
+    if equ[:size] == 1
+        return YTQuantity(equ)
+    else
+        return YTArray(equ)
+    end
+end
+
+function list_equivalencies(a::YTObject)
+    arr = convert(PyObject, a)
+    arr[:list_equivalencies]()
+end
+
+# Ones and Zeros
+
+function ones_like(a::YTArray)
+    YTArray(ones(size(a)), a.units)
+end
+
+function zeros_like(a::YTArray)
+    YTArray(zeros(size(a)), a.units)
 end
 
 end

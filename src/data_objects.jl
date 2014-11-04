@@ -1,6 +1,6 @@
 module data_objects
 
-import PyCall: PyObject, PyDict
+import PyCall: PyObject, PyDict, pycall
 import Base: size, show, showarray, display, showerror
 import ..array: YTArray, YTQuantity, in_units
 import ..images: FixedResolutionBuffer
@@ -43,6 +43,16 @@ end
 
 function print_stats(ds::Dataset)
     ds.ds[:print_stats]()
+end
+
+function find_min(ds::Dataset, field)
+    v, c = pycall(ds.ds["find_min"], (PyObject, PyObject), field)
+    return YTQuantity(v), YTArray(c)
+end
+
+function find_max(ds::Dataset, field)
+    v, c = pycall(ds.ds["find_max"], (PyObject, PyObject), field)
+    return YTQuantity(v), YTArray(c)
 end
 
 # Data containers

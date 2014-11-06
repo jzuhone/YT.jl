@@ -16,9 +16,11 @@ before_install:
   # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
   - sudo rm -rf /dev/shm
   - sudo ln -s /run/shm /dev/shm
-  - conda install --yes python numpy matplotlib cython h5py setuptools mercurial sympy
+  - conda install --yes numpy==1.8.2
+  - conda install --yes matplotlib cython h5py setuptools mercurial sympy
   - hg clone http://bitbucket.org/yt_analysis/yt
   - cd yt && python setup.py install
+  - cd ..
   - wget http://yt-project.org/data/GasSloshing.tar.gz
   - tar -zxvf GasSloshing.tar.gz
 script:

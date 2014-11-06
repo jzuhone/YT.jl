@@ -143,14 +143,14 @@ and a subgrid at ``level == 1``.
 .. code:: jlcon
 
     grid_data = [
-        Dict{"left_edge"=>[0.0, 0.0, 0.0],
+        Dict("left_edge"=>[0.0, 0.0, 0.0],
              "right_edge"=>[1.0, 1.0, 1.0],
              "level"=>0,
-             "dimensions"=>[32, 32, 32]},
-        Dict{"left_edge"=>[0.25, 0.25, 0.25],
+             "dimensions"=>[32, 32, 32]),
+        Dict("left_edge"=>[0.25, 0.25, 0.25],
              "right_edge"=>[0.75, 0.75, 0.75],
              "level"=>1,
-             "dimensions"=>[32, 32, 32]}
+             "dimensions"=>[32, 32, 32])
        ]
 
 We'll just fill each grid with random density data, with a scaling with
@@ -183,10 +183,10 @@ We need to specify the field units in a ``field_units`` ``Dict``:
 
 .. code:: jlcon
 
-    field_units = Dict{"density"=>"code_mass/code_length**3",
+    field_units = Dict("density"=>"code_mass/code_length**3",
                        "particle_position_x"=>"code_length",
                        "particle_position_y"=>"code_length",
-                       "particle_position_z"=>"code_length"}
+                       "particle_position_z"=>"code_length")
 
 Then, call ``load_amr_grids``:
 

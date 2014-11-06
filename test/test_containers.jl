@@ -95,7 +95,7 @@ check_container(slc2, args=args2)
 args1 = "density", "z"
 args2 = "density", 0
 args3 = "density", 1
-kwargs2 = Dict{:weight_field=>"temperature"}
+kwargs2 = Dict(:weight_field=>"temperature")
 prj1 = Proj(ds, args1...)
 prj2 = Proj(ds, args2...; kwargs2...)
 prj3 = Proj(ds, args3...; data_source=sp1)

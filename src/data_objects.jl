@@ -119,7 +119,7 @@ type Region <: DataContainer
         else
             source = nothing
         end
-        reg = ds.ds[:region](c, le, re; data_source=data_source.cont, args...)
+        reg = ds.ds[:region](c, le, re; data_source=source, args...)
         new(reg, ds, YTArray(reg["center"]), YTArray(reg["left_edge"]),
             YTArray(reg["right_edge"]), Dict())
     end

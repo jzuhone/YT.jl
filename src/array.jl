@@ -429,6 +429,11 @@ function list_equivalencies(a::YTObject)
     arr[:list_equivalencies]()
 end
 
+function has_equivalent(a::YTObject, equiv::String)
+    arr = convert(PyObject, a)
+    arr[:has_equivalent](equiv)
+end
+
 # Ones and Zeros
 
 function ones_like(a::YTArray)

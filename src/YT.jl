@@ -10,7 +10,7 @@ export find_min, find_max
 
 export YTArray, YTQuantity, YTUnit
 export in_units, in_cgs, in_mks, from_hdf5, write_hdf5
-export to_equivalent, list_equivalencies
+export to_equivalent, list_equivalencies, has_equivalent
 export ones_like, zeros_like
 
 # load
@@ -61,7 +61,7 @@ include("profiles.jl")
 
 import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks, YTUnit,
     from_hdf5, write_hdf5, to_equivalent, list_equivalencies,
-    ones_like, zeros_like
+    ones_like, zeros_like, has_equivalent
 import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray,
     Cutting, CutRegion, DataContainer, Region, has_field_parameter,

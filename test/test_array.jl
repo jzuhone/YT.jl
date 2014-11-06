@@ -146,7 +146,7 @@ z\y
 @test_throws YTUnitOperationError y+z
 @test_throws YTUnitOperationError y-z
 
-myinfo = ["field"=>"velocity_magnitude", "source"=>"galaxy cluster"]
+myinfo = Dict{"field"=>"velocity_magnitude", "source"=>"galaxy cluster"}
 write_hdf5(a, "test.h5", dataset_name="cluster", info=myinfo)
 b = from_hdf5("test.h5", dataset_name="cluster")
 @test a == b

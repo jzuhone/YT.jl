@@ -1,4 +1,4 @@
-# All this does is make sure that the plots work without errors
+# All this does is make sure that the plots run without errors
 
 using Base.Test
 using YT

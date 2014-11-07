@@ -182,7 +182,7 @@ type Ray <: DataContainer
     end
 end
 
-# CuttingPlane
+# Cutting
 
 type Cutting <: DataContainer
     cont::PyObject

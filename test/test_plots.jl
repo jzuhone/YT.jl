@@ -7,7 +7,7 @@ using PyCall
 ds = load("enzo_tiny_cosmology/DD0046/DD0046")
 
 slc = SlicePlot(ds, "z", ["density","temperature"])
-slc.set_width(0.3.,"unitary")
+slc.set_width(0.3,"unitary")
 slc.annotate_grids()
 slc.save()
 

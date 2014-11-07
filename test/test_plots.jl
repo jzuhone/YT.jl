@@ -4,7 +4,7 @@ using Base.Test
 using YT
 using PyCall
 
-ds = load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
+ds = load("enzo_tiny_cosmology/DD0046/DD0046")
 
 slc = SlicePlot(ds, "z", ["density","temperature"])
 slc.set_width(500.,"kpc")

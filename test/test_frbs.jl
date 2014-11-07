@@ -2,7 +2,7 @@ using Base.Test
 using YT
 using PyCall
 
-ds = load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
+ds = load("enzo_tiny_cosmology/DD0046/DD0046")
 
 slc = Slice(ds, "z", 0.0)
 prj = Proj(ds, "density", "z")

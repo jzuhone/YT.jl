@@ -126,6 +126,15 @@ YTArray(value::Real) = YTQuantity(value, "dimensionless")
 
 YTObject = Union(YTArray,YTQuantity)
 
+function array_or_quan(a::PyObject)
+    x = YTArray(a)
+    if length(x) == 1
+        return x[1]
+    else
+        return x
+    end
+end
+
 type YTUnitOperationError <: Exception
     a::YTObject
     b::YTObject
@@ -417,11 +426,7 @@ end
 function to_equivalent(a::YTObject, unit::String, equiv::String; args...)
     arr = convert(PyObject, a)
     equ = pycall(arr["to_equivalent"], PyObject, unit, equiv; args...)
-    if equ[:size] == 1
-        return YTQuantity(equ)
-    else
-        return YTArray(equ)
-    end
+    array_or_quan(equ)
 end
 
 function list_equivalencies(a::YTObject)

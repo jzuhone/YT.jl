@@ -21,8 +21,8 @@ export load, load_uniform_grid, load_amr_grids, load_particles
 
 export DataContainer, CutRegion, Disk, Ray, Slice, Region, Point
 export Sphere, AllData, Proj, CoveringGrid, Grids, Cutting
-export set_field_parameter, get_field_parameter, get_field_parameters,
-       has_field_parameter
+export set_field_parameter, get_field_parameter, get_field_parameters
+export has_field_parameter, quantities, list_quantities
 
 # Fixed resolution
 
@@ -66,7 +66,7 @@ import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray,
     Cutting, CutRegion, DataContainer, Region, has_field_parameter,
     set_field_parameter, get_field_parameter, get_field_parameters,
-    Point, find_min, find_max
+    Point, find_min, find_max, quantities, list_quantities
 import .plots: SlicePlot, ProjectionPlot, show_plot
 import .images: FixedResolutionBuffer
 import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,

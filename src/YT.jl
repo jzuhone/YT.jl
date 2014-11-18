@@ -42,12 +42,17 @@ export show_plot
 
 export DatasetSeries
 
+# Other
+
+export enable_plugins
+
 import PyCall: @pyimport, PyError
 
 include("../deps/yt_check.jl")
 
 check_for_yt()
 
+@pyimport yt
 @pyimport yt.convenience as ytconv
 @pyimport yt.frontends.stream.api as ytstream
 
@@ -72,6 +77,8 @@ import .images: FixedResolutionBuffer
 import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,
     set_field_unit, variance
 import .dataset_series: DatasetSeries
+
+enable_plugins = yt.enable_plugins
 
 load(fn::String; args...) = Dataset(ytconv.load(fn; args...))
 

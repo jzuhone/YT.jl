@@ -101,6 +101,52 @@ it is a FLASH AMR dataset, so statistics regarding the grids and cells are print
     julia> YT.get_smallest_dx(ds)
     7.231875e21 code_length
 
+``get_field_list`` can be used to obtain the list of on-disk fields:
+
+.. code-block:: jlcon
+
+    julia> YT.get_field_list(ds)
+    12-element Array{Any,1}:
+     ("flash","dens")
+     ("flash","temp")
+     ("flash","pres")
+     ("flash","gpot")
+     ("flash","divb")
+     ("flash","velx")
+     ("flash","vely")
+     ("flash","velz")
+     ("flash","magx")
+     ("flash","magy")
+     ("flash","magz")
+     ("flash","magp")
+
+and ``get_derived_field_list`` returns a list of all of the fields that can be generated:
+
+.. code-block:: jlcon
+
+    julia> YT.get_derived_field_list(ds)
+    120-element Array{Any,1}:
+     ("flash","dens")
+     ("flash","divb")
+     ("flash","gpot")
+     ("flash","magp")
+     ("flash","magx")
+     ("flash","magy")
+     ("flash","magz")
+     ("flash","pres")
+     ("flash","temp")
+     ("flash","velx")
+     ⋮
+     ("index","radius")
+     ("index","spherical_phi")
+     ("index","spherical_r")
+     ("index","spherical_theta")
+     ("index","virial_radius_fraction")
+     ("index","x")
+     ("index","y")
+     ("index","z")
+     ("index","zeros")
+
 .. note::
 
     These methods apply to ``Dataset``\ s loaded from disk files and to ``Dataset``\ s created

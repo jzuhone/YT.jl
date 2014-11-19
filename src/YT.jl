@@ -5,6 +5,7 @@ module YT
 export Dataset
 export print_stats, get_smallest_dx
 export find_min, find_max, get_field_list
+export get_derived_field_list
 
 # YTArrays, YTQuantities, units
 
@@ -71,7 +72,8 @@ import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray,
     Cutting, CutRegion, DataContainer, Region, has_field_parameter,
     set_field_parameter, get_field_parameter, get_field_parameters,
-    Point, find_min, find_max, quantities, list_quantities, get_field_list
+    Point, find_min, find_max, quantities, list_quantities, get_field_list,
+    get_derived_field_list
 import .plots: SlicePlot, ProjectionPlot, show_plot
 import .images: FixedResolutionBuffer
 import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,

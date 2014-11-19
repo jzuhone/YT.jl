@@ -59,6 +59,10 @@ function get_field_list(ds::Dataset)
     ds.ds[:field_list]
 end
 
+function get_derived_field_list(ds::Dataset)
+    ds.ds[:derived_field_list]
+end
+
 # Data containers
 
 abstract DataContainer

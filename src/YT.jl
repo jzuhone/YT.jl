@@ -45,9 +45,9 @@ export DatasetSeries
 
 # Other
 
-export enable_plugins
+export enable_plugins, ytcfg
 
-import PyCall: @pyimport, PyError
+import PyCall: @pyimport, PyError, pycall, PyObject
 
 include("../deps/yt_check.jl")
 
@@ -56,6 +56,7 @@ check_for_yt()
 @pyimport yt
 @pyimport yt.convenience as ytconv
 @pyimport yt.frontends.stream.api as ytstream
+@pyimport yt.config as ytconfig
 
 include("array.jl")
 include("images.jl")
@@ -79,8 +80,26 @@ import .images: FixedResolutionBuffer
 import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,
     set_field_unit, variance
 import .dataset_series: DatasetSeries
+import Base: show
 
 enable_plugins = yt.enable_plugins
+
+type YTConfig
+    ytcfg::PyObject
+end
+
+function setindex!(ytcfg::YTConfig, value::String, section::String, param::String)
+    pycall(ytcfg.ytcfg["__setitem__"], PyObject, (section, param), value)
+    return nothing
+end
+
+function getindex(ytcfg::YTConfig, section::String, param::String)
+    pycall(ytcfg.ytcfg["get"], String, section, param)
+end
+
+show(ytcfg::YTConfig) = typeof(ytcfg)
+
+ytcfg = YTConfig(ytconfig.ytcfg)
 
 load(fn::String; args...) = Dataset(ytconv.load(fn; args...))
 

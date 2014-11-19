@@ -3,7 +3,7 @@ module data_objects
 import PyCall: PyObject, PyDict, pycall, pybuiltin, PyAny
 import Base: size, show, showarray, display, showerror
 import ..array: YTArray, YTQuantity, in_units, array_or_quan
-import ..images: FixedResolutionBuffer
+import ..fixed_resolution: FixedResolutionBuffer
 
 Center = Union(String,Array{Real,3},YTArray)
 Length = Union(Real,(Real,String),YTQuantity)

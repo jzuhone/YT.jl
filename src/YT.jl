@@ -82,6 +82,8 @@ import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,
 import .dataset_series: DatasetSeries
 import Base: show
 
+include("help.jl")
+
 enable_plugins = yt.enable_plugins
 
 type YTConfig
@@ -90,7 +92,6 @@ end
 
 function setindex!(ytcfg::YTConfig, value::String, section::String, param::String)
     pycall(ytcfg.ytcfg["__setitem__"], PyObject, (section, param), value)
-    return nothing
 end
 
 function getindex(ytcfg::YTConfig, section::String, param::String)

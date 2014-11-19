@@ -147,6 +147,25 @@ and ``get_derived_field_list`` returns a list of all of the fields that can be g
      ("index","z")
      ("index","zeros")
 
+``find_min`` and ``find_max`` are used to find the minimum or maximum of a field. They return
+the field value and the point of the extremum:
+
+.. code-block:: jlcon
+
+    julia> v, p = YT.find_min(ds, "temperature")
+    yt : [INFO     ] 2014-11-19 11:51:56,612 Min Value is 9.48720e+05 at
+    -3673792499999999619235840.0000000000000000 3673792500000000156106752.0000000000000000
+    -3673792499999999619235840.0000000000000000
+
+    julia> v
+    948720.25 K
+
+    julia> p
+    3-element YTArray (code_length):
+     -3.6737924999999996e24
+      3.6737925e24
+     -3.6737924999999996e24
+
 .. note::
 
     These methods apply to ``Dataset``\ s loaded from disk files and to ``Dataset``\ s created

@@ -5,6 +5,7 @@ dc_help["AllData"] = "The entire domain."
 dc_help["CoveringGrid"] = "A fixed-resolution 3D grid of points."
 dc_help["Point"] = "A single point."
 dc_help["Ray"] = "A 1D ray of points."
+dc_help["Region"] = "A 3D region of data with an arbitrary center."
 dc_help["Sphere"] = "A sphere with a given center and radius."
 
 # Help
@@ -25,6 +26,6 @@ macro help_dc(dc_type)
     end
 end
 
-for dc_type = (AllData,CoveringGrid,Point,Ray,Sphere)
+for dc_type = (AllData,CoveringGrid,Point,Ray,Region,Sphere)
     @eval help(io::IO, ::Type{$dc_type}) = @help_dc($dc_type)
 end

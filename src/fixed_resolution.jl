@@ -1,4 +1,4 @@
-module images
+module fixed_resolution
 
 import PyCall: PyObject
 

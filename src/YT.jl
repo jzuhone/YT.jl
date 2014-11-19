@@ -59,7 +59,7 @@ check_for_yt()
 @pyimport yt.config as ytconfig
 
 include("array.jl")
-include("images.jl")
+include("fixed_resolution.jl")
 include("data_objects.jl")
 include("physical_constants.jl")
 include("dataset_series.jl")
@@ -76,7 +76,7 @@ import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     Point, find_min, find_max, quantities, list_quantities, get_field_list,
     get_derived_field_list
 import .plots: SlicePlot, ProjectionPlot, show_plot
-import .images: FixedResolutionBuffer
+import .fixed_resolution: FixedResolutionBuffer
 import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,
     set_field_unit, variance
 import .dataset_series: DatasetSeries

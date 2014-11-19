@@ -3,10 +3,14 @@ import Base: help, arg_decl_parts
 dc_help = Dict()
 dc_help["AllData"] = "The entire domain."
 dc_help["CoveringGrid"] = "A fixed-resolution 3D grid of points."
-dc_help["Point"] = "A single point."
-dc_help["Ray"] = "A 1D ray of points."
-dc_help["Region"] = "A 3D region of data with an arbitrary center."
-dc_help["Sphere"] = "A sphere with a given center and radius."
+dc_help["Cutting"] = "An oblique slice through the domain."
+dc_help["Disk"] = "A cylindrical region."
+dc_help["Point"] = "A single point in the domain."
+dc_help["Proj"] = "An projection along a given axis."
+dc_help["Ray"] = "A oblique ray of points."
+dc_help["Region"] = "A rectangular region of data."
+dc_help["Slice"] = "A slice normal to an axis through the domain."
+dc_help["Sphere"] = "A spherical region."
 
 # Help
 
@@ -26,6 +30,7 @@ macro help_dc(dc_type)
     end
 end
 
-for dc_type = (AllData,CoveringGrid,Point,Ray,Region,Sphere)
+for dc_type = (AllData,CoveringGrid,Cutting,Disk,Point,
+               Proj,Ray,Region,Slice,Sphere)
     @eval help(io::IO, ::Type{$dc_type}) = @help_dc($dc_type)
 end

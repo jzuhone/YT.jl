@@ -55,6 +55,10 @@ function find_max(ds::Dataset, field)
     return YTQuantity(v), YTArray(c)
 end
 
+function get_field_list(ds::Dataset)
+    ds.ds[:field_list]
+end
+
 # Data containers
 
 abstract DataContainer

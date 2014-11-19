@@ -5,7 +5,7 @@ import Base: size, show, showarray, display, showerror
 import ..array: YTArray, YTQuantity, in_units, array_or_quan
 import ..fixed_resolution: FixedResolutionBuffer
 
-Center = Union(String,Array{Real,3},YTArray)
+Center = Union(String,Array{Real,1},YTArray)
 Length = Union(Real,(Real,String),YTQuantity)
 
 # Dataset
@@ -17,7 +17,7 @@ type Dataset
     domain_left_edge::YTArray
     domain_right_edge::YTArray
     domain_width::YTArray
-    domain_dimensions::Array{Integer,3}
+    domain_dimensions::Array{Integer,1}
     dimensionality::Integer
     current_time::YTQuantity
     current_redshift::Real
@@ -83,9 +83,9 @@ end
 type Point <: DataContainer
     cont::PyObject
     ds::Dataset
-    coord::Array{Real,3}
+    coord::Array{Real,1}
     field_dict::Dict
-    function Point(ds::Dataset, coord::Array{Real,3}; args...)
+    function Point(ds::Dataset, coord::Array{Real,1}; args...)
         pt = ds.ds[:point](coord; args...)
         new(pt, ds, pt[:p], Dict())
     end
@@ -101,8 +101,8 @@ type Region <: DataContainer
     right_edge::YTArray
     field_dict::Dict
     function Region(ds::Dataset, center::Center,
-                    left_edge::Union(Array{Real,3},YTArray),
-                    right_edge::Union(Array{Real,3},YTArray);
+                    left_edge::Union(Array{Real,1},YTArray),
+                    right_edge::Union(Array{Real,1},YTArray);
                     data_source=nothing, args...)
         if typeof(center) == YTArray
             c = convert(PyObject, center)
@@ -140,9 +140,9 @@ type Disk <: DataContainer
     cont::PyObject
     ds::Dataset
     center::YTArray
-    normal::Array{Real,3}
+    normal::Array{Real,1}
     field_dict::Dict
-    function Disk(ds::Dataset, center::Center, normal::Array{Real,3},
+    function Disk(ds::Dataset, center::Center, normal::Array{Real,1},
                   radius::Length, height::Length; data_source=nothing,
                   args...)
         if typeof(center) == YTArray
@@ -178,8 +178,8 @@ type Ray <: DataContainer
     start_point::YTArray
     end_point::YTArray
     field_dict::Dict
-    function Ray(ds::Dataset, start_point::Array{Real,3},
-                 end_point::Array{Real,3}; data_source=nothing, args...)
+    function Ray(ds::Dataset, start_point::Array{Real,1},
+                 end_point::Array{Real,1}; data_source=nothing, args...)
         if data_source != nothing
             source = data_source.cont
         else
@@ -196,10 +196,10 @@ end
 type Cutting <: DataContainer
     cont::PyObject
     ds::Dataset
-    normal::Array{Real,3}
+    normal::Array{Real,1}
     center::YTArray
     field_dict::Dict
-    function Cutting(ds::Dataset, normal::Array{Real,3},
+    function Cutting(ds::Dataset, normal::Array{Real,1},
                      center::Center; data_source=nothing, args...)
         if typeof(center) == YTArray
             c = convert(PyObject, center)
@@ -302,9 +302,9 @@ end
 type CutRegion <: DataContainer
     cont::PyObject
     ds::Dataset
-    conditions::Array{String}
+    conditions::Array{String,1}
     field_dict::Dict
-    function CutRegion(dc::DataContainer, conditions::Array{String}; args...)
+    function CutRegion(dc::DataContainer, conditions::Array{String,1}; args...)
         cut_reg = dc.cont[:cut_region](conditions; args...)
         new(cut_reg, dc.ds, conditions, Dict())
     end
@@ -340,7 +340,7 @@ type Grid <: DataContainer
     id::Integer
     level::Integer
     number_of_particles::Integer
-    active_dimensions::Array{Integer,3}
+    active_dimensions::Array{Integer,1}
     Parent::Grids
     Children::Grids
     field_dict::Dict
@@ -354,10 +354,10 @@ type CoveringGrid <: DataContainer
     left_edge::YTArray
     right_edge::YTArray
     level::Integer
-    active_dimensions::Array{Integer,3}
+    active_dimensions::Array{Integer,1}
     field_dict::Dict
-    function CoveringGrid(ds::Dataset, level::Integer, left_edge::Array{Real,3},
-                          dims::Array{Integer,3}; args...)
+    function CoveringGrid(ds::Dataset, level::Integer, left_edge::Array{Real,1},
+                          dims::Array{Integer,1}; args...)
         cg = ds.ds[:covering_grid](level, left_edge, dims; args...)
         new(cg, ds, YTArray(cg["left_edge"]), YTArray(cg["right_edge"]),
             level, cg[:ActiveDimensions], Dict())

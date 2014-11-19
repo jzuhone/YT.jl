@@ -204,7 +204,7 @@ is an optional dictionary which can be stored as dataset attributes to provide a
      0.7789837638416921   0.4639426067506691      0.14832697895106595
      0.6460553973501566   0.04338617942933576     0.6935626833634565
 
-    julia> myinfo = ["field"=>"velocity_magnitude", "source"=>"galaxy cluster"]
+    julia> myinfo = Dict("field"=>"velocity_magnitude", "source"=>"galaxy cluster")
 
     julia> YT.write_hdf5(a, "my_file.h5", dataset_name="cluster", info=myinfo)
 
@@ -230,6 +230,57 @@ The data can be read back into a ``YTArray`` using ``from_hdf5``:
      0.6460553973501566   0.04338617942933576     0.6935626833634565
 
 which is obviously the same array.
+
+It may be useful to generate ``YTArray``\ s of ones or zeros similar to an existing ``YTArray``. This
+can be done with ``ones_like`` and ``zeros_like``:
+
+.. code-block:: jlcon
+
+    julia> YT.ones_like(sp["density"])
+    325184-element YTArray (g/cm**3):
+     1.0
+     1.0
+     1.0
+     1.0
+     1.0
+     1.0
+     1.0
+     1.0
+     1.0
+     1.0
+     ⋮
+     1.0
+     1.0
+     1.0
+     1.0
+     1.0
+     1.0
+     1.0
+     1.0
+     1.0
+
+    julia> YT.zeros_like(sp["density"])
+    325184-element YTArray (g/cm**3):
+     0.0
+     0.0
+     0.0
+     0.0
+     0.0
+     0.0
+     0.0
+     0.0
+     0.0
+     0.0
+     ⋮
+     0.0
+     0.0
+     0.0
+     0.0
+     0.0
+     0.0
+     0.0
+     0.0
+     0.0
 
 .. _quantities:
 

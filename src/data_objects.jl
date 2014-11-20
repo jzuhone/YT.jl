@@ -354,15 +354,16 @@ type CoveringGrid <: DataContainer
     left_edge::YTArray
     right_edge::YTArray
     level::Integer
-    active_dimensions::Array{Integer,1}
+    active_dimensions::Array{Integer}
     field_dict::Dict
-    function CoveringGrid(ds::Dataset, level::Integer, left_edge::Array{Real,1},
-                          dims::Array{Integer,1}; args...)
-        cg = ds.ds[:covering_grid](level, left_edge, dims; args...)
-        new(cg, ds, YTArray(cg["left_edge"]), YTArray(cg["right_edge"]),
-            level, cg[:ActiveDimensions], Dict())
-    end
 end
+function CoveringGrid(ds::Dataset, level::Int64, left_edge::Array,
+                      dims::Array; args...)
+    cg = ds.ds[:covering_grid](level, left_edge, dims; args...)
+    CoveringGrid(cg, ds, YTArray(cg["left_edge"]), YTArray(cg["right_edge"]),
+                 level, cg[:ActiveDimensions], Dict())
+end
+
 
 # Quantities
 

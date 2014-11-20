@@ -20,12 +20,9 @@ macro help_dc(dc_type)
         println("")
         println("   "*dc_help[string($dc_type)])
         println("\n   Parameters\n   ----------\n")
-        mm = methods($dc_type)
-        for m in mm
-            args = arg_decl_parts(m)[2]
-            for arg in args
-                println("   $(arg[1])::$(arg[2])")
-            end
+        args = arg_decl_parts(start(methods($dc_type)))[2]
+        for arg in args
+            println("   $(arg[1])::$(arg[2])")
         end
     end
 end

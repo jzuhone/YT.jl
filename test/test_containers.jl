@@ -37,15 +37,15 @@ b = YT.from_hdf5(file_to_read, dataset_name="prj3")
 
 # Cut region
 
-#conditions = ["obj['kT'] > 0.5"]
-#sp2 = YT.Sphere(ds, cont_dict["sp2"][2]...)
-#cr = YT.CutRegion(sp2, conditions)
-#a = cr["density"]
-#b = YT.from_hdf5(file_to_read, dataset_name="cr")
-#@test all(a.value .== b.value)
-#@test a.units.unit_symbol == b.units.unit_symbol
-#kT = YT.YTQuantity(0.5, "keV")
-#@test all(cr["kT"] .> kT)
+conditions = ["obj['kT'] > 0.5"]
+sp2 = YT.Sphere(ds, cont_dict["sp2"][2]...)
+cr = YT.CutRegion(sp2, conditions)
+a = cr["density"]
+b = YT.from_hdf5(file_to_read, dataset_name="cr")
+@test all(a.value .== b.value)
+@test a.units.unit_symbol == b.units.unit_symbol
+kT = YT.YTQuantity(0.5, "keV")
+@test all(cr["kT"] .> kT)
 
 # Grids
 

@@ -20,8 +20,8 @@ macro help_dc(dc_type)
         println("")
         println("   "*dc_help[string($dc_type)])
         println("\n   Parameters\n   ----------\n")
-        args = arg_decl_parts(start(methods($dc_type)))[2]
-        for arg in args
+        args = arg_decl_parts(methods(Sphere)[1])[2]
+        for arg in args[2:end]
             println("   $(arg[1])::$(arg[2])")
         end
     end

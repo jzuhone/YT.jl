@@ -101,8 +101,8 @@ type Region <: DataContainer
     right_edge::YTArray
     field_dict::Dict
     function Region(ds::Dataset, center::Center,
-                    left_edge::Union(Array,YTArray),
-                    right_edge::Union(Array,YTArray);
+                    left_edge::Union(Array{Float64,1},YTArray),
+                    right_edge::Union(Array{Float64,1},YTArray);
                     data_source=nothing, args...)
         if typeof(center) == YTArray
             c = convert(PyObject, center)

@@ -19,14 +19,14 @@ methods below for creating different objects.
 A ``Length``-type argument is for length quantities such as ``radius`` or ``height`` and can be
 one of the following:
 
-  * A ``Real`` number. If so, the assumed units are ``"code_length"``.
-  * A ``(value, unit)`` tuple, e.g., ``(1.5,"Mpc")``.
+  * A ``FloatingPoint`` number. If so, the assumed units are ``"code_length"``.
+  * A ``(value, unit)`` tuple, e.g., ``(1.5, "Mpc")``.
   * A ``YTQuantity``.
 
 A ``Center``-type argument is for the ``center`` of an object and can be one of the following:
 
   * A ``String``, e.g., ``"max"`` (or ``"m"``), ``"center"`` (or ``"c"``).
-  * An ``Array`` of ``Real`` numbers. If so, the assumed units are ``"code_length"``.
+  * An ``Array`` of ``FloatingPoint`` numbers. If so, the assumed units are ``"code_length"``.
   * A ``YTArray``.
 
 .. |yt_cont_docs| replace:: ``yt`` Documentation on data container objects
@@ -39,6 +39,11 @@ A ``Center``-type argument is for the ``center`` of an object and can be one of 
 
   All of the ``DataContainer`` objects take additional optional arguments,
   which are not documented here. Information on these can be found in the |yt_cont_docs|_.
+
+.. note::
+
+  While in the Julia REPL, you can find out information about the different ``DataContainer``\ s
+  by using the ``help`` method, e.g. ``help(Sphere)``
 
 Available Data Containers
 -------------------------
@@ -71,7 +76,7 @@ located at a coordinate ``coord`` in units of ``code_length``:
 
 .. code-block:: julia
 
-  function Point(ds::Dataset, coord::Array; args...)
+  function Point(ds::Dataset, coord::Array{Float64,1}; args...)
 
 Examples:
 
@@ -114,8 +119,8 @@ or ``Array``\ s of ``Real``\ s, in which case they will be assumed to be in unit
 
 .. code-block:: julia
 
-  function Region(ds::Dataset, center::Center, left_edge::Union(YTArray,Array),
-                    right_edge::Union(YTArray,Array); args...)
+  function Region(ds::Dataset, center::Center, left_edge::Union(YTArray,Array{Float64,1}),
+                    right_edge::Union(YTArray,Array{Float64,1}); args...)
 
 Examples:
 
@@ -141,7 +146,7 @@ A ``Disk`` is a disk or cylinder-shaped region with the z-axis of the cylinder p
 
 .. code-block:: julia
 
-  function Disk(ds::Dataset, center::Center, normal::Array, radius::Length,
+  function Disk(ds::Dataset, center::Center, normal::Array{Float64,1}, radius::Length,
                   height::Length; args...)
 
 Examples:
@@ -160,7 +165,7 @@ and ends at the ``end_point`` in ``code_length`` units.
 
 .. code-block:: julia
 
-  function Ray(ds::Dataset, start_point::Array, end_point::Array; args...)
+  function Ray(ds::Dataset, start_point::Array{Float64,1}, end_point::Array{Float64,1}; args...)
 
 Examples:
 
@@ -180,7 +185,7 @@ string ("x","y","z") or an integer (0,1,2), centered at some coordinate
 .. code-block:: julia
 
   function Slice(ds::Dataset, axis::Union(Integer,String),
-                   coord::Real; args...)
+                   coord::FloatingPoint; args...)
 
 Examples:
 
@@ -225,7 +230,7 @@ at some ``center`` coordinate.
 
 .. code-block:: julia
 
-  function Cutting(ds::Dataset, normal::Array, center::Center; args...)
+  function Cutting(ds::Dataset, normal::Array{Float64,1}, center::Center; args...)
 
 Examples:
 
@@ -255,7 +260,7 @@ which is determined by an array of ``conditions`` on fields in the container.
 
 .. code-block:: julia
 
-  function CutRegion(dc::DataContainer, conditions::Array; args...)
+  function CutRegion(dc::DataContainer, conditions::Array{ASCIIString,1}; args...)
 
 ``conditions`` is a list of conditionals that will be evaluated. In the namespace available,
 these conditionals will have access to ‘obj’ which is a data object of unknown shape, and they
@@ -289,7 +294,7 @@ A ``CoveringGrid`` is a 3D ``DataContainer`` of cells extracted at a fixed resol
 
 .. code-block:: julia
 
-  function CoveringGrid(ds::Dataset, level::Integer, left_edge::Array, dims::Array; args...)
+  function CoveringGrid(ds::Dataset, level::Integer, left_edge::Array{Float64,1}, dims::Array{Int,1}; args...)
 
 ``level`` is the refinement level at which to extract the data, ``left_edge`` is the left edge of
 the grid in ``code_length`` units, and ``dims`` is the number of cells on a side.

@@ -92,7 +92,6 @@ type YTConfig
 end
 
 function setindex!(ytcfg::YTConfig, value::String, section::String, param::String)
-    #pycall(ytcfg.ytcfg["__setitem__"], PyObject, (section, param), value)
     set!(ytcfg.ytcfg, (section,param), value)
 end
 

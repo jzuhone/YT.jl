@@ -536,3 +536,9 @@ use ``get_field_parameters``:
     3.61594e21
 
 For more information about field parameters, consult the |yt_fp_docs|_.
+
+.. _derived_quantities:
+
+Derived Quantities
+------------------
+

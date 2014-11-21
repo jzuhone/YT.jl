@@ -1,6 +1,6 @@
 module data_objects
 
-import PyCall: PyObject, PyDict, pycall, pybuiltin, PyAny
+import PyCall: PyObject, PyDict, pycall
 import Base: size, show, showarray, display, showerror
 import ..array: YTArray, YTQuantity, in_units, array_or_quan
 import ..fixed_resolution: FixedResolutionBuffer
@@ -363,28 +363,6 @@ type CoveringGrid <: DataContainer
         new(cg, ds, YTArray(cg["left_edge"]), YTArray(cg["right_edge"]),
             level, cg[:ActiveDimensions], Dict())
     end
-end
-
-# Quantities
-
-isinstance = pybuiltin("isinstance")
-PyTuple = pybuiltin("tuple")
-PyList = pybuiltin("list")
-
-function quantities(dc::DataContainer, key::String, args...)
-    q = pycall(dc.cont["quantities"]["__getitem__"], PyObject, key)
-    a = pycall(q["__call__"], PyObject, args...)
-    if pycall(isinstance, PyAny, a, PyTuple) || pycall(isinstance, PyAny, a, PyList)
-        n = a[:__len__]()
-        return [array_or_quan(pycall(a["__getitem__"], PyObject, i))
-                for i in 0:n-1]
-    else
-        return array_or_quan(a)
-    end
-end
-
-function list_quantities(dc::DataContainer)
-    dc.cont["quantities"][:keys]()
 end
 
 # Field parameters

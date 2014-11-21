@@ -23,7 +23,7 @@ export load, load_uniform_grid, load_amr_grids, load_particles
 export DataContainer, CutRegion, Disk, Ray, Slice, Region, Point
 export Sphere, AllData, Proj, CoveringGrid, Grids, Cutting
 export set_field_parameter, get_field_parameter, get_field_parameters
-export has_field_parameter, quantities, list_quantities
+export has_field_parameter
 
 # Fixed resolution
 
@@ -45,7 +45,7 @@ export DatasetSeries
 
 # Other
 
-export enable_plugins, ytcfg
+export enable_plugins, ytcfg, quantities
 
 import PyCall: @pyimport, PyError, pycall, PyObject
 
@@ -61,6 +61,7 @@ check_for_yt()
 include("array.jl")
 include("fixed_resolution.jl")
 include("data_objects.jl")
+include("quantities.jl")
 include("physical_constants.jl")
 include("dataset_series.jl")
 include("plots.jl")
@@ -73,14 +74,14 @@ import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray,
     Cutting, CutRegion, DataContainer, Region, has_field_parameter,
     set_field_parameter, get_field_parameter, get_field_parameters,
-    Point, find_min, find_max, quantities, list_quantities, get_field_list,
-    get_derived_field_list
+    Point, find_min, find_max, get_field_list, get_derived_field_list
 import .plots: SlicePlot, ProjectionPlot, show_plot
 import .fixed_resolution: FixedResolutionBuffer
 import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,
     set_field_unit, variance
 import .dataset_series: DatasetSeries
 import Base: show
+import .quantities
 
 include("help.jl")
 

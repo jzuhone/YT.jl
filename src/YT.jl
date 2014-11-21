@@ -47,7 +47,7 @@ export DatasetSeries
 
 export enable_plugins, ytcfg, quantities
 
-import PyCall: @pyimport, PyError, pycall, PyObject
+import PyCall: @pyimport, PyError, pycall, PyObject, set!
 
 include("../deps/yt_check.jl")
 
@@ -92,7 +92,8 @@ type YTConfig
 end
 
 function setindex!(ytcfg::YTConfig, value::String, section::String, param::String)
-    pycall(ytcfg.ytcfg["__setitem__"], PyObject, (section, param), value)
+    #pycall(ytcfg.ytcfg["__setitem__"], PyObject, (section, param), value)
+    set!(ytcfg.ytcfg, (section,param), value)
 end
 
 function getindex(ytcfg::YTConfig, section::String, param::String)

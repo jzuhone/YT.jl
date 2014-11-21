@@ -10,15 +10,15 @@ import PyCall: @pyimport, PyObject
 type DatasetSeries
     ts::PyObject
     num_ds::Int
-    function DatasetSeries(fns::Array{Union(ASCIIString,UTF8String),1})
+    function DatasetSeries(fns::Array{ASCIIString,1})
         ts = time_series.DatasetSeries(fns)
-        num_ds = ts[:__len__]()
+        num_ds = length(fns)
         new(ts, num_ds)
     end
 end
 
 function getindex(ts::DatasetSeries, index::Integer)
-    Dataset(ts.ts[:__getitem__](index-1))
+    Dataset(get(ts.ts, index-1))
 end
 
 length(ts::DatasetSeries) = ts.num_ds

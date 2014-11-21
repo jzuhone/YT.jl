@@ -1,6 +1,6 @@
 module profiles
 
-import PyCall: @pyimport, PyObject
+import PyCall: @pyimport, PyObject, pystring
 import Base.show
 import ..data_objects: DataContainer
 import ..array: YTArray
@@ -91,7 +91,7 @@ function variance(profile::YTProfile, key::String)
     variance(profile, field[1][1], field[1][2])
 end
 
-show(io::IO, profile::YTProfile) = print(io,profile.profile[:__repr__]())
+show(io::IO, profile::YTProfile) = print(io,pystring(profile.profile))
 
 end
 

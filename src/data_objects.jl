@@ -1,6 +1,6 @@
 module data_objects
 
-import PyCall: PyObject, PyDict, pycall
+import PyCall: PyObject, PyDict, pycall, pystring
 import Base: size, show, showarray, display, showerror
 import ..array: YTArray, YTQuantity, in_units, array_or_quan
 import ..fixed_resolution: FixedResolutionBuffer
@@ -378,7 +378,7 @@ end
 
 function get_field_parameter(dc::DataContainer, key::String)
     v = pycall(dc.cont["get_field_parameter"], PyObject, key)
-    if contains(v[:__repr__](), "YTArray")
+    if contains(pystring(v), "YTArray")
         v = YTArray(v)
     else
         v = dc.cont[:get_field_parameter](key)
@@ -399,7 +399,7 @@ end
 function getindex(dc::DataContainer, field::Union(String,Tuple))
     if !haskey(dc.field_dict, field)
         dc.field_dict[field] = YTArray(get(dc.cont, PyObject, field))
-        dc.cont[:__delitem__](field)
+        delete!(dc.cont, field)
     end
     return dc.field_dict[field]
 end
@@ -427,8 +427,8 @@ getindex(grids::Grids, idxs::Ranges) = Grids(grids.grids[idxs])
 
 # Show
 
-show(io::IO, ds::Dataset) = print(io,ds.ds[:__repr__]())
-show(io::IO, dc::DataContainer) = print(io,dc.cont[:__repr__]())
+show(io::IO, ds::Dataset) = print(io,pystring(ds.ds))
+show(io::IO, dc::DataContainer) = print(io,pystring(dc.cont))
 
 function showarray(io::IO, grids::Grids)
     num_grids = length(grids)
@@ -437,21 +437,21 @@ function showarray(io::IO, grids::Grids)
         return
     end
     if num_grids == 1
-        print(io, "[ $(grids.grids[1][:__repr__]()) ]")
+        print(io, "[ $(pystring(grids.grids[1])) ]")
         return
     end
     n = num_grids > 8 ? 5 : num_grids
-    println(io, "[ $(grids.grids[1][:__repr__]()),")
+    println(io, "[ $(pystring(grids.grids[1])),")
     for grid in grids.grids[2:n-1]
-        println(io, "  $(grid[:__repr__]()),")
+        println(io, "  $(pystring(grid)),")
     end
     if num_grids > 8
         println(io, "  ...")
         for grid in grids.grids[num_grids-3:num_grids-1]
-            println(io, "  $(grid[:__repr__]()),")
+            println(io, "  $(pystring(grid)),")
         end
     end
-    print(io, "  $(grids.grids[end][:__repr__]()) ]")
+    print(io, "  $(pystring(grids.grids[end])) ]")
 end
 
 show(io::IO, grids::Grids) = showarray(io, grids)

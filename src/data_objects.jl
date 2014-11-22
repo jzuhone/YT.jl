@@ -80,13 +80,40 @@ end
 
 # Point
 
+@doc doc"""
+      A 0-dimensional object defined by a single point
+
+      Parameters:
+
+      * `ds::Dataset`: The dataset to be used.
+      * `p::Array{Float64,1}`: A point defined within the domain. If the domain is periodic
+        its position will be corrected to lie inside the range [DLE,DRE) to ensure
+        one and only one cell may match that point.
+      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field parameters
+        than can be accessed by derived fields.
+      * `data_source::DataContainer`: Optionally draw the selection from the
+        provided data source rather than all data associated with the dataset
+
+      Examples:
+
+          julia> import YT
+          julia> ds = YT.load("RedshiftOutput0005")
+          julia> c = [0.5,0.5,0.5]
+          julia> point = YT.Point(ds,c)
+      """ ->
 type Point <: DataContainer
     cont::PyObject
     ds::Dataset
     coord::Array{Float64,1}
     field_dict::Dict
-    function Point(ds::Dataset, coord::Array{Float64,1}; args...)
-        pt = ds.ds[:point](coord; args...)
+    function Point(ds::Dataset, coord::Array{Float64,1};
+                   data_source=nothing, args...)
+        if data_source != nothing
+            source = data_source.cont
+        else
+            source = nothing
+        end
+        pt = ds.ds[:point](coord; data_source=source, args...)
         new(pt, ds, pt[:p], Dict())
     end
 end
@@ -172,6 +199,31 @@ end
 
 # Ray
 
+@doc doc"""
+      This is an arbitrarily-aligned ray cast through the entire domain, at a
+      specific coordinate.
+
+      The resulting arrays have their dimensionality reduced to one, and
+      an ordered list of points at an (x,y) tuple are available, as is the
+      `"t"` field, which corresponds to a unitless measurement along
+      the ray from start to end.
+
+      Parameters:
+
+      * `ds::Dataset`: The dataset to be used.
+      * `start_point::Array{Float64,1}`: The place where the ray starts.
+      * `end_point::Array{Float64,1}`: The place where the ray ends.
+      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
+        parameters than can be accessed by derived fields.
+      * `data_source::DataContainer`: Optionally draw the selection from the
+        provided data source rather than all data associated with the dataset
+
+      Examples:
+
+          julia> import YT
+          julia> ds = YT.load("RedshiftOutput0005")
+          julia> ray = YT.Ray(ds, [0.2, 0.74, 0.11], [0.4, 0.91, 0.31])
+      """ ->
 type Ray <: DataContainer
     cont::PyObject
     ds::Dataset

@@ -67,14 +67,50 @@ end
 
 abstract DataContainer
 
+function parse_fps(field_parameters)
+    fps = nothing
+    if field_parameters != nothing
+        fps = Dict()
+        for key in keys(field_parameters)
+            fps[key] = convert(PyObject, field_parameters[key])
+        end
+    end
+    return fps
+end
+
 # All Data
 
+@doc doc"""
+      An object representing all of the data in the domain.
+
+      Parameters:
+
+      * `ds::Dataset`: The dataset to be used.
+      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field parameters
+        than can be accessed by derived fields.
+      * `data_source::DataContainer`: Optionally draw the selection from the
+        provided data source rather than all data associated with the dataset
+
+      Examples:
+
+          julia> import YT
+          julia> ds = YT.load("RedshiftOutput0005")
+          julia> dd = YT.AllData(ds)
+      """ ->
 type AllData <: DataContainer
     cont::PyObject
     ds::Dataset
     field_dict::Dict
-    function AllData(ds::Dataset; args...)
-        new(ds.ds[:all_data](args...), ds, Dict())
+    function AllData(ds::Dataset; field_parameters=nothing,
+                     data_source=nothing, args...)
+        if data_source != nothing
+            source = data_source.cont
+        else
+            source = nothing
+        end
+        field_parameters = parse_fps(field_parameters)
+        new(ds.ds[:all_data](field_parameters=field_parameters,
+                             data_source=source, args...), ds, Dict())
     end
 end
 
@@ -107,13 +143,15 @@ type Point <: DataContainer
     coord::Array{Float64,1}
     field_dict::Dict
     function Point(ds::Dataset, coord::Array{Float64,1};
-                   data_source=nothing, args...)
+                   field_parameters=nothing, data_source=nothing, args...)
         if data_source != nothing
             source = data_source.cont
         else
             source = nothing
         end
-        pt = ds.ds[:point](coord; data_source=source, args...)
+        field_parameters = parse_fps(field_parameters)
+        pt = ds.ds[:point](coord; field_parameters=field_parameters,
+                           data_source=source, args...)
         new(pt, ds, pt[:p], Dict())
     end
 end
@@ -130,7 +168,7 @@ type Region <: DataContainer
     function Region(ds::Dataset, center::Center,
                     left_edge::Union(Array{Float64,1},YTArray),
                     right_edge::Union(Array{Float64,1},YTArray);
-                    data_source=nothing, args...)
+                    field_parameters=nothing, data_source=nothing, args...)
         if typeof(center) == YTArray
             c = convert(PyObject, center)
         else
@@ -155,7 +193,9 @@ type Region <: DataContainer
         else
             source = nothing
         end
-        reg = ds.ds[:region](c, le, re; data_source=source, args...)
+        field_parameters = parse_fps(field_parameters)
+        reg = ds.ds[:region](c, le, re; field_parameters=field_parameters,
+                             data_source=source, args...)
         new(reg, ds, YTArray(reg["center"]), YTArray(reg["left_edge"]),
             YTArray(reg["right_edge"]), Dict())
     end
@@ -245,6 +285,35 @@ end
 
 # Cutting
 
+@doc doc"""
+      This is a data object corresponding to an oblique slice through the
+      simulation domain.
+
+      A cutting plane is an oblique plane through the data, defined by a
+      normal vector and a coordinate. It attempts to guess a "north" vector,
+      which can be overridden, and then it pixelizes the appropriate data
+      onto the plane without interpolation.
+
+      Parameters:
+
+      * `ds::Dataset`: The dataset to be used.
+      * `normal::Array{Float64,1}`: The vector that defines the desired plane.
+        For instance, the angular momentum of a sphere.
+      * `center::Union(ASCIIString,Array{Float64,1},YTArray)` : array_like
+        The center of the cutting plane, where the normal vector is anchored.
+      * `north_vector::Array{Float64,1}`: An optional vector to describe the
+        north-facing direction in the resulting plane.
+      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
+        parameters than can be accessed by derived fields.
+      * `data_source::DataContainer`: Optionally draw the selection from the
+        provided data source rather than all data associated with the dataset
+
+      Examples:
+
+          julia> import YT
+          julia> ds = YT.load("RedshiftOutput0005")
+          juila> cp = YT.Cutting(ds, [0.1, 0.2, -0.9], [0.5, 0.42, 0.6])
+      """ ->
 type Cutting <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -252,6 +321,7 @@ type Cutting <: DataContainer
     center::YTArray
     field_dict::Dict
     function Cutting(ds::Dataset, normal::Array{Float64,1}, center::Center;
+                     north_vector=nothing, field_parameters=nothing,
                      data_source=nothing, args...)
         if typeof(center) == YTArray
             c = convert(PyObject, center)
@@ -263,7 +333,10 @@ type Cutting <: DataContainer
         else
             source = nothing
         end
-        cutting = ds.ds[:cutting](normal, c; data_source=source, args...)
+        field_parameters = parse_fps(field_parameters)
+        cutting = ds.ds[:cutting](normal, c; data_source=source,
+                                  north_vector=north_vector,
+                                  field_parameters=field_parameters, args...)
         new(cutting, ds, cutting[:normal], YTArray(cutting["center"]), Dict())
     end
 end
@@ -278,34 +351,68 @@ type Proj <: DataContainer
     weight_field
     field_dict::Dict
     function Proj(ds::Dataset, field, axis::Union(Integer,ASCIIString);
-                  weight_field=nothing, data_source=nothing, args...)
+                  weight_field=nothing, field_parameters=nothing,
+                  data_source=nothing, args...)
         if data_source != nothing
             source = data_source.cont
         else
             source = nothing
         end
+        field_parameters = parse_fps(field_parameters)
         prj = ds.ds[:proj](field, axis, weight_field=weight_field,
+                           field_parameters=field_parameters,
                            data_source=source; args...)
         new(prj, ds, field, prj["axis"], weight_field, Dict())
     end
 end
 
 # Slice
+@doc doc"""
+      This is a data object corresponding to a slice through the simulation
+      domain.
 
+      The slice is an orthogonal slice through the data, taking all the
+      points at the finest resolution available and then indexing them.
+
+      Parameters:
+
+      * `axis::Integer`: The axis along which to slice. Can be 0, 1, or 2
+        for x, y, z.
+      * `coord::FloatingPoint`: The coordinate along the axis at which to
+        slice. This is in "domain" coordinates.
+      * `center::Array{Float64,1}`: The 'center' supplied to fields that
+        use it. Note that this does not have to have `coord` as one value.
+        Optional.
+      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
+        parameters than can be accessed by derived fields.
+      * `data_source::DataContainer`: Optionally draw the selection from the
+        provided data source rather than all data associated with the dataset
+
+      Examples:
+
+          julia> import YT
+          julia> ds = YT.load("RedshiftOutput0005")
+          julia> slc = Slice(ds, 0, 0.25)
+      """ ->
 type Slice <: DataContainer
     cont::PyObject
     ds::Dataset
     axis::Integer
     coord::Float64
     field_dict::Dict
-    function Slice(ds::Dataset, axis::Union(Integer,ASCIIString),
-                   coord::FloatingPoint; data_source=nothing, args...)
+    function Slice(ds::Dataset, axis::Integer,
+                   coord::FloatingPoint; center=nothing,
+                   field_parameters=nothing,
+                   data_source=nothing, args...)
         if data_source != nothing
             source = data_source.cont
         else
             source = nothing
         end
-        slc = ds.ds[:slice](axis, coord; data_source=source, args...)
+        field_parameters = parse_fps(field_parameters)
+        slc = ds.ds[:slice](axis, coord; center=center,
+                            field_parameters=field_parameters,
+                            data_source=source, args...)
         new(slc, ds, slc["axis"], slc["coord"], Dict())
     end
 end
@@ -327,7 +434,7 @@ type Sphere <: DataContainer
     radius::YTQuantity
     field_dict::Dict
     function Sphere(ds::Dataset, center::Center, radius::Length;
-                    data_source=nothing, args...)
+                    field_parameters=nothing, data_source=nothing, args...)
         if typeof(center) == YTArray
             c = convert(PyObject, center)
         else
@@ -343,7 +450,9 @@ type Sphere <: DataContainer
         else
             source = nothing
         end
-        sp = ds.ds[:sphere](c, r; data_source=source, args...)
+        field_parameters = parse_fps(field_parameters)
+        sp = ds.ds[:sphere](c, r; field_parameters=field_parameters,
+                            data_source=source, args...)
         new(sp, ds, YTArray(sp["center"]),
             YTQuantity(sp["radius"]), Dict())
     end
@@ -410,8 +519,11 @@ type CoveringGrid <: DataContainer
     field_dict::Dict
     function CoveringGrid(ds::Dataset, level::Integer,
                           left_edge::Array{Float64,1},
-                          dims::Array{Int,1}; args...)
-        cg = ds.ds[:covering_grid](level, left_edge, dims; args...)
+                          dims::Array{Int,1};
+                          field_parameters=nothing, args...)
+        field_parameters = parse_fps(field_parameters)
+        cg = ds.ds[:covering_grid](level, left_edge, dims;
+                                   field_parameters=field_parameters, args...)
         new(cg, ds, YTArray(cg["left_edge"]), YTArray(cg["right_edge"]),
             level, cg[:ActiveDimensions], Dict())
     end
@@ -419,15 +531,66 @@ end
 
 # Field parameters
 
+@doc doc"""
+      Set the value of a field parameter in a data container.
+
+      Parameters:
+
+      * `dc::DataContainer`: The data container object to set the
+        parameter for.
+      * `key::String`: The name of the parameter to set.
+      * `value::Any`: The value of the parameter.
+
+      Examples:
+
+          julia> import YT
+          julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
+          julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
+          julia> set_field_parameter(sp, "mu", 0.592)
+
+      """ ->
 function set_field_parameter(dc::DataContainer, key::String, value)
     v = convert(PyObject, value)
     dc.cont[:set_field_parameter](key, v)
 end
 
+@doc doc"""
+      Check if a field parameter is set in a data container object.
+
+      Parameters:
+
+      * `dc::DataContainer`: The data container object to check for
+        a parameter.
+      * `key::String`: The name of the parameter to check.
+
+      Examples:
+
+          julia> import YT
+          julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
+          julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
+          julia> has_field_parameter(sp, "center")
+      """ ->
 function has_field_parameter(dc::DataContainer, key::String)
     dc.cont[:has_field_parameter](key)
 end
 
+@doc doc"""
+      Get the value of a field parameter.
+
+      Parameters:
+
+      * `dc::DataContainer`: The data container object to get the
+        parameter from.
+      * `key::String`: The name of the parameter to get.
+
+      Examples:
+
+          julia> import YT
+          julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
+          julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
+          julia> ctr = get_field_parameter(sp, "center")
+
+      """ ->
 function get_field_parameter(dc::DataContainer, key::String)
     v = pycall(dc.cont["get_field_parameter"], PyObject, key)
     if contains(pystring(v), "YTArray")
@@ -438,6 +601,22 @@ function get_field_parameter(dc::DataContainer, key::String)
     return v
 end
 
+@doc doc"""
+      Get all of the field parameters from a data container. Returns
+      a dictionary of field parameters.
+
+      Parameters:
+
+      * `dc::DataContainer`: The data container object to get the
+        parameters from.
+
+      Examples:
+
+          julia> import YT
+          julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
+          julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
+          julia> field_parameters = get_field_parameters(sp)
+      """ ->
 function get_field_parameters(dc::DataContainer)
     fp = Dict()
     for k in collect(keys(dc.cont[:field_parameters]))

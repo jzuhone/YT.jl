@@ -54,8 +54,8 @@ function print_stats(ds::Dataset)
 end
 
 @doc doc"""
-      For a `ds::Dataset`, find the value and the location of a
-      `field::Field`.
+      For a `ds::Dataset`, find the value and the location of the
+      minimum of a `field::Field`.
       """ ->
 function find_min(ds::Dataset, field::Field)
     v, c = pycall(ds.ds["find_min"], (PyObject, PyObject), field)
@@ -63,8 +63,8 @@ function find_min(ds::Dataset, field::Field)
 end
 
 @doc doc"""
-      For a `ds::Dataset`, find the value and the location of a
-      `field::Field`.
+      For a `ds::Dataset`, find the value and the location of the
+      maximum of a `field::Field`.
       """ ->
 function find_max(ds::Dataset, field::Field)
     v, c = pycall(ds.ds["find_max"], (PyObject, PyObject), field)

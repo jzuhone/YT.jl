@@ -120,7 +120,8 @@ or ``Array``\ s of ``Real``\ s, in which case they will be assumed to be in unit
 .. code-block:: julia
 
   function Region(ds::Dataset, center::Center, left_edge::Union(YTArray,Array{Float64,1}),
-                  right_edge::Union(YTArray,Array{Float64,1}); field_parameters::Dict{ASCIIString,Any}, 
+                  right_edge::Union(YTArray,Array{Float64,1}); 
+                  field_parameters::Dict{ASCIIString,Any}, 
                   data_source::DataContainer)
 
 Examples:
@@ -148,7 +149,8 @@ A ``Disk`` is a disk or cylinder-shaped region with the z-axis of the cylinder p
 .. code-block:: julia
 
   function Disk(ds::Dataset, center::Center, normal::Array{Float64,1}, radius::Length,
-                  height::Length; args...)
+                height::Length; field_parameters::Dict{ASCIIString,Any}, 
+                data_source::DataContainer)
 
 Examples:
 
@@ -166,7 +168,8 @@ and ends at the ``end_point`` in ``code_length`` units.
 
 .. code-block:: julia
 
-  function Ray(ds::Dataset, start_point::Array{Float64,1}, end_point::Array{Float64,1}; args...)
+  function Ray(ds::Dataset, start_point::Array{Float64,1}, end_point::Array{Float64,1};
+               field_parameters::Dict{ASCIIString,Any}, data_source::DataContainer)
 
 Examples:
 
@@ -185,8 +188,8 @@ string ("x","y","z") or an integer (0,1,2), centered at some coordinate
 
 .. code-block:: julia
 
-  function Slice(ds::Dataset, axis::Union(Integer,String),
-                   coord::FloatingPoint; args...)
+  function Slice(ds::Dataset, axis::Union(Integer,String), coord::FloatingPoint;
+                 field_parameters::Dict{ASCIIString,Any}, data_source::DataContainer)
 
 Examples:
 
@@ -231,7 +234,8 @@ at some ``center`` coordinate.
 
 .. code-block:: julia
 
-  function Cutting(ds::Dataset, normal::Array{Float64,1}, center::Center; args...)
+  function Cutting(ds::Dataset, normal::Array{Float64,1}, center::Center;
+                   field_parameters::Dict{ASCIIString,Any}, data_source::DataContainer)
 
 Examples:
 
@@ -295,7 +299,9 @@ A ``CoveringGrid`` is a 3D ``DataContainer`` of cells extracted at a fixed resol
 
 .. code-block:: julia
 
-  function CoveringGrid(ds::Dataset, level::Integer, left_edge::Array{Float64,1}, dims::Array{Int,1}; args...)
+  function CoveringGrid(ds::Dataset, level::Integer, left_edge::Array{Float64,1}, 
+                        dims::Array{Int,1}; field_parameters::Dict{ASCIIString,Any}, 
+                        data_source::DataContainer)
 
 ``level`` is the refinement level at which to extract the data, ``left_edge`` is the left edge of
 the grid in ``code_length`` units, and ``dims`` is the number of cells on a side.
@@ -332,13 +338,13 @@ The fields of this ``DataContainer`` are 3D ``YTArray``\ s:
    -1.12805e7  -1.05476e7  -9.79831e6          -1.95956e6       -2.26497e6
    -1.15351e7  -1.08149e7  -1.0073e7   …       -1.24862e6       -1.56333e6
    -1.17823e7  -1.10766e7  -1.03451e7          -1.24862e6       -1.56333e6
-   -1.20202e7  -1.13275e7  -1.06126e7     -567435.0        -850258.0
-   -1.22529e7  -1.15684e7  -1.08709e7     -567435.0        -850258.0
-   -1.24835e7  -1.18055e7  -1.11232e7       26094.7        -200632.0
-   -1.27079e7  -1.20408e7  -1.13734e7  …    26094.7        -200632.0
-   -1.2922e7   -1.22686e7  -1.16157e7      537401.0         358841.0
-   -1.31273e7  -1.24859e7  -1.1844e7       537401.0         358841.0
-   -1.33282e7  -1.26955e7  -1.20595e7      973392.0         829474.0
+   -1.20202e7  -1.13275e7  -1.06126e7          -567435.0        -850258.0
+   -1.22529e7  -1.15684e7  -1.08709e7          -567435.0        -850258.0
+   -1.24835e7  -1.18055e7  -1.11232e7            26094.7        -200632.0
+   -1.27079e7  -1.20408e7  -1.13734e7  …         26094.7        -200632.0
+   -1.2922e7   -1.22686e7  -1.16157e7           537401.0         358841.0
+   -1.31273e7  -1.24859e7  -1.1844e7            537401.0         358841.0
+   -1.33282e7  -1.26955e7  -1.20595e7           973392.0         829474.0
 
    ...
 

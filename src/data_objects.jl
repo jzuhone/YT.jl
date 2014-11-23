@@ -225,6 +225,33 @@ end
 
 # Disk
 
+@doc doc"""
+      By providing a `center`, a `normal`, a `radius` and a `height` we
+      can define a cylinder of any proportion. Only cells whose centers
+      are within the cylinder will be selected.
+
+      Parameters:
+
+      * `ds::Dataset`: The dataset to be used.
+      * `center::Center`: Coordinate to which the normal, radius, and
+        height all reference
+      * `normal::Array{Float64,1}`: The normal vector defining the
+        direction of lengthwise part of the cylinder
+      * `radius::Length`: The radius of the cylinder
+      * `height::Length`: The distance from the midplane of the
+        cylinder to the top and bottom planes
+      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field parameters
+        than can be accessed by derived fields.
+      * `data_source::DataContainer`: Optionally draw the selection from the
+        provided data source rather than all data associated with the dataset
+
+      Examples:
+
+          julia> import YT
+          julia> ds = YT.load("RedshiftOutput0005")
+          julia> c = [0.5,0.5,0.5]
+          julia> disk = Disk(ds, c, [1,0,0], (1, 'kpc'), (10, 'kpc'))
+      """ ->
 type Disk <: DataContainer
     cont::PyObject
     ds::Dataset

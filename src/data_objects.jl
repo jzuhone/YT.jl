@@ -454,7 +454,7 @@ type Slice <: DataContainer
     axis::Integer
     coord::Float64
     field_dict::Dict
-    function Slice(ds::Dataset, axis::Integer,
+    function Slice(ds::Dataset, axis::Union(Integer,ASCIIString),
                    coord::FloatingPoint; center=nothing,
                    field_parameters=nothing,
                    data_source=nothing)

@@ -7,6 +7,7 @@ import ..fixed_resolution: FixedResolutionBuffer
 
 Center = Union(ASCIIString,Array{Float64,1},YTArray)
 Length = Union(FloatingPoint,(FloatingPoint,ASCIIString),YTQuantity)
+Field  = Union(ASCIIString,(ASCIIString,ASCIIString))
 
 # Dataset
 
@@ -52,12 +53,20 @@ function print_stats(ds::Dataset)
     ds.ds[:print_stats]()
 end
 
-function find_min(ds::Dataset, field)
+@doc doc"""
+      For a `ds::Dataset`, find the value and the location of a
+      `field::Field`.
+      """ ->
+function find_min(ds::Dataset, field::Field)
     v, c = pycall(ds.ds["find_min"], (PyObject, PyObject), field)
     return YTQuantity(v), YTArray(c)
 end
 
-function find_max(ds::Dataset, field)
+@doc doc"""
+      For a `ds::Dataset`, find the value and the location of a
+      `field::Field`.
+      """ ->
+function find_max(ds::Dataset, field::Field)
     v, c = pycall(ds.ds["find_max"], (PyObject, PyObject), field)
     return YTQuantity(v), YTArray(c)
 end
@@ -286,13 +295,16 @@ type Ray <: DataContainer
     end_point::YTArray
     field_dict::Dict
     function Ray(ds::Dataset, start_point::Array{Float64,1},
-                 end_point::Array{Float64,1}; data_source=nothing)
+                 end_point::Array{Float64,1}; field_parameters=nothing,
+                 data_source=nothing)
         if data_source != nothing
             source = data_source.cont
         else
             source = nothing
         end
-        ray = ds.ds[:ray](start_point, end_point; data_source=source)
+        field_parameters = parse_fps(field_parameters)
+        ray = ds.ds[:ray](start_point, end_point; field_parameters=field_parameters,
+                          data_source=source)
         new(ray, ds, YTArray(ray["start_point"]),
             YTArray(ray["end_point"]), Dict())
     end
@@ -480,8 +492,8 @@ type CutRegion <: DataContainer
     ds::Dataset
     conditions::Array{ASCIIString,1}
     field_dict::Dict
-    function CutRegion(dc::DataContainer, conditions::Array{ASCIIString,1}; args...)
-        cut_reg = dc.cont[:cut_region](conditions; args...)
+    function CutRegion(dc::DataContainer, conditions::Array{ASCIIString,1})
+        cut_reg = dc.cont[:cut_region](conditions)
         new(cut_reg, dc.ds, conditions, Dict())
     end
 end
@@ -642,7 +654,7 @@ end
 
 # Indices
 
-function getindex(dc::DataContainer, field::Union(String,Tuple))
+function getindex(dc::DataContainer, field::Field
     if !haskey(dc.field_dict, field)
         dc.field_dict[field] = YTArray(get(dc.cont, PyObject, field))
         delete!(dc.cont, field)
@@ -650,8 +662,8 @@ function getindex(dc::DataContainer, field::Union(String,Tuple))
     return dc.field_dict[field]
 end
 
-getindex(dc::DataContainer, ftype::String,
-         fname::String) = getindex(dc, (ftype, fname))
+getindex(dc::DataContainer, ftype::ASCIIString,
+         fname::ASCIIString) = getindex(dc, (ftype, fname))
 
 function getindex(grids::Grids, i::Integer)
     if !haskey(grids.grid_dict, i)

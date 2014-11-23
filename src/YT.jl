@@ -83,8 +83,6 @@ import .dataset_series: DatasetSeries
 import Base: show
 import .quantities
 
-include("help.jl")
-
 enable_plugins = yt.enable_plugins
 
 type YTConfig

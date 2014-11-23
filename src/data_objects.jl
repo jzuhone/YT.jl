@@ -654,7 +654,7 @@ end
 
 # Indices
 
-function getindex(dc::DataContainer, field::Field
+function getindex(dc::DataContainer, field::Field)
     if !haskey(dc.field_dict, field)
         dc.field_dict[field] = YTArray(get(dc.cont, PyObject, field))
         delete!(dc.cont, field)

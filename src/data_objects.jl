@@ -37,10 +37,17 @@ type Dataset
     end
 end
 
+@doc doc"""
+      Get the smallest cell size or SPH smoothing length of
+      a `ds::Dataset`.
+      """ ->
 function get_smallest_dx(ds::Dataset)
     pycall(ds.ds[:index]["get_smallest_dx"], YTArray)[1]
 end
 
+@doc doc"""
+      Print important stats on a `ds::Dataset`.
+      """ ->
 function print_stats(ds::Dataset)
     ds.ds[:print_stats]()
 end
@@ -55,10 +62,16 @@ function find_max(ds::Dataset, field)
     return YTQuantity(v), YTArray(c)
 end
 
+@doc doc"""
+      Get the field list of a `ds::Dataset`.
+      """ ->
 function get_field_list(ds::Dataset)
     ds.ds[:field_list]
 end
 
+@doc doc"""
+      Get all of the derived fields of a `ds::Dataset`.
+      """ ->
 function get_derived_field_list(ds::Dataset)
     ds.ds[:derived_field_list]
 end
@@ -102,7 +115,7 @@ type AllData <: DataContainer
     ds::Dataset
     field_dict::Dict
     function AllData(ds::Dataset; field_parameters=nothing,
-                     data_source=nothing, args...)
+                     data_source=nothing)
         if data_source != nothing
             source = data_source.cont
         else
@@ -110,7 +123,7 @@ type AllData <: DataContainer
         end
         field_parameters = parse_fps(field_parameters)
         new(ds.ds[:all_data](field_parameters=field_parameters,
-                             data_source=source, args...), ds, Dict())
+                             data_source=source), ds, Dict())
     end
 end
 
@@ -143,7 +156,7 @@ type Point <: DataContainer
     coord::Array{Float64,1}
     field_dict::Dict
     function Point(ds::Dataset, coord::Array{Float64,1};
-                   field_parameters=nothing, data_source=nothing, args...)
+                   field_parameters=nothing, data_source=nothing)
         if data_source != nothing
             source = data_source.cont
         else
@@ -151,7 +164,7 @@ type Point <: DataContainer
         end
         field_parameters = parse_fps(field_parameters)
         pt = ds.ds[:point](coord; field_parameters=field_parameters,
-                           data_source=source, args...)
+                           data_source=source)
         new(pt, ds, pt[:p], Dict())
     end
 end
@@ -168,7 +181,7 @@ type Region <: DataContainer
     function Region(ds::Dataset, center::Center,
                     left_edge::Union(Array{Float64,1},YTArray),
                     right_edge::Union(Array{Float64,1},YTArray);
-                    field_parameters=nothing, data_source=nothing, args...)
+                    field_parameters=nothing, data_source=nothing)
         if typeof(center) == YTArray
             c = convert(PyObject, center)
         else
@@ -195,7 +208,7 @@ type Region <: DataContainer
         end
         field_parameters = parse_fps(field_parameters)
         reg = ds.ds[:region](c, le, re; field_parameters=field_parameters,
-                             data_source=source, args...)
+                             data_source=source)
         new(reg, ds, YTArray(reg["center"]), YTArray(reg["left_edge"]),
             YTArray(reg["right_edge"]), Dict())
     end
@@ -210,8 +223,8 @@ type Disk <: DataContainer
     normal::Array{Float64,1}
     field_dict::Dict
     function Disk(ds::Dataset, center::Center, normal::Array{Float64,1},
-                  radius::Length, height::Length; data_source=nothing,
-                  args...)
+                  radius::Length, height::Length; field_parameters=nothing,
+                  data_source=nothing)
         if typeof(center) == YTArray
             c = convert(PyObject, center)
         else
@@ -232,7 +245,9 @@ type Disk <: DataContainer
         else
             source = nothing
         end
-        dk = ds.ds[:disk](c, normal, r, h; data_source=source, args...)
+        field_parameters = parse_fps(field_parameters)
+        dk = ds.ds[:disk](c, normal, r, h; field_parameters=field_parameters,
+                          data_source=source)
         new(dk, ds, YTArray(dk["center"]), normal, Dict())
     end
 end
@@ -271,13 +286,13 @@ type Ray <: DataContainer
     end_point::YTArray
     field_dict::Dict
     function Ray(ds::Dataset, start_point::Array{Float64,1},
-                 end_point::Array{Float64,1}; data_source=nothing, args...)
+                 end_point::Array{Float64,1}; data_source=nothing)
         if data_source != nothing
             source = data_source.cont
         else
             source = nothing
         end
-        ray = ds.ds[:ray](start_point, end_point; data_source=source, args...)
+        ray = ds.ds[:ray](start_point, end_point; data_source=source)
         new(ray, ds, YTArray(ray["start_point"]),
             YTArray(ray["end_point"]), Dict())
     end
@@ -322,7 +337,7 @@ type Cutting <: DataContainer
     field_dict::Dict
     function Cutting(ds::Dataset, normal::Array{Float64,1}, center::Center;
                      north_vector=nothing, field_parameters=nothing,
-                     data_source=nothing, args...)
+                     data_source=nothing)
         if typeof(center) == YTArray
             c = convert(PyObject, center)
         else
@@ -336,7 +351,7 @@ type Cutting <: DataContainer
         field_parameters = parse_fps(field_parameters)
         cutting = ds.ds[:cutting](normal, c; data_source=source,
                                   north_vector=north_vector,
-                                  field_parameters=field_parameters, args...)
+                                  field_parameters=field_parameters)
         new(cutting, ds, cutting[:normal], YTArray(cutting["center"]), Dict())
     end
 end
@@ -352,16 +367,16 @@ type Proj <: DataContainer
     field_dict::Dict
     function Proj(ds::Dataset, field, axis::Union(Integer,ASCIIString);
                   weight_field=nothing, field_parameters=nothing,
-                  data_source=nothing, args...)
+                  data_source=nothing)
         if data_source != nothing
             source = data_source.cont
         else
             source = nothing
         end
         field_parameters = parse_fps(field_parameters)
-        prj = ds.ds[:proj](field, axis, weight_field=weight_field,
+        prj = ds.ds[:proj](field, axis; weight_field=weight_field,
                            field_parameters=field_parameters,
-                           data_source=source; args...)
+                           data_source=source)
         new(prj, ds, field, prj["axis"], weight_field, Dict())
     end
 end
@@ -376,8 +391,8 @@ end
 
       Parameters:
 
-      * `axis::Integer`: The axis along which to slice. Can be 0, 1, or 2
-        for x, y, z.
+      * `axis::Union(Integer,ASCIIString)`: The axis along which to slice.
+        Can be 0, 1, or 2, or "x", "y", or "z", for x, y, z.
       * `coord::FloatingPoint`: The coordinate along the axis at which to
         slice. This is in "domain" coordinates.
       * `center::Array{Float64,1}`: The 'center' supplied to fields that
@@ -403,7 +418,7 @@ type Slice <: DataContainer
     function Slice(ds::Dataset, axis::Integer,
                    coord::FloatingPoint; center=nothing,
                    field_parameters=nothing,
-                   data_source=nothing, args...)
+                   data_source=nothing)
         if data_source != nothing
             source = data_source.cont
         else
@@ -412,7 +427,7 @@ type Slice <: DataContainer
         field_parameters = parse_fps(field_parameters)
         slc = ds.ds[:slice](axis, coord; center=center,
                             field_parameters=field_parameters,
-                            data_source=source, args...)
+                            data_source=source)
         new(slc, ds, slc["axis"], slc["coord"], Dict())
     end
 end
@@ -434,7 +449,7 @@ type Sphere <: DataContainer
     radius::YTQuantity
     field_dict::Dict
     function Sphere(ds::Dataset, center::Center, radius::Length;
-                    field_parameters=nothing, data_source=nothing, args...)
+                    field_parameters=nothing, data_source=nothing)
         if typeof(center) == YTArray
             c = convert(PyObject, center)
         else
@@ -452,7 +467,7 @@ type Sphere <: DataContainer
         end
         field_parameters = parse_fps(field_parameters)
         sp = ds.ds[:sphere](c, r; field_parameters=field_parameters,
-                            data_source=source, args...)
+                            data_source=source)
         new(sp, ds, YTArray(sp["center"]),
             YTQuantity(sp["radius"]), Dict())
     end
@@ -520,10 +535,10 @@ type CoveringGrid <: DataContainer
     function CoveringGrid(ds::Dataset, level::Integer,
                           left_edge::Array{Float64,1},
                           dims::Array{Int,1};
-                          field_parameters=nothing, args...)
+                          field_parameters=nothing)
         field_parameters = parse_fps(field_parameters)
         cg = ds.ds[:covering_grid](level, left_edge, dims;
-                                   field_parameters=field_parameters, args...)
+                                   field_parameters=field_parameters)
         new(cg, ds, YTArray(cg["left_edge"]), YTArray(cg["right_edge"]),
             level, cg[:ActiveDimensions], Dict())
     end

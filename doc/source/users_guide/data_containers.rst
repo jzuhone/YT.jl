@@ -37,13 +37,8 @@ A ``Center``-type argument is for the ``center`` of an object and can be one of 
 
 .. note::
 
-  All of the ``DataContainer`` objects take additional optional arguments,
-  which are not documented here. Information on these can be found in the |yt_cont_docs|_.
-
-.. note::
-
   While in the Julia REPL, you can find out information about the different ``DataContainer``\ s
-  by using the ``help`` method, e.g. ``help(Sphere)``
+  by checking its docstring with ``@doc AllData`` or using the help system with ``?``.
 
 Available Data Containers
 -------------------------
@@ -58,7 +53,8 @@ no parameters to create, except the ``Dataset`` object:
 
 .. code-block:: julia
 
-  function AllData(ds::Dataset; args...)
+  function AllData(ds::Dataset; field_parameters::Dict{ASCIIString,Any}, 
+                   data_source::DataContainer)
 
 Examples:
 
@@ -76,7 +72,9 @@ located at a coordinate ``coord`` in units of ``code_length``:
 
 .. code-block:: julia
 
-  function Point(ds::Dataset, coord::Array{Float64,1}; args...)
+  function Point(ds::Dataset, coord::Array{Float64,1}; 
+                 field_parameters::Dict{ASCIIString,Any}, 
+                 data_source::DataContainer)
 
 Examples:
 
@@ -93,7 +91,9 @@ A ``Sphere`` is an object with a ``center`` and a ``radius``.
 
 .. code-block:: julia
 
-  function Sphere(ds::Dataset, center::Center, radius::Length; args...)
+  function Sphere(ds::Dataset, center::Center, radius::Length; 
+                  field_parameters::Dict{ASCIIString,Any}, 
+                  data_source::DataContainer)
 
 Examples:
 
@@ -120,7 +120,8 @@ or ``Array``\ s of ``Real``\ s, in which case they will be assumed to be in unit
 .. code-block:: julia
 
   function Region(ds::Dataset, center::Center, left_edge::Union(YTArray,Array{Float64,1}),
-                    right_edge::Union(YTArray,Array{Float64,1}); args...)
+                  right_edge::Union(YTArray,Array{Float64,1}); field_parameters::Dict{ASCIIString,Any}, 
+                  data_source::DataContainer)
 
 Examples:
 

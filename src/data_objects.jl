@@ -71,7 +71,7 @@ function parse_fps(field_parameters)
     fps = nothing
     if field_parameters != nothing
         fps = Dict()
-        for key in keys(field_parameters)
+        for key in collect(keys(field_parameters))
             fps[key] = convert(PyObject, field_parameters[key])
         end
     end
@@ -593,7 +593,7 @@ end
       """ ->
 function get_field_parameter(dc::DataContainer, key::String)
     v = pycall(dc.cont["get_field_parameter"], PyObject, key)
-    if contains(pystring(v), "YTArray")
+    if contains(pystring(v), "YTArray") || contains(pystring(v), "YTQuantity")
         v = YTArray(v)
     else
         v = dc.cont[:get_field_parameter](key)

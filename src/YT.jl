@@ -61,7 +61,6 @@ check_for_yt()
 include("array.jl")
 include("fixed_resolution.jl")
 include("data_objects.jl")
-include("quantities.jl")
 include("physical_constants.jl")
 include("dataset_series.jl")
 include("plots.jl")
@@ -82,7 +81,6 @@ import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,
     set_field_unit, variance
 import .dataset_series: DatasetSeries
 import Base: show
-import .quantities
 
 @doc doc""" Enable the plugins defined in the plugin file.""" ->
 enable_plugins = yt.enable_plugins

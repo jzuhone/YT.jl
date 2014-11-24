@@ -693,7 +693,7 @@ type CutRegion <: DataContainer
             source = nothing
         end
         field_parameters = parse_fps(field_parameters)
-        cut_reg = dc.cont[:cut_region](conditions,
+        cut_reg = dc.cont[:cut_region](conditionals,
                                        field_parameters=field_parameters,
                                        data_source=source)
         new(cut_reg, dc.ds, conditions, Dict())

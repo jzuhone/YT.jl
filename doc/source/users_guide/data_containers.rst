@@ -154,7 +154,7 @@ A ``Disk`` is a disk or cylinder-shaped region with the z-axis of the cylinder p
 .. code-block:: julia
 
   function Disk(ds::Dataset, center::Center, normal::Array{Float64,1},
-                radius::Length, height::Length; f
+                radius::Length, height::Length;
                 field_parameters=nothing,
                 data_source=nothing)
 
@@ -183,7 +183,7 @@ Examples:
 
 .. code-block:: jlcon
 
-  julia> ray = Ray(ds, [0.0,0.0,0.0], [3.0e23,3.0e23,3.0e23])
+  julia> ray = YT.Ray(ds, [0.0,0.0,0.0], [3.0e23,3.0e23,3.0e23])
 
 .. _ortho_ray:
 
@@ -204,7 +204,7 @@ Examples:
 
 .. code-block:: jlcon
 
-  julia> ortho_ray = OrthoRay(ds, 0, [1.0e23,-2.0e22])
+  julia> ortho_ray = YT.OrthoRay(ds, 0, [1.0e23,-2.0e22])
 
 .. _slice:
 
@@ -217,7 +217,7 @@ string ("x","y","z") or an integer (0,1,2), centered at some coordinate
 
 .. code-block:: julia
 
-  function Slice(ds::Dataset, axis::Union(Integer,String),
+  function Slice(ds::Dataset, axis::Union(Integer,ASCIIString),
                  coord::FloatingPoint;
                  field_parameters=nothing,
                  data_source=nothing)
@@ -237,12 +237,13 @@ A ``Proj`` is an integral of a given ``field`` along a sight line corresponding 
 
 .. code-block:: julia
 
-  function Proj(ds::Dataset, field, axis::Union(Integer,String);
+  function Proj(ds::Dataset, field, axis::Union(Integer,ASCIIString);
                 weight_field=nothing, data_source=nothing,
                 field_parameters=nothing, method=nothing)
 
 The optional argument ``weight_field`` (a field name) allows the projection to be weighted.
 The optional argument ``method`` selects the projection method type:
+
 * "integrate" : integration along the axis
 * "mip" : maximum intensity projection
 * "sum" : same as "integrate", except that we don't multiply by the path length
@@ -407,7 +408,7 @@ You can access the individual fields of a single ``Grid`` object as well:
 
 .. code-block:: jlcon
 
-  julia> grids = Grids(ds)
+  julia> grids = YT.Grids(ds)
   [ FLASHGrid_0001 ([16 16 16]),
     FLASHGrid_0002 ([16 16 16]),
     FLASHGrid_0003 ([16 16 16]),

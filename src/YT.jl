@@ -84,6 +84,7 @@ import .dataset_series: DatasetSeries
 import Base: show
 import .quantities
 
+@doc doc""" Enable the plugins defined in the plugin file.""" ->
 enable_plugins = yt.enable_plugins
 
 type YTConfig
@@ -102,7 +103,8 @@ show(ytcfg::YTConfig) = typeof(ytcfg)
 
 ytcfg = YTConfig(ytconfig.ytcfg)
 
-load(fn::String; args...) = Dataset(ytconv.load(fn; args...))
+@doc doc""" `load` a `Dataset` object from the file `fn::ASCIIString`.""" ->
+load(fn::ASCIIString; args...) = Dataset(ytconv.load(fn; args...))
 
 # Stream datasets
 

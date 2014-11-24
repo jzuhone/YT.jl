@@ -5,7 +5,7 @@ import Base: size, show, showarray, display, showerror
 import ..array: YTArray, YTQuantity, in_units, array_or_quan
 import ..fixed_resolution: FixedResolutionBuffer
 
-Center = Union(ASCIIString,Array{Float64,1},YTArray)
+Center = Union(ASCIIString,Array{Float64,1},YTArray,(ASCIIString,ASCIIString))
 Length = Union(FloatingPoint,(FloatingPoint,ASCIIString),YTQuantity)
 Field  = Union(ASCIIString,(ASCIIString,ASCIIString))
 
@@ -100,7 +100,7 @@ function parse_fps(field_parameters)
     return fps
 end
 
-# All Data
+# AllData
 
 @doc doc"""
       An object representing all of the data in the domain.
@@ -179,7 +179,37 @@ type Point <: DataContainer
 end
 
 # Region
+@doc doc"""
+      A 3D region of data with an arbitrary center.
 
+      Takes an array of three *left_edge* coordinates, three
+      *right_edge* coordinates, and a *center* that can be
+      anywhere in the domain. If the selected region extends
+      past the edges of the domain, no data will be found there,
+      though the object's `left_edge` or `right_edge` are not modified.
+
+      Parameters:
+
+      * `ds::Dataset`: The dataset to be used.
+      * `center::Center`: The center of the region
+      * `left_edge::Union(Array{Float64,1},YTArray)`: The left edge of
+        the region
+      * `right_edge::Union(Array{Float64,1},YTArray)`: The right edge of
+        the region
+      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field parameters
+        than can be accessed by derived fields.
+      * `data_source::DataContainer`: Optionally draw the selection from the
+        provided data source rather than all data associated with the dataset
+
+      Examples:
+          julia> import YT
+          julia> ds = YT.load("RedshiftOutput0005")
+          julia> left_edge = [0.1,0.1,0.1]
+          julia> right_edge = [0.6,0.6,0.6]
+          julia> center = "max"
+          julia> region = YT.Region(ds,center,left_edge,right_edge)
+
+      """ ->
 type Region <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -338,7 +368,7 @@ type Ray <: DataContainer
 end
 
 # OrthoRay
-@doc doc """
+@doc doc"""
       This is an orthogonal ray cast through the entire domain, at a specific
       coordinate.
 

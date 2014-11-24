@@ -474,7 +474,7 @@ type Cutting <: DataContainer
     end
 end
 
-# Projection
+# Proj
 
 @doc doc"""
       This is a data object corresponding to a line integral through the
@@ -528,7 +528,7 @@ type Proj <: DataContainer
     field_dict::Dict
     function Proj(ds::Dataset, field, axis::Union(Integer,ASCIIString);
                   weight_field=nothing, field_parameters=nothing,
-                  data_source=nothing, method=nothing)
+                  data_source=nothing, method="integrate")
         if data_source != nothing
             source = data_source.cont
         else

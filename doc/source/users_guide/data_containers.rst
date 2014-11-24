@@ -20,12 +20,15 @@ A ``Length``-type argument is for length quantities such as ``radius`` or ``heig
 one of the following:
 
   * A ``FloatingPoint`` number. If so, the assumed units are ``"code_length"``.
-  * A ``(value, unit)`` tuple, e.g., ``(1.5, "Mpc")``.
+  * A ``(FloatingPoint, ASCIIString)`` tuple, e.g., ``(1.5, "Mpc")``.
   * A ``YTQuantity``.
 
 A ``Center``-type argument is for the ``center`` of an object and can be one of the following:
 
-  * A ``String``, e.g., ``"max"`` (or ``"m"``), ``"center"`` (or ``"c"``).
+  * An ``ASCIIString``, e.g., ``"max"`` (or ``"m"``), ``"center"`` (or ``"c"``),
+    corresponding to the point with maximum density and the center of the domain, respectively.
+  * A ``(ASCIIString, ASCIIString)`` tuple, e.g. ``("min", "temperature")``,
+    or ``("max","velocity_x")``, corresponding to maxima and minima of specific fields.
   * An ``Array`` of ``FloatingPoint`` numbers. If so, the assumed units are ``"code_length"``.
   * A ``YTArray``.
 
@@ -38,7 +41,8 @@ A ``Center``-type argument is for the ``center`` of an object and can be one of 
 .. note::
 
   While in the Julia REPL, you can find out information about the different ``DataContainer``\ s
-  by checking its docstring with ``@doc AllData`` or using the help system with ``?``.
+  by checking its docstring with ``@doc AllData`` or using the help system with ``?``. To see
+  how to call the constructor for a ``DataContainer``, use ``methods``, e.g. ``methods(Sphere)``.
 
 Available Data Containers
 -------------------------
@@ -53,8 +57,8 @@ no parameters to create, except the ``Dataset`` object:
 
 .. code-block:: julia
 
-  function AllData(ds::Dataset; field_parameters::Dict{ASCIIString,Any}, 
-                   data_source::DataContainer)
+  function AllData(ds::Dataset; field_parameters=nothing,
+                   data_source=nothing)
 
 Examples:
 
@@ -73,8 +77,8 @@ located at a coordinate ``coord`` in units of ``code_length``:
 .. code-block:: julia
 
   function Point(ds::Dataset, coord::Array{Float64,1}; 
-                 field_parameters::Dict{ASCIIString,Any}, 
-                 data_source::DataContainer)
+                 field_parameters=nothing,
+                 data_source=nothing)
 
 Examples:
 
@@ -92,8 +96,8 @@ A ``Sphere`` is an object with a ``center`` and a ``radius``.
 .. code-block:: julia
 
   function Sphere(ds::Dataset, center::Center, radius::Length; 
-                  field_parameters::Dict{ASCIIString,Any}, 
-                  data_source::DataContainer)
+                  field_parameters=nothing,
+                  data_source=nothing)
 
 Examples:
 
@@ -114,15 +118,16 @@ Region
 
 A ``Region`` is a rectangular prism with a ``left_edge``, a ``right_edge``, and a ``center``
 (that can be anywhere in the domain). The edges can be ``YTArray``\ s,
-or ``Array``\ s of ``Real``\ s, in which case they will be assumed to be in units of
+or ``Array``\ s of ``Float64``\ s, in which case they will be assumed to be in units of
 ``code_length``.
 
 .. code-block:: julia
 
-  function Region(ds::Dataset, center::Center, left_edge::Union(YTArray,Array{Float64,1}),
+  function Region(ds::Dataset, center::Center,
+                  left_edge::Union(YTArray,Array{Float64,1}),
                   right_edge::Union(YTArray,Array{Float64,1}); 
-                  field_parameters::Dict{ASCIIString,Any}, 
-                  data_source::DataContainer)
+                  field_parameters=nothing,
+                  data_source=nothing)
 
 Examples:
 
@@ -148,9 +153,10 @@ A ``Disk`` is a disk or cylinder-shaped region with the z-axis of the cylinder p
 
 .. code-block:: julia
 
-  function Disk(ds::Dataset, center::Center, normal::Array{Float64,1}, radius::Length,
-                height::Length; field_parameters::Dict{ASCIIString,Any}, 
-                data_source::DataContainer)
+  function Disk(ds::Dataset, center::Center, normal::Array{Float64,1},
+                radius::Length, height::Length; f
+                field_parameters=nothing,
+                data_source=nothing)
 
 Examples:
 
@@ -168,14 +174,37 @@ and ends at the ``end_point`` in ``code_length`` units.
 
 .. code-block:: julia
 
-  function Ray(ds::Dataset, start_point::Array{Float64,1}, end_point::Array{Float64,1};
-               field_parameters::Dict{ASCIIString,Any}, data_source::DataContainer)
+  function Ray(ds::Dataset, start_point::Array{Float64,1},
+               end_point::Array{Float64,1};
+               field_parameters=nothing,
+               data_source=nothing)
 
 Examples:
 
 .. code-block:: jlcon
 
   julia> ray = Ray(ds, [0.0,0.0,0.0], [3.0e23,3.0e23,3.0e23])
+
+.. _ortho_ray:
+
+OrthoRay
++++
+
+An ``OrthoRay`` is a 1-dimensional object along an ``axis``
+through a coordinate pair ``coords`` which corresponds to the
+point (in code units) on the other two axes which the ``OrthoRay``
+goes through.
+
+.. code-block:: julia
+
+  function OrthoRay(ds::Dataset, axis::Integer, coords::(Float64,Float64),
+                    field_parameters=nothing, data_source=nothing)
+
+Examples:
+
+.. code-block:: jlcon
+
+  julia> ortho_ray = OrthoRay(ds, 0, [1.0e23,-2.0e22])
 
 .. _slice:
 
@@ -188,8 +217,10 @@ string ("x","y","z") or an integer (0,1,2), centered at some coordinate
 
 .. code-block:: julia
 
-  function Slice(ds::Dataset, axis::Union(Integer,String), coord::FloatingPoint;
-                 field_parameters::Dict{ASCIIString,Any}, data_source::DataContainer)
+  function Slice(ds::Dataset, axis::Union(Integer,String),
+                 coord::FloatingPoint;
+                 field_parameters=nothing,
+                 data_source=nothing)
 
 Examples:
 
@@ -207,10 +238,19 @@ A ``Proj`` is an integral of a given ``field`` along a sight line corresponding 
 .. code-block:: julia
 
   function Proj(ds::Dataset, field, axis::Union(Integer,String);
-                  weight_field=nothing, data_source=nothing, args...)
+                weight_field=nothing, data_source=nothing,
+                field_parameters=nothing, method=nothing)
 
-The optional arguments ``weight_field`` (a field name) and ``data_source`` (a ``DataContainer``)
-allow the projection to be weighted and a subselection of the domain to be projected.
+The optional argument ``weight_field`` (a field name) allows the projection to be weighted.
+The optional argument ``method`` selects the projection method type:
+* "integrate" : integration along the axis
+* "mip" : maximum intensity projection
+* "sum" : same as "integrate", except that we don't multiply by the path length
+
+.. warning::
+
+  The "sum" option should only be used for uniform resolution grid
+  datasets, as other datasets may result in unphysical images.
 
 Examples:
 
@@ -235,7 +275,7 @@ at some ``center`` coordinate.
 .. code-block:: julia
 
   function Cutting(ds::Dataset, normal::Array{Float64,1}, center::Center;
-                   field_parameters::Dict{ASCIIString,Any}, data_source::DataContainer)
+                   field_parameters=nothing, data_source=nothing)
 
 Examples:
 
@@ -261,13 +301,16 @@ CutRegion
 +++++++++
 
 A ``CutRegion`` is a subset of another ``DataContainer`` ``dc``,
-which is determined by an array of ``conditions`` on fields in the container.
+which is determined by an array of ``conditionals`` on fields in the container.
 
 .. code-block:: julia
 
-  function CutRegion(dc::DataContainer, conditions::Array{ASCIIString,1}; args...)
+  function CutRegion(dc::DataContainer,
+                     conditionals::Array{ASCIIString,1}
+                     data_source=nothing,
+                     field_parameters=nothing)
 
-``conditions`` is a list of conditionals that will be evaluated. In the namespace available,
+``conditionals`` is a list of conditionals that will be evaluated. In the namespace available,
 these conditionals will have access to ‘obj’ which is a data object of unknown shape, and they
 must generate a boolean array. For instance, ``conditionals = [“obj[‘temperature’] < 1e3”]``
 
@@ -300,8 +343,7 @@ A ``CoveringGrid`` is a 3D ``DataContainer`` of cells extracted at a fixed resol
 .. code-block:: julia
 
   function CoveringGrid(ds::Dataset, level::Integer, left_edge::Array{Float64,1}, 
-                        dims::Array{Int,1}; field_parameters::Dict{ASCIIString,Any}, 
-                        data_source::DataContainer)
+                        dims::Array{Int,1}; field_parameters=nothing)
 
 ``level`` is the refinement level at which to extract the data, ``left_edge`` is the left edge of
 the grid in ``code_length`` units, and ``dims`` is the number of cells on a side.

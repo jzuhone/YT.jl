@@ -509,6 +509,7 @@ end
 
       Parameters:
 
+      * `ds::Dataset`: The dataset to be used.
       * `axis::Union(Integer,ASCIIString)`: The axis along which to slice.
         Can be 0, 1, or 2, or "x", "y", or "z", for x, y, z.
       * `coord::FloatingPoint`: The coordinate along the axis at which to
@@ -525,7 +526,7 @@ end
 
           julia> import YT
           julia> ds = YT.load("RedshiftOutput0005")
-          julia> slc = Slice(ds, 0, 0.25)
+          julia> slc = YT.Slice(ds, 0, 0.25)
       """ ->
 type Slice <: DataContainer
     cont::PyObject
@@ -560,6 +561,26 @@ end
 
 # Sphere
 
+@doc doc"""
+      A sphere of points defined by a `center` and a `radius`.
+
+      Parameters:
+
+      * `ds::Dataset`: The dataset to be used.
+      * `center::Center`: The center of the sphere.
+      * `radius::Length`: The radius of the sphere.
+      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
+        parameters than can be accessed by derived fields.
+      * `data_source::DataContainer`: Optionally draw the selection from the
+        provided data source rather than all data associated with the dataset
+
+      Examples:
+
+          julia> import YT
+          julia> ds = YT.load("RedshiftOutput0005")
+          julia> c = [0.5,0.5,0.5]
+          julia> sp = YT.Sphere(ds, c, (1., "kpc"))
+      """ ->
 type Sphere <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -606,6 +627,9 @@ end
 
 # Grids
 
+@doc doc"""
+      Return an `Array` of grids associated with `ds::Dataset`.
+      """ ->
 type Grids <: AbstractArray
     grids::Array
     grid_dict::Dict

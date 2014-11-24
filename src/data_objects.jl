@@ -670,8 +670,6 @@ end
         generate a boolean array. For instance, `conditionals = ["obj['temperature'] < 1e3"]`
       * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
         parameters than can be accessed by derived fields.
-      * `data_source::DataContainer`: Optionally draw the selection from the
-        provided data source rather than all data associated with the dataset
 
       Examples:
 
@@ -686,16 +684,10 @@ type CutRegion <: DataContainer
     conditionals::Array{ASCIIString,1}
     field_dict::Dict
     function CutRegion(dc::DataContainer, conditionals::Array{ASCIIString,1},
-                       field_parameters=nothing, data_source=nothing)
-        if data_source != nothing
-            source = data_source.cont
-        else
-            source = nothing
-        end
+                       field_parameters=nothing)
         field_parameters = parse_fps(field_parameters)
         cut_reg = dc.cont[:cut_region](conditionals,
-                                       field_parameters=field_parameters,
-                                       data_source=source)
+                                       field_parameters=field_parameters)
         new(cut_reg, dc.ds, conditions, Dict())
     end
 end

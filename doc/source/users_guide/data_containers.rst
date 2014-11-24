@@ -308,7 +308,6 @@ which is determined by an array of ``conditionals`` on fields in the container.
 
   function CutRegion(dc::DataContainer,
                      conditionals::Array{ASCIIString,1}
-                     data_source=nothing,
                      field_parameters=nothing)
 
 ``conditionals`` is a list of conditionals that will be evaluated. In the namespace available,

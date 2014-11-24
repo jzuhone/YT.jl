@@ -188,7 +188,7 @@ Examples:
 .. _ortho_ray:
 
 OrthoRay
-+++
+++++++++
 
 An ``OrthoRay`` is a 1-dimensional object along an ``axis``
 through a coordinate pair ``coords`` which corresponds to the

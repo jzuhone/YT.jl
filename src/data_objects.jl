@@ -337,6 +337,29 @@ type Ray <: DataContainer
     end
 end
 
+# OrthoRay
+
+type OrthoRay <: DataContainer
+    cont::PyObject
+    ds::Dataset
+    axis::Integer
+    coords::(Float64,Float64)
+    field_dict::Dict
+    function OrthoRay(ds::Dataset, axis::Integer, coords::(Float64,Float64),
+                      field_parameters=nothing, data_source=nothing)
+        if data_source != nothing
+            source = data_source.cont
+        else
+            source = nothing
+        end
+        field_parameters = parse_fps(field_parameters)
+        ortho_ray = ds.ds[:ortho_ray](axis, coords,
+                                      field_parameters=field_parameters,
+                                      data_source=source)
+        new(ortho_ray, ds, axis, coords, Dict())
+    end
+end
+
 # Cutting
 
 @doc doc"""

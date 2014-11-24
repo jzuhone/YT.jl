@@ -338,7 +338,33 @@ type Ray <: DataContainer
 end
 
 # OrthoRay
+@doc doc """
+      This is an orthogonal ray cast through the entire domain, at a specific
+      coordinate.
 
+      The resulting arrays have their dimensionality reduced to one, and an
+      ordered list of points at an (x,y) tuple along `axis` are available.
+
+      Parameters:
+
+      * `ds::Dataset`: The dataset to be used.
+      * `axis::Integer`: The axis along which to cast the ray. Can be 0, 1,
+        or 2 for x, y, z.
+      * `coords::(Float64,Float64)`: The (plane_x, plane_y) coordinates at
+        which to cast the ray. Note that this is in the plane coordinates:
+        so if you are casting along x, this will be (y,z). If you are casting
+        along y, this will be (x,z). If you are casting along z, this will be (x,y).
+      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
+        parameters than can be accessed by derived fields.
+      * `data_source::DataContainer`: Optionally draw the selection from the
+        provided data source rather than all data associated with the dataset
+
+      Examples:
+
+          julia> import YT
+          julia> ds = YT.load("RedshiftOutput0005")
+          julia> oray = YT.OrthoRay(ds, 0, (0.2, 0.74))
+      """ ->
 type OrthoRay <: DataContainer
     cont::PyObject
     ds::Dataset

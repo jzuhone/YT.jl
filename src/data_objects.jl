@@ -476,6 +476,49 @@ end
 
 # Projection
 
+@doc doc"""
+      This is a data object corresponding to a line integral through the
+      simulation domain.
+
+      `Proj` is a projection of a `field` along an `axis`. The field can
+      have an associated `weight_field`, in which case the values are
+      multiplied by a weight before being summed, and then divided by the
+      sum of that weight; the two fundamental modes of operating are direct
+      line integral (no weighting) and average along a line of sight
+      (weighting). Note that lines of sight are integrated at every projected
+      finest-level cell.
+
+      Parameters:
+
+      * `ds::Dataset`: The dataset to be used.
+      * `field::Field`: This is the field which will be "projected" along
+        the axis.
+      * `axis::Union(Integer,ASCIIString)`: The axis along which to project.
+        Can be 0, 1, or 2, or "x", "y", or "z", for x, y, z.
+        The axis along which to slice.  Can be 0, 1, or 2 for x, y, z.
+      * `weight_field::Field`: If supplied, the field being projected will be
+        multiplied by this weight value before being integrated, and at the
+        conclusion of the projection the resultant values will be divided by
+        the projected `weight_field`.
+      * `center::Center`: The `center` supplied to fields that use it.
+        Strictly optional.
+      * `data_source::DataContainer`: If specified, this will be the data
+        source used for selecting regions to project.
+      * `method::ASCIIString`: The method of projection to be performed.
+        "integrate" : integration along the axis
+        "mip" : maximum intensity projection
+        "sum" : same as "integrate", except that we don't multiply by the path length
+        WARNING: The "sum" option should only be used for uniform resolution grid
+        datasets, as other datasets may result in unphysical images.
+      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
+        parameters than can be accessed by derived fields.
+
+      Examples:
+
+          julia> import YT
+          julia> ds = YT.load("RedshiftOutput0005")
+          julia> prj = YT.Proj(ds, "density", 0)
+    """ ->
 type Proj <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -485,7 +528,7 @@ type Proj <: DataContainer
     field_dict::Dict
     function Proj(ds::Dataset, field, axis::Union(Integer,ASCIIString);
                   weight_field=nothing, field_parameters=nothing,
-                  data_source=nothing)
+                  data_source=nothing, method=nothing)
         if data_source != nothing
             source = data_source.cont
         else
@@ -494,7 +537,7 @@ type Proj <: DataContainer
         field_parameters = parse_fps(field_parameters)
         prj = ds.ds[:proj](field, axis; weight_field=weight_field,
                            field_parameters=field_parameters,
-                           data_source=source)
+                           data_source=source, method=method)
         new(prj, ds, field, prj["axis"], weight_field, Dict())
     end
 end
@@ -614,13 +657,45 @@ end
 
 # CutRegion
 
+@doc doc"""
+      This is a data object designed to allow individuals to apply logical
+      operations to fields and filter as a result of those cuts.
+
+      Parameters:
+
+      * `dc::DataContainer`: The object to which cuts will be applied.
+      * `conditionals::Array{ASCIIString,1}`: A list of conditionals that will
+        be evaluated. In the namespace available, these conditionals will have
+        access to `'obj'` which is a data object of unknown shape, and they must
+        generate a boolean array. For instance, `conditionals = ["obj['temperature'] < 1e3"]`
+      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
+        parameters than can be accessed by derived fields.
+      * `data_source::DataContainer`: Optionally draw the selection from the
+        provided data source rather than all data associated with the dataset
+
+      Examples:
+
+          julia> import YT
+          julia> ds = YT.load("RedshiftOutput0005")
+          julia> sp = YT.Sphere(ds, "max", (1.0, 'mpc'))
+          julia> cr = YT.CutRegion(sp, ["obj['temperature'] < 1e3"])
+      """ ->
 type CutRegion <: DataContainer
     cont::PyObject
     ds::Dataset
-    conditions::Array{ASCIIString,1}
+    conditionals::Array{ASCIIString,1}
     field_dict::Dict
-    function CutRegion(dc::DataContainer, conditions::Array{ASCIIString,1})
-        cut_reg = dc.cont[:cut_region](conditions)
+    function CutRegion(dc::DataContainer, conditionals::Array{ASCIIString,1},
+                       field_parameters=nothing, data_source=nothing)
+        if data_source != nothing
+            source = data_source.cont
+        else
+            source = nothing
+        end
+        field_parameters = parse_fps(field_parameters)
+        cut_reg = dc.cont[:cut_region](conditions,
+                                       field_parameters=field_parameters,
+                                       data_source=source)
         new(cut_reg, dc.ds, conditions, Dict())
     end
 end
@@ -666,6 +741,29 @@ end
 
 # CoveringGrid
 
+@doc doc"""
+      A 3D region with all data extracted to a single, specified
+      resolution.  Left edge should align with a cell boundary, but
+      defaults to the closest cell boundary.
+
+      Parameters:
+
+      * `ds::Dataset`: The dataset to be used.
+      * `level::Integer`: The resolution level data to which data
+        will be gridded.
+      * `left_edge::Array{Float64,1}`: The left edge of the region
+        to be extracted
+      * `dims::Array{Int,1}`: Number of cells along each axis of
+        the resulting `CoveringGrid`
+      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
+        parameters than can be accessed by derived fields.
+
+      Examples:
+
+          julia> import YT
+          julia> ds = YT.load("RedshiftOutput0005")
+          julia> cube = CoveringGrid(ds, 2, [0.0, 0.0, 0.0], [128, 128, 128])
+      """ ->
 type CoveringGrid <: DataContainer
     cont::PyObject
     ds::Dataset

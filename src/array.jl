@@ -412,12 +412,45 @@ diff(a::YTArray, dim::Integer) = YTArray(diff(a.value, dim), a.units)
 
 # To/from HDF5
 
-function write_hdf5(a::YTArray, filename::String; dataset_name=nothing, info=nothing)
+@doc doc"""
+      Write a `YTArray` to an HDF5 file.
+
+      Parameters:
+
+      * `a::YTArray`: The `YTArray` to write to the file.
+      * `filename::ASCIIString`: The file to write to.
+      * `dataset_name::ASCIIString`: The name of the HDF5 dataset to
+        write the data into.
+      * `info::Dict{ASCIIString,Any}`: A dictionary of keys and values
+        to write to the file, associated with this array, that will be
+        stored in the dataset attributes.
+
+      Examples:
+
+          julia> using YT
+          julia> a = YTArray(rand(10), "cm/s")
+          juila> write_hdf5(a, "my_file.h5", dataset_name="velocity")
+      """ ->
+function write_hdf5(a::YTArray, filename::ASCIIString; dataset_name=nothing, info=nothing)
     arr = convert(PyObject, a)
     arr[:write_hdf5](filename; dataset_name=dataset_name, info=info)
 end
 
-function from_hdf5(filename::String; dataset_name=nothing)
+@doc doc"""
+      Read a `YTArray` from an HDF5 file.
+
+      Parameters:
+
+      * `filename::ASCIIString`: The file to read from.
+      * `dataset_name::ASCIIString`: The name of the HDF5 dataset to
+        read the data from.
+
+      Examples:
+
+          julia> using YT
+          juila> v = from_hdf5("my_file.h5", dataset_name="velocity")
+      """ ->
+function from_hdf5(filename::ASCIIString; dataset_name=nothing)
     YTArray(pycall(bare_array["from_hdf5"], PyObject, filename; dataset_name=dataset_name))
 end
 

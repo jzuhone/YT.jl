@@ -7,6 +7,10 @@ import PyCall: @pyimport, PyObject
 
 @pyimport yt.data_objects.time_series as time_series
 
+@doc doc"""
+      Construct a time series sequence of datasets
+      from an array of filenames, `fns::Array{ASCIIString,1}`.
+      """ ->
 type DatasetSeries
     ts::PyObject
     num_ds::Int

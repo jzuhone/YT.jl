@@ -359,8 +359,6 @@ end
 
 # Show
 
-summary(a::YTArray) = string(dims2string(size(a)), " ", typeof(a))
-
 function showarray(io::IO, a::YTArray; kw...)
     println(io, "$(summary(a)) ($(a.units)):")
     showarray(io, a.value; header=false, limit=true)
@@ -476,7 +474,8 @@ end
 
 # Ones, Zeros, etc.
 
-ones(a::YTArray) = YTArray(ones(size(a)), a.units)
-zeros(a::YTArray) = YTArray(zeros(size(a)), a.units)
+ones(a::YTArray) = YTArray(ones(a), a.units)
+zeros(a::YTArray) = YTArray(zeros(a), a.units)
+eye(a::YTArray) = YTArray(eye(a), a.units)
 
 end

@@ -105,12 +105,12 @@ end
 @doc doc"""
       An object representing all of the data in the domain.
 
-      Parameters:
+      Arguments:
 
       * `ds::Dataset`: The dataset to be used.
-      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field parameters
-        than can be accessed by derived fields.
-      * `data_source::DataContainer`: Optionally draw the selection from the
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+        field parameters than can be accessed by derived fields.
+      * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
 
       Examples:
@@ -141,15 +141,15 @@ end
 @doc doc"""
       A 0-dimensional object defined by a single point
 
-      Parameters:
+      Arguments:
 
       * `ds::Dataset`: The dataset to be used.
       * `p::Array{Float64,1}`: A point defined within the domain. If the domain is periodic
         its position will be corrected to lie inside the range [DLE,DRE) to ensure
         one and only one cell may match that point.
-      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field parameters
-        than can be accessed by derived fields.
-      * `data_source::DataContainer`: Optionally draw the selection from the
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+        field parameters than can be accessed by derived fields.
+      * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
 
       Examples:
@@ -188,7 +188,7 @@ end
       past the edges of the domain, no data will be found there,
       though the object's `left_edge` or `right_edge` are not modified.
 
-      Parameters:
+      Arguments:
 
       * `ds::Dataset`: The dataset to be used.
       * `center::Center`: The center of the region
@@ -196,9 +196,9 @@ end
         the region
       * `right_edge::Union(Array{Float64,1},YTArray)`: The right edge of
         the region
-      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field parameters
-        than can be accessed by derived fields.
-      * `data_source::DataContainer`: Optionally draw the selection from the
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+        field parameters than can be accessed by derived fields.
+      * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
 
       Examples:
@@ -260,7 +260,7 @@ end
       can define a cylinder of any proportion. Only cells whose centers
       are within the cylinder will be selected.
 
-      Parameters:
+      Arguments:
 
       * `ds::Dataset`: The dataset to be used.
       * `center::Center`: Coordinate to which the normal, radius, and
@@ -270,9 +270,9 @@ end
       * `radius::Length`: The radius of the cylinder
       * `height::Length`: The distance from the midplane of the
         cylinder to the top and bottom planes
-      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field parameters
-        than can be accessed by derived fields.
-      * `data_source::DataContainer`: Optionally draw the selection from the
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+        field parameters than can be accessed by derived fields.
+      * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
 
       Examples:
@@ -329,14 +329,14 @@ end
       `"t"` field, which corresponds to a unitless measurement along
       the ray from start to end.
 
-      Parameters:
+      Arguments:
 
       * `ds::Dataset`: The dataset to be used.
       * `start_point::Array{Float64,1}`: The place where the ray starts.
       * `end_point::Array{Float64,1}`: The place where the ray ends.
-      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
-        parameters than can be accessed by derived fields.
-      * `data_source::DataContainer`: Optionally draw the selection from the
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+        field parameters than can be accessed by derived fields.
+      * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
 
       Examples:
@@ -375,7 +375,7 @@ end
       The resulting arrays have their dimensionality reduced to one, and an
       ordered list of points at an (x,y) tuple along `axis` are available.
 
-      Parameters:
+      Arguments:
 
       * `ds::Dataset`: The dataset to be used.
       * `axis::Integer`: The axis along which to cast the ray. Can be 0, 1,
@@ -384,9 +384,9 @@ end
         which to cast the ray. Note that this is in the plane coordinates:
         so if you are casting along x, this will be (y,z). If you are casting
         along y, this will be (x,z). If you are casting along z, this will be (x,y).
-      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
-        parameters than can be accessed by derived fields.
-      * `data_source::DataContainer`: Optionally draw the selection from the
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+        field parameters than can be accessed by derived fields.
+      * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
 
       Examples:
@@ -427,18 +427,18 @@ end
       which can be overridden, and then it pixelizes the appropriate data
       onto the plane without interpolation.
 
-      Parameters:
+      Arguments:
 
       * `ds::Dataset`: The dataset to be used.
       * `normal::Array{Float64,1}`: The vector that defines the desired plane.
         For instance, the angular momentum of a sphere.
       * `center::Union(ASCIIString,Array{Float64,1},YTArray)` : array_like
         The center of the cutting plane, where the normal vector is anchored.
-      * `north_vector::Array{Float64,1}`: An optional vector to describe the
+      * `north_vector::Array{Float64,1}` (optional): An optional vector to describe the
         north-facing direction in the resulting plane.
-      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
-        parameters than can be accessed by derived fields.
-      * `data_source::DataContainer`: Optionally draw the selection from the
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+        field parameters than can be accessed by derived fields.
+      * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
 
       Examples:
@@ -488,7 +488,7 @@ end
       (weighting). Note that lines of sight are integrated at every projected
       finest-level cell.
 
-      Parameters:
+      Arguments:
 
       * `ds::Dataset`: The dataset to be used.
       * `field::Field`: This is the field which will be "projected" along
@@ -500,17 +500,16 @@ end
         multiplied by this weight value before being integrated, and at the
         conclusion of the projection the resultant values will be divided by
         the projected `weight_field`.
-      * `center::Center`: The `center` supplied to fields that use it.
-        Strictly optional.
-      * `data_source::DataContainer`: If specified, this will be the data
+      * `center::Center` (optional): The `center` supplied to fields that use it.
+      * `data_source::DataContainer` (optional): If specified, this will be the data
         source used for selecting regions to project.
-      * `method::ASCIIString`: The method of projection to be performed.
+      * `method::ASCIIString` (optional): The method of projection to be performed.
         "integrate" : integration along the axis
         "mip" : maximum intensity projection
         "sum" : same as "integrate", except that we don't multiply by the path length
         WARNING: The "sum" option should only be used for uniform resolution grid
         datasets, as other datasets may result in unphysical images.
-      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of field
         parameters than can be accessed by derived fields.
 
       Examples:
@@ -527,8 +526,9 @@ type Proj <: DataContainer
     weight_field
     field_dict::Dict
     function Proj(ds::Dataset, field, axis::Union(Integer,ASCIIString);
-                  weight_field=nothing, field_parameters=nothing,
-                  data_source=nothing, method="integrate")
+                  weight_field=nothing, center=nothing,
+                  field_parameters=nothing, data_source=nothing, 
+                  method="integrate")
         if data_source != nothing
             source = data_source.cont
         else
@@ -536,7 +536,7 @@ type Proj <: DataContainer
         end
         field_parameters = parse_fps(field_parameters)
         prj = ds.ds[:proj](field, axis; weight_field=weight_field,
-                           field_parameters=field_parameters,
+                           center=center, field_parameters=field_parameters,
                            data_source=source, method=method)
         new(prj, ds, field, prj["axis"], weight_field, Dict())
     end
@@ -550,20 +550,20 @@ end
       The slice is an orthogonal slice through the data, taking all the
       points at the finest resolution available and then indexing them.
 
-      Parameters:
+      Arguments:
 
       * `ds::Dataset`: The dataset to be used.
       * `axis::Union(Integer,ASCIIString)`: The axis along which to slice.
         Can be 0, 1, or 2, or "x", "y", or "z", for x, y, z.
       * `coord::FloatingPoint`: The coordinate along the axis at which to
         slice. This is in "domain" coordinates.
-      * `center::Array{Float64,1}`: The 'center' supplied to fields that
+      * `center::Array{Float64,1}` (optional): The 'center' supplied to fields that
         use it. Note that this does not have to have `coord` as one value.
-        Optional.
-      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
-        parameters than can be accessed by derived fields.
-      * `data_source::DataContainer`: Optionally draw the selection from the
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+        field parameters than can be accessed by derived fields.
+      * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
+
 
       Examples:
 
@@ -607,14 +607,14 @@ end
 @doc doc"""
       A sphere of points defined by a `center` and a `radius`.
 
-      Parameters:
+      Arguments:
 
       * `ds::Dataset`: The dataset to be used.
       * `center::Center`: The center of the sphere.
       * `radius::Length`: The radius of the sphere.
-      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
-        parameters than can be accessed by derived fields.
-      * `data_source::DataContainer`: Optionally draw the selection from the
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+        field parameters than can be accessed by derived fields.
+      * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
 
       Examples:
@@ -661,14 +661,14 @@ end
       This is a data object designed to allow individuals to apply logical
       operations to fields and filter as a result of those cuts.
 
-      Parameters:
+      Arguments:
 
       * `dc::DataContainer`: The object to which cuts will be applied.
       * `conditionals::Array{ASCIIString,1}`: A list of conditionals that will
         be evaluated. In the namespace available, these conditionals will have
         access to `'obj'` which is a data object of unknown shape, and they must
         generate a boolean array. For instance, `conditionals = ["obj['temperature'] < 1e3"]`
-      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of field
         parameters than can be accessed by derived fields.
 
       Examples:
@@ -738,7 +738,7 @@ end
       resolution.  Left edge should align with a cell boundary, but
       defaults to the closest cell boundary.
 
-      Parameters:
+      Arguments:
 
       * `ds::Dataset`: The dataset to be used.
       * `level::Integer`: The resolution level data to which data
@@ -747,7 +747,7 @@ end
         to be extracted
       * `dims::Array{Int,1}`: Number of cells along each axis of
         the resulting `CoveringGrid`
-      * `field_parameters::Dict{ASCIIString,Any}`: A dictionary of field
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of field
         parameters than can be accessed by derived fields.
 
       Examples:
@@ -781,7 +781,7 @@ end
 @doc doc"""
       Set the value of a field parameter in a data container.
 
-      Parameters:
+      Arguments:
 
       * `dc::DataContainer`: The data container object to set the
         parameter for.
@@ -804,7 +804,7 @@ end
 @doc doc"""
       Check if a field parameter is set in a data container object.
 
-      Parameters:
+      Arguments:
 
       * `dc::DataContainer`: The data container object to check for
         a parameter.
@@ -824,7 +824,7 @@ end
 @doc doc"""
       Get the value of a field parameter.
 
-      Parameters:
+      Arguments:
 
       * `dc::DataContainer`: The data container object to get the
         parameter from.
@@ -852,7 +852,7 @@ end
       Get all of the field parameters from a data container. Returns
       a dictionary of field parameters.
 
-      Parameters:
+      Arguments:
 
       * `dc::DataContainer`: The data container object to get the
         parameters from.

@@ -5,7 +5,7 @@ import Base: cbrt, convert, copy, eltype, hypot, maximum, minimum, ndims,
              expm1, log2, log1p, sinh, cosh, tanh, csc, sec, cot, csch,
              sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan, sum,
              cumsum, cummin, cummax, cumsum_kbn, diff, display, print,
-             showarray, showerror
+             showarray, showerror, ones, zeros, eye, summary
 
 import SymPy: Sym
 import PyCall: @pyimport, PyObject, pycall
@@ -359,6 +359,8 @@ end
 
 # Show
 
+summary(a::YTArray) = string(dims2string(size(a)), " ", typeof(a))
+
 function showarray(io::IO, a::YTArray; kw...)
     println(io, "$(summary(a)) ($(a.units)):")
     showarray(io, a.value; header=false, limit=true)
@@ -472,14 +474,9 @@ function has_equivalent(a::YTObject, equiv::String)
     arr[:has_equivalent](equiv)
 end
 
-# Ones and Zeros
+# Ones, Zeros, etc.
 
-function ones_like(a::YTArray)
-    YTArray(ones(size(a)), a.units)
-end
-
-function zeros_like(a::YTArray)
-    YTArray(zeros(size(a)), a.units)
-end
+ones(a::YTArray) = YTArray(ones(size(a)), a.units)
+zeros(a::YTArray) = YTArray(zeros(size(a)), a.units)
 
 end

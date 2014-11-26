@@ -232,11 +232,11 @@ The data can be read back into a ``YTArray`` using ``from_hdf5``:
 which is obviously the same array.
 
 It may be useful to generate ``YTArray``\ s of ones or zeros similar to an existing ``YTArray``. This
-can be done with ``ones_like`` and ``zeros_like``:
+can be done with ``ones`` and ``zeros``, in the same manner as the standard Julia ``Array``:
 
 .. code-block:: jlcon
 
-    julia> YT.ones_like(sp["density"])
+    julia> ones(sp["density"])
     325184-element YTArray (g/cm**3):
      1.0
      1.0
@@ -259,7 +259,7 @@ can be done with ``ones_like`` and ``zeros_like``:
      1.0
      1.0
 
-    julia> YT.zeros_like(sp["density"])
+    julia> zeros(sp["density"])
     325184-element YTArray (g/cm**3):
      0.0
      0.0

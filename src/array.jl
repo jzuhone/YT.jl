@@ -474,8 +474,8 @@ end
 
 # Ones, Zeros, etc.
 
-ones(a::YTArray) = YTArray(ones(a), a.units)
-zeros(a::YTArray) = YTArray(zeros(a), a.units)
-eye(a::YTArray) = YTArray(eye(a), a.units)
+ones(a::YTArray) = YTArray(ones(a.value), a.units)
+zeros(a::YTArray) = YTArray(zeros(a.value), a.units)
+eye(a::YTArray) = YTArray(eye(a.value), a.units)
 
 end

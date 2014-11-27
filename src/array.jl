@@ -114,6 +114,13 @@ type YTArray <: AbstractArray
                           unitary_quan[:units][:dimensions])
         new(value, yt_units)
     end
+    function YTArray(value::DArray, units::String; registry=nothing)
+        unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
+        yt_units = YTUnit(unitary_quan,
+                          unitary_quan[:units],
+                          unitary_quan[:units][:dimensions])
+        new(value, yt_units)
+    end
 end
 YTArray(value::Array, units::String; args...) = YTArray(convert(Array{Float64}, value),
                                                         units; args...)
@@ -134,6 +141,9 @@ YTArray(value::BitArray, units::YTUnit) = value
 YTArray(value::Array) = YTArray(value, "dimensionless")
 YTArray(value::Real) = YTQuantity(value, "dimensionless")
 YTArray(value::PyArray, units::Sym; registry=nothing) = YTArray(value, string(units), registry=registry)
+YTArray(value::DArray, units::Sym; registry=nothing) = YTArray(value, string(units), registry=registry)
+YTArray(value::DArray, units::YTUnit) = YTArray(value, string(units.unit_symbol),
+                                                registry=units.yt_unit["units"]["registry"])
 
 YTObject = Union(YTArray,YTQuantity)
 

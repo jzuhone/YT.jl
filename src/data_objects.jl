@@ -9,6 +9,8 @@ Center = Union(ASCIIString,Array{Float64,1},YTArray,(ASCIIString,ASCIIString))
 Length = Union(FloatingPoint,(FloatingPoint,ASCIIString),YTQuantity)
 Field  = Union(ASCIIString,(ASCIIString,ASCIIString))
 
+in_parallel = nprocs() > 1
+
 # Dataset
 
 type Dataset
@@ -876,7 +878,14 @@ end
 
 function getindex(dc::DataContainer, field::Field)
     if !haskey(dc.field_dict, field)
-        dc.field_dict[field] = YTArray(get(dc.cont, PyObject, field))
+        pyarr = get(dc.cont, PyObject, field)
+        if in_parallel
+            registry = dc.ds.ds["unit_registry"]
+            arr = distribute(pyarr[:d])
+            dc.field_dict[field] = YTArray(arr, pyarr[:units], registry=registry)
+        else 
+            dc.field_dict[field] = YTArray(pyarr)
+        end
     end
     return dc.field_dict[field]
 end

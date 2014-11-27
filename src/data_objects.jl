@@ -1,6 +1,6 @@
 module data_objects
 
-import PyCall: PyObject, PyDict, pycall, pystring, PyArray
+import PyCall: PyObject, PyDict, pycall, pystring, PyArray, PyVector
 import Base: size, show, showarray, display, showerror
 import ..array: YTArray, YTQuantity, in_units, array_or_quan
 import ..fixed_resolution: FixedResolutionBuffer
@@ -58,8 +58,9 @@ end
       minimum of a `field::Field`.
       """ ->
 function find_min(ds::Dataset, field::Field)
-    v, c = pycall(ds.ds["find_min"], (PyObject, PyObject), field)
-    return YTQuantity(v), YTArray(c)
+    a = pycall(ds.ds["find_min"], PyObject, field)
+    v, c = PyVector{PyObject}(a)
+    YTQuantity(v), YTArray(c)
 end
 
 @doc doc"""
@@ -67,8 +68,9 @@ end
       maximum of a `field::Field`.
       """ ->
 function find_max(ds::Dataset, field::Field)
-    v, c = pycall(ds.ds["find_max"], (PyObject, PyObject), field)
-    return YTQuantity(v), YTArray(c)
+    a = pycall(ds.ds["find_max"], PyObject, field)
+    v, c = PyVector{PyObject}(a)
+    YTQuantity(v), YTArray(c)
 end
 
 @doc doc"""

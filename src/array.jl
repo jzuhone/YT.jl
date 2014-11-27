@@ -5,13 +5,14 @@ import Base: cbrt, convert, copy, eltype, hypot, maximum, minimum, ndims,
              expm1, log2, log1p, sinh, cosh, tanh, csc, sec, cot, csch,
              sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan, sum,
              cumsum, cummin, cummax, cumsum_kbn, diff, display, print,
-             showarray, showerror, ones, zeros, eye, summary
+             showarray, showerror, ones, zeros, eye, summary, linspace,
+             sum_kbn, gradient
 
 import SymPy: Sym
-import PyCall: @pyimport, PyObject, pycall
+import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin
 @pyimport yt.units as units
 
-IntOrRange = Union(Integer,Range,Range1,Array{Int,1})
+IntOrRange = Union(Integer,Ranges)
 
 # Grab the classes for creating YTArrays and YTQuantities
 
@@ -91,15 +92,22 @@ YTQuantity(value::Real) = YTQuantity(value, "dimensionless")
 # YTArray definition
 
 type YTArray <: AbstractArray
-    value::Array{Float64}
+    value
     units::YTUnit
     function YTArray(yt_array::PyObject)
         yt_units = YTUnit(yt_array["unit_quantity"],
                           yt_array[:units],
                           yt_array[:units][:dimensions])
-        new(yt_array[:d], yt_units)
+        new(PyArray(yt_array["d"]), yt_units)
     end
     function YTArray(value::Array{Float64}, units::String; registry=nothing)
+        unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
+        yt_units = YTUnit(unitary_quan,
+                          unitary_quan[:units],
+                          unitary_quan[:units][:dimensions])
+        new(value, yt_units)
+    end
+    function YTArray(value::PyArray, units::String; registry=nothing)
         unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
         yt_units = YTUnit(unitary_quan,
                           unitary_quan[:units],
@@ -114,6 +122,8 @@ YTArray(ds, value::Array, units::String) = YTArray(value, units,
 YTArray(value::Array, units::Sym; args...) = YTArray(value, string(units); args...)
 YTArray(value::Array, units::YTUnit) = YTArray(value, string(units.unit_symbol),
                                                registry=units.yt_unit["units"]["registry"])
+YTArray(value::PyArray, units::YTUnit) = YTArray(value, string(units.unit_symbol),
+                                               registry=units.yt_unit["units"]["registry"])
 YTArray(value::Real, units::String; args...) = YTQuantity(value, units; args...)
 YTArray(ds, value::Real, units::String) = YTQuantity(value, units, registry=ds.ds["unit_registry"])
 YTArray(value::Real, units::Sym; args...) = YTQuantity(value, units; args...)
@@ -123,6 +133,7 @@ YTArray(value::BitArray, units::Sym) = value
 YTArray(value::BitArray, units::YTUnit) = value
 YTArray(value::Array) = YTArray(value, "dimensionless")
 YTArray(value::Real) = YTQuantity(value, "dimensionless")
+YTArray(value::PyArray, units::Sym; registry=nothing) = YTArray(value, string(units), registry=registry)
 
 YTObject = Union(YTArray,YTQuantity)
 
@@ -206,14 +217,29 @@ function setindex!(a::YTArray, x::Real, idxs::Array{Int,1})
     YTArray(setindex!(a.value, convert(Float64, x), idxs), a.units)
 end
 
+pyslice(i::Integer) = i
+pyslice(i::UnitRange) = pycall(pybuiltin("slice"), PyObject, i.start-1, i.stop)
+pyslice(i::StepRange) = pycall(pybuiltin("slice"), PyObject, i.start-1, i.stop, i.step)
+ 
 # For grids
 function getindex(a::YTArray, i::IntOrRange, j::IntOrRange, k::IntOrRange)
-    return YTArray(getindex(a.value, i, j, k), a.units)
+    YTArray(getindex(a.value, i, j, k), a.units)
+end
+function getindex(a::PyArray, i::IntOrRange, j::IntOrRange, k::IntOrRange)
+    ii = pyslice(i)
+    jj = pyslice(j)
+    kk = pyslice(k)
+    get(a.o, PyArray, (ii,jj,kk))
 end
 
 # For images
 function getindex(a::YTArray, i::IntOrRange, j::IntOrRange)
-    return YTArray(getindex(a.value, i, j), a.units)
+    YTArray(getindex(a.value, i, j), a.units)
+end
+function getindex(a::PyArray, i::IntOrRange, j::IntOrRange)
+    ii = pyslice(i)
+    jj = pyslice(j)
+    get(a.o, PyArray, (ii,jj))
 end
 
 # Unit conversions
@@ -270,6 +296,25 @@ end
 /(a::Array, b::YTQuantity) = *(a, 1.0/b)
 \(a::YTQuantity, b::Array) = /(b,a)
 .\(a::Array, b::YTQuantity) = /(b,a)
+
+# Sadly this is necessary
+for op = (:+, :-, :*, :.*, :/, :./, :\, :.\, :hypot, :.==, :.!=, :.>=, :.<=, :.<, :.>)
+    @eval ($op)(a::PyArray{Float64},b::Real) = ($op)(Array{Float64}(a.o),b)
+    @eval ($op)(a::Real,b::PyArray{Float64}) = ($op)(a,Array{Float64}(b.o))
+end
+
+for op = (:*, :/, :\) 
+    @eval ($op)(a::PyArray{Float64},b::YTQuantity) = ($op)(Array{Float64}(a.o),b)
+    @eval ($op)(a::YTQuantity,b::PyArray{Float64}) = ($op)(a,Array{Float64}(b.o))
+end
+
+-(a::PyArray) = -1*a
+
+for (op1, op2) in zip((:+, :-),(:.+,:.-))
+    @eval ($op1)(a::PyArray,b::PyArray) = ($op2)(a,b)
+    @eval ($op1)(a::Array,b::PyArray) = ($op2)(a,b)
+    @eval ($op1)(a::PyArray,b::Array) = ($op2)(a,b)
+end
 
 # YTArray next
 
@@ -395,6 +440,8 @@ eltype(a::YTArray) = eltype(a.value)
 sum(a::YTArray) = YTQuantity(sum(a.value), a.units)
 sum(a::YTArray, dims) = YTQuantity(sum(a.value, dims), a.units)
 
+sum_kbn(a::YTArray) = YTArray(sum_kbn(a.value), a.units)
+
 cumsum(a::YTArray) = YTArray(cumsum(a.value), a.units)
 cumsum(a::YTArray, dim::Integer) = YTArray(cumsum(a.value, dim), a.units)
 
@@ -409,6 +456,10 @@ cummax(a::YTArray, dim::Integer) = YTArray(cummax(a.value, dim), a.units)
 
 diff(a::YTArray) = YTArray(diff(a.value), a.units)
 diff(a::YTArray, dim::Integer) = YTArray(diff(a.value, dim), a.units)
+
+gradient(a::YTArray) = YTArray(gradient(a.value), a.units)
+gradient(a::YTArray, b::YTObject) = YTArray(gradient(a.value, b.value), a.units/b.units)
+gradient(a::YTArray, b::Real) = YTArray(gradient(a.value, b), a.units)
 
 # To/from HDF5
 
@@ -477,5 +528,9 @@ end
 ones(a::YTArray) = YTArray(ones(a.value), a.units)
 zeros(a::YTArray) = YTArray(zeros(a.value), a.units)
 eye(a::YTArray) = YTArray(eye(a.value), a.units)
+
+linspace(start::YTQuantity, stop::YTQuantity, n::Integer) = 
+    YTArray(linspace(in_units(start, stop.units).value,stop.value,n), start.units)
+linspace(start::YTQuantity, stop::YTQuantity) = linspace(start,stop,100)
 
 end

@@ -121,4 +121,12 @@ function load_particles(data::Dict; args...)
     return Dataset(ds)
 end
 
+# Parallelism
+
+in_parallel = false
+
+if nprocs() > 1
+    in_parallel = true
+end
+
 end

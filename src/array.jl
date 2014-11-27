@@ -404,8 +404,10 @@ end
 
 # Show
 
+summary(a::YTArray) = string(dims2string(size(a)), " YTArray ($(a.units)):")
+
 function showarray(io::IO, a::YTArray; kw...)
-    println(io, "$(summary(a)) ($(a.units)):")
+    println(io, summary(a))
     showarray(io, a.value; header=false, limit=true)
 end
 

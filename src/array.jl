@@ -6,7 +6,7 @@ import Base: cbrt, convert, copy, eltype, hypot, maximum, minimum, ndims,
              sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan, sum,
              cumsum, cummin, cummax, cumsum_kbn, diff, display, print,
              showarray, showerror, ones, zeros, eye, summary, linspace,
-             sum_kbn, gradient
+             sum_kbn, gradient, dims2string
 
 import SymPy: Sym
 import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin

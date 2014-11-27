@@ -543,6 +543,7 @@ type Proj <: DataContainer
 end
 
 # Slice
+
 @doc doc"""
       This is a data object corresponding to a slice through the simulation
       domain.
@@ -594,12 +595,53 @@ type Slice <: DataContainer
     end
 end
 
-function to_frb(cont::Union(Slice,Proj), width::Union(Length,(Length,Length)),
+@doc doc"""
+      Create a FixedResolutionBuffer from a slice or projection. 
+      
+      Arguments:
+      
+      * `cont::Union(Slice,Proj) or cont::Cutting`: A Slice, Proj, or 
+        Cutting DataContainer.
+      * `width::Length`: The width of the FRB.
+      * `nx::Union(Integer,(Integer,Integer))`: Either an integer or a 2-tuple of
+        integers, corresponding to the dimensions of the image. 
+      * `center::Center` (optional): The center of the FRB. If not specified, 
+        defaults to the center of the current object. Not available if `cont` is 
+        a `Cutting.`
+      * `height::Length` (optional): The height of the FRB. If not specified,
+        defaults to the `width`. 
+      * `periodic::Bool` (optional): Is the FRB periodic? Default `false`.
+      
+      Examples:
+      
+          julia> slc = Slice(ds, "z", 0.0)
+          julia> frb = to_frb(slc, (500.,"kpc"), 800)
+      """ ->
+function to_frb(cont::Union(Slice,Proj), width::Length,
                 nx::Union(Integer,(Integer,Integer)); center=nothing,
-                height=nothing, args...)
-    FixedResolutionBuffer(cont.ds, cont.cont[:to_frb](width, nx;
+                height=nothing, periodic=false)
+    if typeof(width) == YTQuantity
+        w = convert(PyObject, width)
+    else
+        w = width
+    end
+    FixedResolutionBuffer(cont.ds, cont.cont[:to_frb](w, nx;
                                                       center=center,
-                                                      height=height, args...))
+                                                      height=height,
+                                                      periodic=periodic))
+end
+
+function to_frb(cont::Cutting, width::Length,
+                nx::Union(Integer,(Integer,Integer));
+                height=nothing, periodic=false)
+    if typeof(width) == YTQuantity
+        w = convert(PyObject, width)
+    else
+        w = width
+    end
+    FixedResolutionBuffer(cont.ds, cont.cont[:to_frb](w, nx;
+                                                      height=height,
+                                                      periodic=periodic))
 end
 
 # Sphere

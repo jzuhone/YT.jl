@@ -600,14 +600,13 @@ end
       
       Arguments:
       
-      * `cont::Union(Slice,Proj) or cont::Cutting`: A Slice, Proj, or 
-        Cutting DataContainer.
+      * `cont::Union(Slice,Proj)` or `cont::Cutting`: A Slice, Proj, or Cutting DataContainer.
       * `width::Length`: The width of the FRB.
       * `nx::Union(Integer,(Integer,Integer))`: Either an integer or a 2-tuple of
         integers, corresponding to the dimensions of the image. 
       * `center::Center` (optional): The center of the FRB. If not specified, 
-        defaults to the center of the current object. Not available if `cont` is 
-        a `Cutting.`
+        defaults to the center of the current object. Not available if `cont` is a
+        `Cutting.`
       * `height::Length` (optional): The height of the FRB. If not specified,
         defaults to the `width`. 
       * `periodic::Bool` (optional): Is the FRB periodic? Default `false`.

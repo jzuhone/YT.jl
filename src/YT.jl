@@ -140,7 +140,7 @@ function load_particles(data::Dict{Array{Float64},ASCIIString}; length_unit=noth
                         n_ref=64, over_refine_factor=1, geometry='cartesian')
     ds = ytstream.load_particles(data; length_unit=length_unit, bbox=bbox, sim_time=sim_time,
                                  mass_unit=mass_unit, time_unit=time_unit, velocity_unit=velocity_unit,
-                                 magnetic_unit=magnetic_unit, periodicity=periodicity, n_ref=n_ref
+                                 magnetic_unit=magnetic_unit, periodicity=periodicity, n_ref=n_ref,
                                  over_refine_factor=over_refine_factor, geometry=geometry)
     return Dataset(ds)
 end

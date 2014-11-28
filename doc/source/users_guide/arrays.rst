@@ -455,3 +455,100 @@ The physical constants implemented in ``YT.physical_constants`` are (in cgs unit
 * ``Na``: Avogadro's number
 * ``Tcmb``: Cosmic microwave background temperature
 * ``stefan_boltzmann``: Stefan-Boltzmann constant
+
+.. _equivalencies:
+
+Equivalencies
+-------------
+
+"Some physical quantities are directly related to other unitful quantities by a constant, but otherwise do not 
+have the same units. To facilitate conversions between these quantities, ``yt`` implements a system of unit 
+equivalencies (inspired by the `AstroPy implementation <http://docs.astropy.org/en/latest/units/equivalencies.html>`_.
+The possible unit equivalencies are
+
+* ``"thermal"``: conversions between temperature and energy (:math:`E = k_BT`)
+* ``"spectral"``: conversions between wavelength, frequency, and energy for photons 
+  (:math:`E = h\nu = hc/\lambda`, :math:`c = \lambda\nu`)
+* ``"mass_energy"``: conversions between mass and energy (:math:`E = mc^2`)
+* ``"lorentz"``: conversions between velocity and Lorentz factor (:math:`\gamma = 1/\\sqrt{1-(v/c)^2}`)
+* ``"schwarzschild"``: conversions between mass and Schwarzschild radius (:math:`R_S = 2GM/c^2`)
+* ``"compton"``: conversions between mass and Compton wavelength (:math:`\lambda = h/mc`)
+
+The following unit equivalencies only apply under conditions applicable for an ideal gas with a constant mean molecular 
+weight :math:`\mu` and ratio of specific heats :math:`\gamma`:
+      
+* ``"number_density"``: conversions between density and number density (:math:`n = \rho/\mu{m_p}`)
+* ``"sound_speed"``: conversions between temperature and sound speed for an ideal gas (:math:`c_s^2 = \gamma{k_BT}/\mu{m_p}`)
+
+A ``YTArray`` or ``YTQuantity`` can be converted to an equivalent using the ``to_equivalent`` method, where the unit 
+and the equivalence name are provided as arguments:
+
+.. code-block:: jlcon
+
+    julia> T = YTQuantity(1.0e8, "K")
+
+    julia> to_equivalent(T, "keV", "thermal")
+    8.617332401096501 keV
+
+    julia> ds = load('IsolatedGalaxy/galaxy0030/galaxy0030')
+    
+    julia> dd = AllData(ds)
+    
+    julia> to_equivalent(dd["density"], "kpc**-3", "number_density")
+    3644460-element YTArray (kpc**(-3)):
+     1.441658495282944e58 
+     1.445257323866133e58 
+     1.4447291393781058e58
+     1.4441308994269905e58
+     1.443577677934973e58 
+     1.4430142249749788e58
+     1.442458957189366e58 
+     1.441917652348286e58 
+     1.4413998196984475e58
+     1.440917014780153e58 
+     ⋮
+     3.126449826777384e62 
+     4.590495737918272e62 
+     7.282569464375485e62 
+     1.1537277841059746e63
+     1.7350057717608834e63
+     2.4686488054537047e63
+     3.3023848519686545e63
+     4.668116783340724e63 
+     3.2130275999617263e64
+
+    julia> import YT.physical_constants: mp
+    
+    julia> to_equivalent(mp, "GeV", "mass_energy")
+    0.9388966459173169 GeV
+    
+Some equivalencies take optional parameters, such as ``"sound_speed"``, which allows you to change
+the mean molecular weight ``mu`` and ratio of specific heats ``gamma``:
+
+.. code-block:: jlcon
+
+    julia> kT = YTQuantity(4.0, "keV")
+    
+    julia> to_equivalent(kT, "km/s", "sound_speed", gamma=4./3., mu=0.5)
+    1010.476390793905 km/s
+    
+To list the available equivalencies for a given array or quantity, use the ``list_equivalencies`` method:
+
+.. code-block:: jlcon 
+
+    julia> list_equivalencies(kT)
+    spectral: length <-> rate <-> energy
+    sound_speed (ideal gas): velocity <-> temperature <-> energy
+    mass_energy: mass <-> energy
+    thermal: temperature <-> energy
+
+or to check if a specific equivalence exist for an array or quantity, use ``has_equivalent``:
+
+.. code-block:: jlcon
+
+    julia> has_equivalent(kT, "spectral")
+    true
+    
+    julia> has_equivalent(dd["density"], "compton")
+    false
+

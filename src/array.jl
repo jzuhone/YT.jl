@@ -135,8 +135,7 @@ YTArray(value::BitArray, units::YTUnit) = value
 YTArray(value::Array) = YTArray(value, "dimensionless")
 YTArray(value::Real) = YTQuantity(value, "dimensionless")
 YTArray(value::PyArray, units::Sym; registry=nothing) = YTArray(value, string(units); registry=registry)
-YTArray(value::Array{YTQuantity}) = YTArray(Array{Float64}(value), value[1].units;
-                                            registry=units.yt_unit["units"]["registry"])
+YTArray(value::Array{YTQuantity}) = YTArray(Array{Float64}(value), value[1].units)
 
 YTObject = Union(YTArray,YTQuantity)
 

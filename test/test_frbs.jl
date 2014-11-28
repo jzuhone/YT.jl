@@ -1,6 +1,5 @@
 using Base.Test
 using YT
-using PyCall
 
 test_dir = Pkg.dir("YT") * "/test"
 

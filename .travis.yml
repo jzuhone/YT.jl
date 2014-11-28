@@ -22,7 +22,10 @@ before_install:
   - cd yt_test && hg update tip && python setup.py install
   - cd ..
   - wget http://yt-project.org/data/enzo_tiny_cosmology.tar.gz
+  - wget http://yt-project.org/data/WindTunnel.tar.gz
   - tar -zxvf enzo_tiny_cosmology.tar.gz
+  - tar -zxvf WindTunnel.tar.gz
+  - julia -e 'Pkg.add("Glob")'
 script:
   - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("YT"))`); Pkg.pin("YT"); Pkg.resolve()'
   - julia -e 'using YT; @assert isdefined(:YT); @assert typeof(YT) === Module'

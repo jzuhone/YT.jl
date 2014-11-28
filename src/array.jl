@@ -134,6 +134,7 @@ YTArray(value::BitArray, units::YTUnit) = value
 YTArray(value::Array) = YTArray(value, "dimensionless")
 YTArray(value::Real) = YTQuantity(value, "dimensionless")
 YTArray(value::PyArray, units::Sym; registry=nothing) = YTArray(value, string(units), registry=registry)
+YTArray(value::Array{YTQuantity}) = YTArray(Array{Float64}(value), value[1].units)
 
 YTObject = Union(YTArray,YTQuantity)
 
@@ -181,7 +182,7 @@ end
 # Copy
 
 copy(q::YTQuantity) = YTQuantity(q.value, q.units)
-copy(a::YTArray) = YTArray(a.value, a.units)
+copy(a::YTArray) = YTArray(copy(a.value), a.units)
 
 # Conversions
 
@@ -195,6 +196,8 @@ convert(::Type{PyObject}, a::YTArray) = pycall(bare_array, PyObject, a.value,
 convert(::Type{PyObject}, a::YTQuantity) = pycall(bare_quan, PyObject, a.value,
                                                   string(a.units.unit_symbol),
                                                   a.units.yt_unit["units"]["registry"])
+convert(::Type{YTArray}, q::YTQuantity) = YTArray([q.value], q.units)
+
 # Indexing, ranges (slicing)
 
 getindex(a::YTArray, i::Integer) = YTQuantity(a.value[i], a.units)

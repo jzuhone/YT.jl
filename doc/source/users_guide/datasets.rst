@@ -1,5 +1,8 @@
 .. _datasets:
 
+.. |glob_package| replace:: Glob.jl package
+.. _glob_package: https://github.com/vtjnash/Glob.jl
+
 Datasets
 ========
 
@@ -171,3 +174,40 @@ the field value and the point of the extremum:
     These methods apply to ``Dataset``\ s loaded from disk files and to ``Dataset``\ s created
     from generic in-memory data. For details on how to create the latter,
     see `In-Memory Datasets <in_memory_datasets.html>`_.
+    
+Dataset Series
+--------------
+
+If you have a time-series set of ``Dataset``\ s, you can construct a ``DatasetSeries`` object
+to iterate over them:
+
+.. code-block:: julia
+
+    function DatasetSeries(fns::Array{ASCIIString,1}))
+    
+where ``fns`` is an ``Array`` of strings corresponding to the filenames of the datasets to be
+loaded. Such a list of filenames could be generated using the |glob_package|_. Once a 
+``DatasetSeries`` object is created, it can be iterated over:
+
+.. code-block:: jlcon
+
+    julia> using Glob
+    
+    julia> fns = sort(glob("sloshing_low_res_hdf5_plt_cnt_0*"))
+    
+    julia> time = YTQuantity[]
+    
+    julia> max_dens = YTQuantity[]
+    
+    julia> ts = DatasetSeries(fns)
+    
+    julia> for ds in ts
+               append!(time, [ds.current_time])
+               sp = Sphere(ds, "c", (100.,"kpc"))
+               append!(max_dens, [maximum(sp["density"])])
+           end
+           
+    julia> time = YTArray(time)
+          
+    julia> max_dens = YTArray(max_dens)
+

@@ -8,9 +8,9 @@ by a field. These can be in 1D, 2D, or 3D. ``YT`` reproduces this functionality 
 .. code-block:: julia
 
    function YTProfile(data_source::DataContainer, bin_fields, fields;
-                        n_bins=64, extrema=nothing, logs=nothing,
-                        units=nothing, weight_field="cell_mass",
-                        accumulation=false, fractional=false)
+                      n_bins=64, extrema=nothing, logs=nothing,
+                      units=nothing, weight_field="cell_mass",
+                      accumulation=false, fractional=false)
 
 ``YTProfile`` takes the following arguments:
 
@@ -46,11 +46,11 @@ and with the units of the radius in kpc:
 
    julia> sp = YT.Sphere(ds, "max", (1.0,"Mpc"))
 
-   julia> units=["radius"=>"kpc"]
+   julia> units = Dict("radius"=>"kpc")
 
-   julia> logs=["radius"=>false]
+   julia> logs = Dict("radius"=>false)
 
-   julia> fields=["density","temperature"]
+   julia> fields = ["density","temperature"]
    
    julia> profile = YT.YTProfile(sp, "radius", fields, n_bins=100, units=units, logs=logs)
 

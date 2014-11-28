@@ -21,12 +21,12 @@ import ..array: YTArray
       * `fields`: A single field or `Array` of fields to be binned.
       * `n_bins`: A single integer or tuple of 2 or 3 integers, to determine the number of bins along 
         each dimension.
-      * `extrema::Dict(ASCIIString,Any)`: A dictionary of tuples (with the field names as the keys) that 
+      * `extrema::Dict{ASCIIString,Any}`: A dictionary of tuples (with the field names as the keys) that 
         determine the maximum and minimum of the bin ranges, e.g. Dict("density"=>(1.0e-30, 1.0e-25)). If a 
         field's extrema are not specified, the extrema of the field in the `data_source` are assumed. The
         extrema are assumed to be in the units of the field in the `units` argument unless it is not
         specified, otherwise they are in the field's default units.
-      * `logs::Dict(ASCIIString,Bool)`: A dictionary (with the field names as the keys) that determines whether
+      * `logs::Dict{ASCIIString,Bool}`: A dictionary (with the field names as the keys) that determines whether
         the bins are in logspace or linear space, e.g. Dict("radius"=>false). If not set, the `take_log` 
         attribute for the field determines this.
       * `units`: A dictionary (with the field names as the keys) that determines the units
@@ -42,9 +42,9 @@ import ..array: YTArray
       Examples:
       
           julia> sp = YT.Sphere(ds, "max", (1.0,"Mpc"))
-          julia> units=["radius"=>"kpc"]
-          julia> logs=["radius"=>false]
-          julia> fields=["density","temperature"]
+          julia> units=Dict("radius"=>"kpc")
+          julia> logs=Dict("radius"=>false)
+          julia> fields=Dict("density","temperature")
           julia> profile = YT.YTProfile(sp, "radius", fields, n_bins=100, units=units, logs=logs)
           julia> print(profile.x)
           julia> print(profile["density"])

@@ -467,10 +467,9 @@ equivalencies (inspired by the `AstroPy implementation <http://docs.astropy.org/
 The possible unit equivalencies are
 
 * ``"thermal"``: conversions between temperature and energy (:math:`E = k_BT`)
-* ``"spectral"``: conversions between wavelength, frequency, and energy for photons 
-  (:math:`E = h\nu = hc/\lambda`, :math:`c = \lambda\nu`)
+* ``"spectral"``: conversions between wavelength, frequency, and energy (:math:`E = h\nu = hc/\lambda`, :math:`c = \lambda\nu`)
 * ``"mass_energy"``: conversions between mass and energy (:math:`E = mc^2`)
-* ``"lorentz"``: conversions between velocity and Lorentz factor (:math:`\gamma = 1/\\sqrt{1-(v/c)^2}`)
+* ``"lorentz"``: conversions between velocity and Lorentz factor (:math:`\gamma = 1/\sqrt{1-(v/c)^2}`)
 * ``"schwarzschild"``: conversions between mass and Schwarzschild radius (:math:`R_S = 2GM/c^2`)
 * ``"compton"``: conversions between mass and Compton wavelength (:math:`\lambda = h/mc`)
 
@@ -478,7 +477,7 @@ The following unit equivalencies only apply under conditions applicable for an i
 weight :math:`\mu` and ratio of specific heats :math:`\gamma`:
       
 * ``"number_density"``: conversions between density and number density (:math:`n = \rho/\mu{m_p}`)
-* ``"sound_speed"``: conversions between temperature and sound speed for an ideal gas (:math:`c_s^2 = \gamma{k_BT}/\mu{m_p}`)
+* ``"sound_speed"``: conversions between temperature and sound speed assuming an ideal gas (:math:`c_s^2 = \gamma{k_BT}/\mu{m_p}`)
 
 A ``YTArray`` or ``YTQuantity`` can be converted to an equivalent using the ``to_equivalent`` method, where the unit 
 and the equivalence name are provided as arguments:

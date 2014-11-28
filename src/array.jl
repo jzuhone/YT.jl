@@ -77,11 +77,12 @@ type YTQuantity
     end
 end
 
-YTQuantity(value::Real, units::String; args...) = YTQuantity(convert(Float64, value),
-                                                             units; args...)
+YTQuantity(value::Real, units::String; registry=nothing) = YTQuantity(convert(Float64, value),
+                                                                      units; registry=registry)
 YTQuantity(ds, value::Real, units::String) = YTQuantity(value, units,
                                                         registry=ds.ds["unit_registry"])
-YTQuantity(value::Real, units::Sym; args...) = YTQuantity(value, string(units); args...)
+YTQuantity(value::Real, units::Sym; registry=nothing) = YTQuantity(value, string(units); 
+                                                                   registry=registry)
 YTQuantity(value::Real, units::YTUnit) = YTQuantity(value, string(units.unit_symbol),
                                                     registry=units.yt_unit["units"]["registry"])
 YTQuantity(value::Bool, units::String) = value
@@ -115,26 +116,27 @@ type YTArray <: AbstractArray
         new(value, yt_units)
     end
 end
-YTArray(value::Array, units::String; args...) = YTArray(convert(Array{Float64}, value),
-                                                        units; args...)
+YTArray(value::Array, units::String; registry=nothing) = YTArray(convert(Array{Float64}, value),
+                                                                 units; registry=registry)
 YTArray(ds, value::Array, units::String) = YTArray(value, units,
                                                    registry=ds.ds["unit_registry"])
-YTArray(value::Array, units::Sym; args...) = YTArray(value, string(units); args...)
+YTArray(value::Array, units::Sym; registry=nothing) = YTArray(value, string(units); registry=registry)
 YTArray(value::Array, units::YTUnit) = YTArray(value, string(units.unit_symbol),
                                                registry=units.yt_unit["units"]["registry"])
 YTArray(value::PyArray, units::YTUnit) = YTArray(value, string(units.unit_symbol),
                                                registry=units.yt_unit["units"]["registry"])
-YTArray(value::Real, units::String; args...) = YTQuantity(value, units; args...)
+YTArray(value::Real, units::String; registry=nothing) = YTQuantity(value, units; registry=registry)
 YTArray(ds, value::Real, units::String) = YTQuantity(value, units, registry=ds.ds["unit_registry"])
-YTArray(value::Real, units::Sym; args...) = YTQuantity(value, units; args...)
-YTArray(value::Real, units::YTUnit; args...) = YTQuantity(value, units; args...)
+YTArray(value::Real, units::Sym; registry=nothing) = YTQuantity(value, units; registry=registry)
+YTArray(value::Real, units::YTUnit; registry=nothing) = YTQuantity(value, units; registry=registry)
 YTArray(value::BitArray, units::String) = value
 YTArray(value::BitArray, units::Sym) = value
 YTArray(value::BitArray, units::YTUnit) = value
 YTArray(value::Array) = YTArray(value, "dimensionless")
 YTArray(value::Real) = YTQuantity(value, "dimensionless")
-YTArray(value::PyArray, units::Sym; registry=nothing) = YTArray(value, string(units), registry=registry)
-YTArray(value::Array{YTQuantity}) = YTArray(Array{Float64}(value), value[1].units)
+YTArray(value::PyArray, units::Sym; registry=nothing) = YTArray(value, string(units); registry=registry)
+YTArray(value::Array{YTQuantity}) = YTArray(Array{Float64}(value), value[1].units;
+                                            registry=units.yt_unit["units"]["registry"])
 
 YTObject = Union(YTArray,YTQuantity)
 
@@ -259,9 +261,9 @@ function in_mks(a::YTObject)
     a.value*pycall(a.units.yt_unit["in_mks"], YTQuantity)
 end
 
-in_units(a::YTObject, units::Sym; args...) = in_units(a, string(units); args...)
-in_units(a::YTObject, units::YTUnit; args...) = in_units(a, units.unit_symbol; args...)
-in_units(a::YTObject, b::YTObject; args...) = in_units(a, b.units; args...)
+in_units(a::YTObject, units::Sym) = in_units(a, string(units))
+in_units(a::YTObject, units::YTUnit) = in_units(a, units.unit_symbol)
+in_units(a::YTObject, b::YTObject) = in_units(a, b.units)
 
 # Arithmetic and comparisons
 

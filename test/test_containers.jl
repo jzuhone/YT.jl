@@ -7,7 +7,9 @@ cont_dict = test_containers.cont_dict
 
 ds = YT.load("enzo_tiny_cosmology/DD0046/DD0046")
 
-file_to_read = "test/containers.h5"
+test_dir = Pkg.dir("YT") * "/test"
+
+file_to_read = "$(test_dir)/containers.h5"
 
 for key in keys(cont_dict)
     cont_name = cont_dict[key][1]

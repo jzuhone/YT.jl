@@ -1,6 +1,9 @@
 import yt
+import sys
+import os
 
-file_to_write = "test/frbs.h5"
+test_dir = sys.argv[1] 
+file_to_write = os.path.join(test_dir, "frbs.h5")
 
 ds = yt.load("enzo_tiny_cosmology/DD0046/DD0046")
 

@@ -2,7 +2,9 @@ using Base.Test
 using YT
 using PyCall
 
-file_to_read = "test/frbs.h5"
+test_dir = Pkg.dir("YT") * "/test"
+
+file_to_read = "$(test_dir)/frbs.h5"
 
 ds = load("enzo_tiny_cosmology/DD0046/DD0046")
 

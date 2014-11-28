@@ -128,7 +128,7 @@ YTArray(value::PyArray, units::YTUnit) = YTArray(value, string(units.unit_symbol
 YTArray(value::Real, units::String; registry=nothing) = YTQuantity(value, units; registry=registry)
 YTArray(ds, value::Real, units::String) = YTQuantity(value, units, registry=ds.ds["unit_registry"])
 YTArray(value::Real, units::Sym; registry=nothing) = YTQuantity(value, units; registry=registry)
-YTArray(value::Real, units::YTUnit; registry=nothing) = YTQuantity(value, units; registry=registry)
+YTArray(value::Real, units::YTUnit) = YTQuantity(value, units)
 YTArray(value::BitArray, units::String) = value
 YTArray(value::BitArray, units::Sym) = value
 YTArray(value::BitArray, units::YTUnit) = value

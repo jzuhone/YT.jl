@@ -137,7 +137,7 @@ end
 function load_particles(data::Dict{Array{Float64},ASCIIString}; length_unit=nothing, 
                         bbox=nothing, sim_time=0.0, mass_unit=nothing, time_unit=nothing, 
                         velocity_unit=nothing, magnetic_unit=nothing, periodicity=(true, true, true), 
-                        n_ref=64, over_refine_factor=1, geometry='cartesian')
+                        n_ref=64, over_refine_factor=1, geometry="cartesian")
     ds = ytstream.load_particles(data; length_unit=length_unit, bbox=bbox, sim_time=sim_time,
                                  mass_unit=mass_unit, time_unit=time_unit, velocity_unit=velocity_unit,
                                  magnetic_unit=magnetic_unit, periodicity=periodicity, n_ref=n_ref,

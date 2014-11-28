@@ -187,27 +187,25 @@ to iterate over them:
     
 where ``fns`` is an ``Array`` of strings corresponding to the filenames of the datasets to be
 loaded. Such a list of filenames could be generated using the |glob_package|_. Once a 
-``DatasetSeries`` object is created, it can be iterated over:
+``DatasetSeries`` object is created, it can be iterated over, such as in this script:
 
-.. code-block:: jlcon
+.. code-block:: julia
 
-    julia> using Glob
+    using YT
+    using Glob
+    fns = sort(glob("sloshing_low_res_hdf5_plt_cnt_0*"))
     
-    julia> fns = sort(glob("sloshing_low_res_hdf5_plt_cnt_0*"))
+    time = YTQuantity[]
+    max_dens = YTQuantity[]
     
-    julia> time = YTQuantity[]
+    ts = DatasetSeries(fns)
     
-    julia> max_dens = YTQuantity[]
-    
-    julia> ts = DatasetSeries(fns)
-    
-    julia> for ds in ts
-               append!(time, [ds.current_time])
-               sp = Sphere(ds, "c", (100.,"kpc"))
-               append!(max_dens, [maximum(sp["density"])])
-           end
+    for ds in ts
+        append!(time, [ds.current_time])
+        sp = Sphere(ds, "c", (100.,"kpc"))
+        append!(max_dens, [maximum(sp["density"])])
+    end
            
-    julia> time = YTArray(time)
-          
-    julia> max_dens = YTArray(max_dens)
+    time = YTArray(time)
+    max_dens = YTArray(max_dens)
 

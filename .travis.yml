@@ -23,9 +23,6 @@ before_install:
   - cd ..
   - wget http://yt-project.org/data/enzo_tiny_cosmology.tar.gz
   - tar -zxvf enzo_tiny_cosmology.tar.gz
-  - export PYTHONPATH=test:$PYTHONPATH
-  - python test/test_containers.py
-  - python test/test_frbs.py
 script:
   - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("YT"))`); Pkg.pin("YT"); Pkg.resolve()'
   - julia -e 'using YT; @assert isdefined(:YT); @assert typeof(YT) === Module'

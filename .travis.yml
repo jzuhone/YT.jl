@@ -16,8 +16,8 @@ before_install:
   # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
   - sudo rm -rf /dev/shm
   - sudo ln -s /run/shm /dev/shm
-  - conda install binstar
-  - conda install -c https://conda.binstar.org/jzuhone yt
+  - conda install --yes binstar
+  - conda install --yes -c https://conda.binstar.org/jzuhone yt
   - wget http://yt-project.org/data/enzo_tiny_cosmology.tar.gz
   - wget http://yt-project.org/data/WindTunnel.tar.gz
   - tar -zxvf enzo_tiny_cosmology.tar.gz

@@ -16,11 +16,7 @@ before_install:
   # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
   - sudo rm -rf /dev/shm
   - sudo ln -s /run/shm /dev/shm
-  - conda install --yes numpy==1.8.2
-  - conda install --yes matplotlib cython h5py setuptools mercurial sympy
-  - hg clone http://bitbucket.org/yt_analysis/yt yt_test
-  - cd yt_test && hg update tip && python setup.py install
-  - cd ..
+  - conda install -c https://conda.binstar.org/jzuhone yt/dev
   - wget http://yt-project.org/data/enzo_tiny_cosmology.tar.gz
   - wget http://yt-project.org/data/WindTunnel.tar.gz
   - tar -zxvf enzo_tiny_cosmology.tar.gz

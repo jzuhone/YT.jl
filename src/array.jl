@@ -554,6 +554,7 @@ eye(a::YTArray) = YTArray(eye(a.value), a.units)
 
 linspace(start::YTQuantity, stop::YTQuantity, n::Integer) = 
     YTArray(linspace(in_units(start, stop.units).value,stop.value,n), start.units)
-linspace(start::YTQuantity, stop::YTQuantity) = linspace(start,stop,100)
+linspace(start::YTQuantity, stop::YTQuantity) = 
+    YTArray(linspace(in_units(start, stop.units).value,stop.value), start.units)
 
 end

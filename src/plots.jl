@@ -1,6 +1,6 @@
 module plots
 
-import ..data_objects: Dataset, DataContainer
+import ..data_objects: Dataset, DataContainer, parse_fps
 import ..dataset_series: DatasetSeries
 import ..array: YTArray
 import PyCall: @pyimport, PyObject, pywrap
@@ -14,7 +14,9 @@ function SlicePlot(ds::Dataset, axis, fields; center="c", args...)
     else
         c = center
     end
-    pywrap(pw.SlicePlot(ds.ds, axis, fields, center=c; args...))
+    fps = parse_fps(field_parameters)
+    pywrap(pw.SlicePlot(ds.ds, axis, fields; center=c,
+                        field_parameters=fps, args...))
 end
 
 function ProjectionPlot(ds::Dataset, axis, fields; center="c",
@@ -29,8 +31,9 @@ function ProjectionPlot(ds::Dataset, axis, fields; center="c",
     else
         c = center
     end
-    pywrap(pw.ProjectionPlot(ds.ds, axis, fields, center=c,
-                             data_source=source; args...))
+    fps = parse_fps(field_parameters)
+    pywrap(pw.ProjectionPlot(ds.ds, axis, fields; center=c,
+                             data_source=source, field_parameters=fps, args...))
 end
 
 # Show plot

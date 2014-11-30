@@ -21,7 +21,7 @@ function SlicePlot(ds::Dataset, axis, fields; center="c",
 end
 
 function ProjectionPlot(ds::Dataset, axis, fields; center="c",
-                        data_source=nothing, field_paramters=nothing,
+                        data_source=nothing, field_parameters=nothing,
                         args...)
     if data_source != nothing
         source = data_source.cont

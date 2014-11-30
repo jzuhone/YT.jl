@@ -8,7 +8,8 @@ import PyCall: @pyimport, PyObject, pywrap
 @pyimport yt.visualization.plot_window as pw
 @pyimport yt.visualization.profile_plotter as pp
 
-function SlicePlot(ds::Dataset, axis, fields; center="c", args...)
+function SlicePlot(ds::Dataset, axis, fields; center="c", 
+                   field_parameters=nothing, args...)
     if typeof(center) <: YTArray
         c = PyObject(center)
     else
@@ -20,7 +21,8 @@ function SlicePlot(ds::Dataset, axis, fields; center="c", args...)
 end
 
 function ProjectionPlot(ds::Dataset, axis, fields; center="c",
-                        data_source=nothing, args...)
+                        data_source=nothing, field_paramters=nothing,
+                        args...)
     if data_source != nothing
         source = data_source.cont
     else

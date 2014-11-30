@@ -85,15 +85,11 @@ z\y
 @test x/y == y\x
 @test x./a == a.\x
 
-@test_approx_eq abs(a).value sqrt(a.*a).value
-@test_approx_eq abs(x).value sqrt(x*x).value
-@test_approx_eq abs(a).value cbrt(a.^3).value
-@test_approx_eq abs(x).value cbrt(x^3).value
+@test_approx_eq a.value sqrt(a.*a).value
+@test_approx_eq x.value sqrt(x*x).value
 
-@test abs(a).units == sqrt(a.*a).units
-@test abs(x).units == sqrt(x*x).units
-@test abs(a).units == cbrt(a.^3).units
-@test abs(x).units == cbrt(x^3).units
+@test a.units == sqrt(a.*a).units
+@test x.units == sqrt(x*x).units
 
 @test_approx_eq in_cgs(x).value x.value*100.0
 @test_approx_eq in_mks(b).value b.value/1000.0

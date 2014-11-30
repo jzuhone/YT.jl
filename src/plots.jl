@@ -9,8 +9,8 @@ import PyCall: @pyimport, PyObject, pywrap
 @pyimport yt.visualization.profile_plotter as pp
 
 function SlicePlot(ds::Dataset, axis, fields; center="c", args...)
-    if typeof(center) == YTArray
-        c = convert(PyObject, center)
+    if typeof(center) <: YTArray
+        c = PyObject(center)
     else
         c = center
     end
@@ -24,8 +24,8 @@ function ProjectionPlot(ds::Dataset, axis, fields; center="c",
     else
         source = nothing
     end
-    if typeof(center) == YTArray
-        c = convert(PyObject, center)
+    if typeof(center) <: YTArray
+        c = PyObject(center) 
     else
         c = center
     end

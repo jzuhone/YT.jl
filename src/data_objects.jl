@@ -96,7 +96,7 @@ function parse_fps(field_parameters)
     if field_parameters != nothing
         fps = Dict()
         for key in collect(keys(field_parameters))
-            fps[key] = convert(PyObject, field_parameters[key])
+            fps[key] = PyObject(field_parameters[key])
         end
     end
     return fps
@@ -223,19 +223,19 @@ type Region <: DataContainer
                     left_edge::Union(Array{Float64,1},YTArray),
                     right_edge::Union(Array{Float64,1},YTArray);
                     field_parameters=nothing, data_source=nothing)
-        if typeof(center) == YTArray
-            c = convert(PyObject, center)
+        if typeof(center) <: YTArray
+            c = PyObject(center) 
         else
             c = center
         end
-        if typeof(left_edge) == YTArray
+        if typeof(left_edge) <: YTArray
             le = in_units(YTArray(ds, left_edge.value,
                           repr(left_edge.units.unit_symbol)),
                           "code_length").value
         else
             le = left_edge
         end
-        if typeof(right_edge) == YTArray
+        if typeof(right_edge) <: YTArray
             re = in_units(YTArray(ds, right_edge.value,
                           repr(right_edge.units.unit_symbol)),
                           "code_length").value
@@ -293,18 +293,18 @@ type Disk <: DataContainer
     function Disk(ds::Dataset, center::Center, normal::Array{Float64,1},
                   radius::Length, height::Length; field_parameters=nothing,
                   data_source=nothing)
-        if typeof(center) == YTArray
-            c = convert(PyObject, center)
+        if typeof(center) <: YTArray
+            c = PyObject(center) 
         else
             c = center
         end
-        if typeof(radius) == YTQuantity
-            r = convert(PyObject, radius)
+        if typeof(radius) <: YTQuantity
+            r = PyObject(radius)
         else
             r = radius
         end
-        if typeof(height) == YTQuantity
-            h = convert(PyObject, height)
+        if typeof(height) <: YTQuantity
+            h = PyObject(height)
         else
             h = height
         end
@@ -458,8 +458,8 @@ type Cutting <: DataContainer
     function Cutting(ds::Dataset, normal::Array{Float64,1}, center::Center;
                      north_vector=nothing, field_parameters=nothing,
                      data_source=nothing)
-        if typeof(center) == YTArray
-            c = convert(PyObject, center)
+        if typeof(center) <: YTArray
+            c = PyObject(center)
         else
             c = center
         end
@@ -621,8 +621,8 @@ end
 function to_frb(cont::Union(Slice,Proj), width::Length,
                 nx::Union(Integer,(Integer,Integer)); center=nothing,
                 height=nothing, periodic=false)
-    if typeof(width) == YTQuantity
-        w = convert(PyObject, width)
+    if typeof(width) <: YTQuantity
+        w = PyObject(width) 
     else
         w = width
     end
@@ -635,8 +635,8 @@ end
 function to_frb(cont::Cutting, width::Length,
                 nx::Union(Integer,(Integer,Integer));
                 height=nothing, periodic=false)
-    if typeof(width) == YTQuantity
-        w = convert(PyObject, width)
+    if typeof(width) <: YTQuantity
+        w = PyObject(width) 
     else
         w = width
     end
@@ -675,13 +675,13 @@ type Sphere <: DataContainer
     field_dict::Dict
     function Sphere(ds::Dataset, center::Center, radius::Length;
                     field_parameters=nothing, data_source=nothing)
-        if typeof(center) == YTArray
-            c = convert(PyObject, center)
+        if typeof(center) <: YTArray
+            c = PyObject(center)
         else
             c = center
         end
-        if typeof(radius) == YTQuantity
-            r = convert(PyObject, radius)
+        if typeof(radius) <: YTQuantity
+            r = PyObject(radius) 
         else
             r = radius
         end
@@ -840,7 +840,7 @@ end
 
       """ ->
 function set_field_parameter(dc::DataContainer, key::String, value)
-    v = convert(PyObject, value)
+    v = PyObject(value)
     dc.cont[:set_field_parameter](key, v)
 end
 

@@ -327,13 +327,13 @@ end
 
 # Sadly this is necessary
 for op = (:+, :-, :*, :.*, :/, :./, :\, :.\, :hypot, :.==, :.!=, :.>=, :.<=, :.<, :.>)
-    @eval ($op)(a::PyArray{Float64},b::Real) = ($op)(Array{Float64}(a.o),b)
-    @eval ($op)(a::Real,b::PyArray{Float64}) = ($op)(a,Array{Float64}(b.o))
+    @eval ($op)(a::PyArray{Float64},b::Real) = ($op)(convert(Array{Float64}, a.o),b)
+    @eval ($op)(a::Real,b::PyArray{Float64}) = ($op)(a,convert(Array{Float64}, b.o))
 end
 
 for op = (:*, :/, :\) 
-    @eval ($op)(a::PyArray{Float64},b::YTQuantity) = ($op)(Array{Float64}(a.o),b)
-    @eval ($op)(a::YTQuantity,b::PyArray{Float64}) = ($op)(a,Array{Float64}(b.o))
+    @eval ($op)(a::PyArray{Float64},b::YTQuantity) = ($op)(convert(Array{Float64}, a.o),b)
+    @eval ($op)(a::YTQuantity,b::PyArray{Float64}) = ($op)(a,convert(Array{Float64}, b.o))
 end
 
 -(a::PyArray) = -1*a

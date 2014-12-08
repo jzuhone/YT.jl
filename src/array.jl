@@ -154,7 +154,7 @@ YTArray(value::BitArray, units::YTUnit) = value
 YTArray{T<:Real}(value::Array{T}) = YTArray{T}(value, "dimensionless")
 YTArray(value::Real) = YTQuantity(value, "dimensionless")
 
-YTArray(a::Array{YTQuantity}) = YTArray{typeof(a[1].value)}(Array{typeof(a[1].value)}(a), a[1].units)
+YTArray(a::Array{YTQuantity}) = YTArray{typeof(a[1].value)}(convert(Array{typeof(a[1].value)},a), a[1].units)
 
 eltype(a::YTArray) = eltype(a.value)
 

@@ -1,7 +1,7 @@
 Installing ``YT``
 =================
 
-``YT`` version 0.2 requires Julia version 0.4 or later, and may be installed just like any other Julia package:
+``YT`` version 0.2 requires Julia version 0.3 or later, and may be installed just like any other Julia package:
 
 .. code-block:: jlcon
 

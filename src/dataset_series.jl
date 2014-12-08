@@ -7,6 +7,10 @@ import PyCall: @pyimport, PyObject
 
 @pyimport yt.data_objects.time_series as time_series
 
+if VERSION < v"0.4-"
+    import YT: @doc
+end
+
 @doc doc"""
       Construct a time series sequence of datasets
       from an array of filenames, `fns::Array{Union(ASCIIString,UTF8String),1}`.

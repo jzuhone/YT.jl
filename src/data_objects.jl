@@ -5,6 +5,10 @@ import Base: size, show, showarray, display, showerror
 import ..array: YTArray, YTQuantity, in_units, array_or_quan
 import ..fixed_resolution: FixedResolutionBuffer
 
+if VERSION < v"0.4-"
+    import YT: @doc
+end
+
 Center = Union(ASCIIString,Array{Float64,1},YTArray,(ASCIIString,ASCIIString))
 Length = Union(FloatingPoint,(FloatingPoint,ASCIIString),YTQuantity)
 Field  = Union(ASCIIString,(ASCIIString,ASCIIString))

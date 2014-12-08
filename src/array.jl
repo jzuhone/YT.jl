@@ -12,6 +12,10 @@ import SymPy: Sym
 import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin, PyAny
 @pyimport yt.units as units
 
+if VERSION < v"0.4-"
+    import YT: @doc
+end
+
 IntOrRange = Union(Integer,Ranges)
 
 # Grab the classes for creating YTArrays and YTQuantities

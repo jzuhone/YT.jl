@@ -6,6 +6,10 @@ import ..data_objects: DataContainer
 import ..array: YTArray
 @pyimport yt.data_objects.profiles as prof
 
+if VERSION < v"0.4-"
+    import YT: @doc
+end
+
 @doc doc"""
 
       Bin data from a data container object into a profile. These can be in 

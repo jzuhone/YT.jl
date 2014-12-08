@@ -8,6 +8,10 @@ import PyCall: @pyimport, PyObject, pywrap
 @pyimport yt.visualization.plot_window as pw
 @pyimport yt.visualization.profile_plotter as pp
 
+if VERSION < v"0.4-"
+    import YT: @doc
+end
+
 function SlicePlot(ds::Dataset, axis, fields; center="c", 
                    field_parameters=nothing, args...)
     if typeof(center) <: YTArray

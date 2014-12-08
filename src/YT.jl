@@ -57,6 +57,12 @@ check_for_yt()
 @pyimport yt.frontends.stream.api as ytstream
 @pyimport yt.config as ytconfig
 
+if VERSION < v"0.4-"
+    macro doc(args...)
+        return nothing
+    end
+end
+
 include("array.jl")
 include("fixed_resolution.jl")
 include("data_objects.jl")

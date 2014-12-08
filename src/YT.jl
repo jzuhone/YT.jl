@@ -59,7 +59,7 @@ check_for_yt()
 
 if VERSION < v"0.4-"
     macro doc(args...)
-        return nothing
+        return args[end]
     end
 end
 

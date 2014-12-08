@@ -46,9 +46,9 @@ and with the units of the radius in kpc:
 
    julia> sp = YT.Sphere(ds, "max", (1.0,"Mpc"))
 
-   julia> units = Dict("radius"=>"kpc")
+   julia> units = ["radius"=>"kpc"]
 
-   julia> logs = Dict("radius"=>false)
+   julia> logs = ["radius"=>false]
 
    julia> fields = ["density","temperature"]
    

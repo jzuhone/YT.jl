@@ -204,7 +204,7 @@ is an optional dictionary which can be stored as dataset attributes to provide a
      0.7789837638416921   0.4639426067506691      0.14832697895106595
      0.6460553973501566   0.04338617942933576     0.6935626833634565
 
-    julia> myinfo = Dict("field"=>"velocity_magnitude", "source"=>"galaxy cluster")
+    julia> myinfo = ["field"=>"velocity_magnitude", "source"=>"galaxy cluster"]
 
     julia> YT.write_hdf5(a, "my_file.h5", dataset_name="cluster", info=myinfo)
 

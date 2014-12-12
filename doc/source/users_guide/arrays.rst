@@ -319,11 +319,13 @@ Changing Units
 
 Occasionally you will want to change the units of an array or quantity to something more
 appropriate. Taking density as the example, we can change it to units of solar masses per
-kiloparsec:
+kiloparsec, using ``convert_to_units``:
 
 .. code-block:: jlcon
 
-    julia> a = YT.in_units(sp["density"], "Msun/kpc**3")
+    julia> YT.convert_to_units(sp["density"], "Msun/kpc**3")
+    
+    julia> a
     325184-element YTArray (Msun/kpc**3):
      193361.43661723754
      190489.69785225237
@@ -347,11 +349,13 @@ kiloparsec:
      238662.9022094481
      235767.96552301125
 
-We can switch back to cgs units rather easily:
+We can switch back to cgs units rather easily, using ``convert_to_cgs``:
 
 .. code-block:: jlcon
 
-    julia> YT.in_cgs(a)
+    julia> YT.convert_to_cgs(a)
+    
+    julia> a
     325184-element YTArray (g/cm**3):
      1.3086558386643183e-26
      1.28922012403754e-26
@@ -375,11 +379,13 @@ We can switch back to cgs units rather easily:
      1.6152527924542868e-26
      1.595660076018442e-26
 
-or to MKS units:
+or to MKS units, using ``convert_to_mks``:
 
 .. code-block:: jlcon
 
-    julia> YT.in_mks(a)
+    julia> YT.convert_to_mks(a)
+    
+    julia> a
     325184-element YTArray (kg/m**3):
      1.3086558386643184e-23
      1.2892201240375402e-23
@@ -402,6 +408,62 @@ or to MKS units:
      1.6194386856326155e-23
      1.6152527924542868e-23
      1.595660076018442e-23
+
+The above do in-place conversions of the original array or quantity. To create a new array or 
+quantity from a unit conversion of an existing one, use the ``in_units``, ``in_cgs``, and 
+``in_mks`` methods, which have the same signature, and return the new array or quantity:
+
+.. code-block:: jlcon
+
+    julia> b = YT.convert_to_units(sp["density"], "Msun/kpc**3")
+    325184-element YTArray (Msun/kpc**3):
+     193361.43661723754
+     190489.69785225237
+     192620.74223809008
+     192078.1521891412
+     194743.95533346717
+     189558.77596412544
+     191741.79371078173
+     191280.49883112026
+     193917.25335152834
+     193386.3647075119
+     ⋮
+     237787.32295826814
+     243195.01114436015
+     237328.8054548747
+     242544.03512482112
+     241643.02694502342
+     239798.46209161723
+     234058.62702232625
+     239281.3920328031
+     238662.9022094481
+     235767.96552301125
+     
+    julia> sp["density"]
+    325184-element YTArray (g/cm**3):
+     1.3086558386643183e-26
+     1.28922012403754e-26
+     1.303642874130672e-26
+     1.2999706649871096e-26
+     1.318012622631734e-26
+     1.2829197138546696e-26
+     1.297694215792844e-26
+     1.2945722063157944e-26
+     1.3124175650316954e-26
+     1.308824550127447e-26
+     ⋮
+     1.6093269371270004e-26
+     1.64592576904618e-26
+     1.606223724726208e-26
+     1.6415200117053996e-26
+     1.6354220552782833e-26
+     1.622938177378765e-26
+     1.5840914000284966e-26
+     1.6194386856326155e-26
+     1.6152527924542868e-26
+     1.595660076018442e-26
+
+where we can see the original array has been unaltered. 
 
 .. _physical-constants:
 

@@ -272,8 +272,9 @@ end
 
 # Unit conversions
 
+
 function in_units(a::YTObject, units::String)
-    a.value*YTQuantity(pycall(a.units.yt_unit["in_units"], PyObject, units))
+    a.value*pycall(a.units.yt_unit["in_units"], YTQuantity, units)
 end
 
 function in_cgs(a::YTObject)
@@ -283,6 +284,31 @@ end
 function in_mks(a::YTObject)
     a.value*pycall(a.units.yt_unit["in_mks"], YTQuantity)
 end
+
+function convert_to_units(a::YTObject, units::String)    
+    new_unit = pycall(a.units.yt_unit["in_units"], YTQuantity, units)
+    a.value *= new_unit.value
+    a.units = new_unit.units
+    return
+end
+
+function convert_to_cgs(a::YTObject)
+    new_unit = pycall(a.units.yt_unit["in_cgs"], YTQuantity)
+    a.value *= new_unit.value
+    a.units = new_unit.units
+    return
+end
+
+function convert_to_mks(a::YTObject)
+    new_unit = pycall(a.units.yt_unit["in_mks"], YTQuantity)
+    a.value *= new_unit.value
+    a.units = new_unit.units
+    return
+end
+
+convert_to_units(a::YTObject, units::Sym) = convert_to_units(a, string(units))
+convert_to_units(a::YTObject, units::YTUnit) = convert_to_units(a, units.unit_symbol)
+convert_to_units(a::YTObject, b::YTObject) = convert_to_units(a, b.units)
 
 in_units(a::YTObject, units::Sym) = in_units(a, string(units))
 in_units(a::YTObject, units::YTUnit) = in_units(a, units.unit_symbol)

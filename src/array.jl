@@ -7,7 +7,7 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              cumsum, cummin, cummax, cumsum_kbn, diff, display, print,
              showarray, showerror, ones, zeros, eye, summary, linspace,
              sum_kbn, gradient, dims2string, mean, std, stdm, var, varm,
-             median, middle
+             median, middle, midpoints, quantile
 
 import SymPy: Sym
 import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin, PyAny
@@ -532,6 +532,11 @@ middle(a::YTArray) = YTQuantity(middle(a.value), a.units)
 
 middle(a::YTQuantity) = YTQuantity(middle(a.value), a.units)
 middle(a::YTQuantity, b::YTQuantity) = YTQuantity(middle(a.value, in_units(b, a.units).value), a.units)
+
+midpoints(a::YTArray) = YTArray(midpoints(a.value), a.units)
+
+quantile(a::YTArray,q::AbstractArray) = YTArray(quantile(a.value, q), a.units)
+quantile(a::YTArray,q::Number) = YTArray(quantile(a.value, q), a.units)
 
 # To/from HDF5
 

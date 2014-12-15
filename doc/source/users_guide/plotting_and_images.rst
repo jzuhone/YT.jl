@@ -16,9 +16,12 @@ and ``ProjectionPlot``:
 
 .. code-block:: julia
 
-    function SlicePlot(ds::Dataset, axis, fields; center="c", args...)
+    function SlicePlot(ds::Dataset, axis, fields; center="c", width=nothing, 
+                       field_parameters=nothing, args...)
 
-    function ProjectionPlot(ds::Dataset, axis, fields; center="c", data_source=nothing, args...)
+    function ProjectionPlot(ds::Dataset, axis, fields; weight_field=nothing,
+                            center="c", width=nothing, field_parameters=nothing, 
+                            data_source=nothing, args...)
 
 Unlike other methods in ``YT``, these return the native ``yt`` Python-based objects. This is
 mainly for convenience; it allows one to use all of the annotation and plot modification methods

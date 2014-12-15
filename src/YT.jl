@@ -58,9 +58,16 @@ check_for_yt()
 @pyimport yt.frontends.stream.api as ytstream
 @pyimport yt.config as ytconfig
 
+import Base: show, help
+
 if VERSION < v"0.4-"
+    macro doc_mstr(x)
+        x
+    end
     macro doc(args...)
-        return esc(args[1].args[end])
+        mydoc = esc(args[1].args[1])
+        mydef = esc(args[1].args[end])
+        return mydef
     end
 end
 
@@ -86,7 +93,6 @@ import .fixed_resolution: FixedResolutionBuffer
 import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,
     set_field_unit, variance
 import .dataset_series: DatasetSeries
-import Base: show
 
 @doc doc""" Enable the plugins defined in the plugin file.""" ->
 enable_plugins = yt.enable_plugins

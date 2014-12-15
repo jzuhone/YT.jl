@@ -465,6 +465,38 @@ quantity from a unit conversion of an existing one, use the ``in_units``, ``in_c
 
 where we can see the original array has been unaltered. 
 
+.. _array_methods:
+
+Mathematical Functions and Array Methods
+----------------------------------------
+
+A number of standard mathematical functions and array methods in Julia work on ``YTArray``\ s:
+
+* ``sqrt`` (square root)
+* ``abs``  (absolute value)
+* ``abs2`` (square of the absolute value)
+* ``minimum`` (minimum of an array)
+* ``maximum`` (maximum of an array)
+* ``hypot`` (square root of the sum of squares)
+* ``size`` (size of an array)
+* ``ndims`` (number of dimensions of an array)
+* ``sum``, ``sum_kbn`` (sum of array elements)
+* ``cumsum``, ``cumsum_kbn`` (cumulative sum of array elements)
+* ``cummin`` (cumulative minimum of array elements)
+* ``cummax`` (cumulative maximum of array elements)
+* ``diff`` (finite difference operator of an array)
+* ``gradient`` (differences along an array with a specified spacing between points)
+* ``mean`` (arithmetic mean of an array)
+* ``std``, ``stdm`` (standard deviation of an array)
+* ``var``, ``varm`` (variance of an array)
+* ``midpoints`` (midpoints of array)
+* ``median`` (median of an array)
+* ``middle`` (middle of an array or two numbers)
+* ``quantile`` (quantile(s) of an array)
+
+For more information on how these methods work in Julia, please consult the 
+`Julia documentation <http://julia.readthedocs.org>`_.
+
 .. _physical-constants:
 
 Physical Constants
@@ -503,20 +535,7 @@ quantities and arrays:
      5.806717052886709
      5.895867148202309
 
-The physical constants implemented in ``YT.physical_constants`` are (in cgs units):
-
-* ``G``: Newton's constant of gravitation
-* ``kboltz``: Boltzmann's constant
-* ``clight``: Speed of light in vacuum
-* ``me``: mass of the electron
-* ``mp``: mass of the proton
-* ``qp``: charge of the proton
-* ``hcgs``: Planck's constant
-* ``sigma_thompson``: Thompson cross section
-* ``amu_cgs``: Atomic mass unit
-* ``Na``: Avogadro's number
-* ``Tcmb``: Cosmic microwave background temperature
-* ``stefan_boltzmann``: Stefan-Boltzmann constant
+Have a look inside ``YT.physical_constants`` to see which constants are implemented. 
 
 .. _equivalencies:
 

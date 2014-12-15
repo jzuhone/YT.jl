@@ -452,7 +452,6 @@ for op = (:exp, :log, :log2, :log10, :log1p, :expm1,
           :cosh, :tanh, :coth, :sech, :csch, :sinpi,
           :cospi, :asin, :acos, :atan)
     @eval ($op)(a::YTObject) = ($op)(a.value)
-    #@eval ($op)(q::YTQuantity) = ($op)(q.value)
 end
 
 # Show

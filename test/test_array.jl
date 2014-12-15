@@ -147,3 +147,9 @@ write_hdf5(a, "test.h5", dataset_name="cluster", info=myinfo)
 b = from_hdf5("test.h5", dataset_name="cluster")
 @test a == b
 @test a.units == b.units
+
+c = YTQuantity(1.0,"kpc")
+d = YTQuantity(1.0,"ly")
+
+@test middle(c,d) == 0.5*(c+d)
+

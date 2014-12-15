@@ -6,7 +6,8 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan, sum,
              cumsum, cummin, cummax, cumsum_kbn, diff, display, print,
              showarray, showerror, ones, zeros, eye, summary, linspace,
-             sum_kbn, gradient, dims2string
+             sum_kbn, gradient, dims2string, mean, std, stdm, var, varm,
+             median, middle
 
 import SymPy: Sym
 import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin, PyAny
@@ -94,7 +95,7 @@ YTQuantity(value::Bool, units::String) = value
 YTQuantity(value::Bool, units::Sym) = value
 YTQuantity(value::Bool, units::YTUnit) = value
 YTQuantity(value::Bool) = value
-YTQuantity{T<:Real}(value::T) = YTQuantity{T}(value, "dimensionless")
+YTQuantity{T<:Real}(value::T) = YTQuantity(value, "dimensionless")
 
 function YTQuantity(yt_quantity::PyObject)
     yt_units = YTUnit(yt_quantity["unit_quantity"],
@@ -151,7 +152,7 @@ YTArray(value::BitArray, units::String) = value
 YTArray(value::BitArray, units::Sym) = value
 YTArray(value::BitArray, units::YTUnit) = value
 
-YTArray{T<:Real}(value::Array{T}) = YTArray{T}(value, "dimensionless")
+YTArray{T<:Real}(value::Array{T}) = YTArray(value, "dimensionless")
 YTArray(value::Real) = YTQuantity(value, "dimensionless")
 
 YTArray(a::Array{YTQuantity}) = YTArray{typeof(a[1].value)}(convert(Array{typeof(a[1].value)},a), a[1].units)
@@ -512,6 +513,25 @@ diff(a::YTArray, dim::Integer) = YTArray(diff(a.value, dim), a.units)
 gradient(a::YTArray) = YTArray(gradient(a.value), a.units)
 gradient(a::YTArray, b::YTObject) = YTArray(gradient(a.value, b.value), a.units/b.units)
 gradient(a::YTArray, b::Real) = YTArray(gradient(a.value, b), a.units)
+
+mean(a::YTArray) = YTQuantity(mean(a.value), a.units)
+mean(a::YTArray, region) = YTQuantity(mean(a.value, region), a.units)
+
+std(a::YTArray) = YTQuantity(std(a.value), a.units)
+std(a::YTArray, region) = YTQuantity(std(a.value, region), a.units)
+
+stdm(a::YTArray, m::YTQuantity) = YTQuantity(stdm(a, in_units(m,a.units).value), a.units)
+
+var(a::YTArray) = YTQuantity(var(a.value), a.units)
+var(a::YTArray, region) = YTQuantity(var(a.value, region), a.units)
+
+varm(a::YTArray, m::YTQuantity) = YTQuantity(varm(a, in_units(m,a.units).value), a.units)
+
+median(a::YTArray) = YTQuantity(median(a.value), a.units)
+middle(a::YTArray) = YTQuantity(middle(a.value), a.units)
+
+middle(a::YTQuantity) = YTQuantity(middle(a.value), a.units)
+middle(a::YTQuantity, b::YTQuantity) = YTQuantity(middle(a.value, in_units(b, a.units).value), a.units)
 
 # To/from HDF5
 

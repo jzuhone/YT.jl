@@ -16,9 +16,12 @@ and ``ProjectionPlot``:
 
 .. code-block:: julia
 
-    function SlicePlot(ds::Dataset, axis, fields; center="c", args...)
+    function SlicePlot(ds::Dataset, axis, fields; center="c", width=nothing, 
+                       field_parameters=nothing, args...)
 
-    function ProjectionPlot(ds::Dataset, axis, fields; center="c", data_source=nothing, args...)
+    function ProjectionPlot(ds::Dataset, axis, fields; weight_field=nothing,
+                            center="c", width=nothing, field_parameters=nothing, 
+                            data_source=nothing, args...)
 
 Unlike other methods in ``YT``, these return the native ``yt`` Python-based objects. This is
 mainly for convenience; it allows one to use all of the annotation and plot modification methods
@@ -96,21 +99,30 @@ The full set of options for these plots can be found in the |yt_plotting_docs|_.
 Images
 ------
 
-To create a raw 2D image from a ``Slice`` or ``Proj`` object,
+To create a raw 2D image from a ``Slice``, ``Proj``, or ``Cutting`` object,
 one can create a ``FixedResolutionBuffer`` object using the ``to_frb`` method:
 
 .. code-block:: julia
 
     function to_frb(cont::Union(Slice,Proj), width::Length,
-                      nx::Union(Integer,(Integer,Integer)); center=nothing, height=nothing,
-                      args...)
+                    nx::Union(Integer,(Integer,Integer)); 
+                    center=nothing, height=nothing, periodic=false)
+                    
+    function to_frb(cont::Cutting, width::Length,
+                    nx::Union(Integer,(Integer,Integer)); 
+                    height=nothing, periodic=false)
 
-where ``cont`` is the ``Slice`` or ``Proj`` object, ``width`` is the width of the plot,
+where ``cont`` is the ``Slice``, ``Proj``, or ``Cutting`` object, ``width`` is the width of the plot,
 ``nx`` is the resolution of the image, ``center`` is the center of the image (defaults to the
 ``center`` of the ``cont``), and ``height`` is the height of the image (defaults to the
 ``width``). The resolution ``nx`` can either be a single value or a tuple of two values,
-depending on how you want to set the width and height. This is an example of how to create a
-``FixedResolutionBuffer`` from a ``Slice``:
+depending on how you want to set the width and height. 
+
+.. note::
+    
+    The ``center`` keyword argument is not available when calling ``to_frb`` on a ``Cutting``.
+    
+This is an example of how to create a ``FixedResolutionBuffer`` from a ``Slice``:
 
 .. code-block:: jlcon
 
@@ -118,9 +130,7 @@ depending on how you want to set the width and height. This is an example of how
     YTSlice (sloshing_nomag2_hdf5_plt_cnt_0100): axis=2, coord=0.0
 
     julia> frb = YT.to_frb(slc, (500.,"kpc"), 800)
-    FixedResolutionBuffer (800x800):
-        -7.714193952405812e23 code_length <= x < 7.714193952405812e23 code_length
-        -7.714193952405812e23 code_length <= y < 7.714193952405812e23 code_length
+    FixedResolutionBuffer (800x800)
 
 which can be plotted with a plotting package such as
 `PyPlot <http://github.com/stevengj/PyPlot.jl>`_ or `Winston <http://github.com/nolta/Winston.jl>`_:

@@ -1,13 +1,13 @@
-# All this does is make sure that the plots work without errors
+# All this does is make sure that the plots run without errors
 
 using Base.Test
 using YT
 using PyCall
 
-ds = load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
+ds = load("enzo_tiny_cosmology/DD0046/DD0046")
 
 slc = SlicePlot(ds, "z", ["density","temperature"])
-slc.set_width(500.,"kpc")
+slc.set_width(0.3,"unitary")
 slc.annotate_grids()
 slc.save()
 

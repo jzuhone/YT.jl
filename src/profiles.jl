@@ -1,11 +1,60 @@
 module profiles
 
-import PyCall: @pyimport, PyObject
+import PyCall: @pyimport, PyObject, pystring
 import Base.show
 import ..data_objects: DataContainer
-import ..array: YTArray
+import ..array: YTArray, convert_to_units
 @pyimport yt.data_objects.profiles as prof
 
+if VERSION < v"0.4-"
+    import YT: @doc
+end
+
+Field  = Union(ASCIIString,(ASCIIString,ASCIIString))
+
+@doc doc"""
+
+      Bin data from a data container object into a profile. These can be in 
+      1D, 2D, or 3D. 
+     
+      Arguments:
+      
+      * `data_source::DataContainer`: The object containing the data from which the profile is
+        to be created.
+      * `bin_fields`: An `Array` of field names over which the binning will occur. The number of
+        fields decides whether or not this will be a 1D, 2D, or 3D profile. If a single field string is
+        given, it is assumed to be 1D.
+      * `fields`: A single field or `Array` of fields to be binned.
+      * `n_bins`: A single integer or tuple of 2 or 3 integers, to determine the number of bins along 
+        each dimension.
+      * `extrema::Dict{ASCIIString,Any}`: A dictionary of tuples (with the field names as the keys) that 
+        determine the maximum and minimum of the bin ranges, e.g. Dict("density"=>(1.0e-30, 1.0e-25)). If a 
+        field's extrema are not specified, the extrema of the field in the `data_source` are assumed. The
+        extrema are assumed to be in the units of the field in the `units` argument unless it is not
+        specified, otherwise they are in the field's default units.
+      * `logs::Dict{ASCIIString,Bool}`: A dictionary (with the field names as the keys) that determines whether
+        the bins are in logspace or linear space, e.g. Dict("radius"=>false). If not set, the `take_log` 
+        attribute for the field determines this.
+      * `units`: A dictionary (with the field names as the keys) that determines the units
+        of the field, e.g. Dict("density"=>"Msun/kpc**3"). If not set then the default units for the 
+        field are used.
+      * `weight_field`: The field to weight the binned fields by when binning. Can be a field name or
+        `nothing`, to produce an unweighted profile. `"cell_mass"` is the default.
+      * `accumulation::Bool`: If `true`, the profile values for a bin n are the cumulative sum of all the
+        values from bin 1 to n. If the profile is 2D or 3D, an `Array{Bool,1}` of values can be given to
+        control the summation in each dimension independently.
+      * `fractional::Bool`: If `true`, the profile values are divided by the sum of all of the values.
+
+      Examples:
+      
+          julia> sp = YT.Sphere(ds, "max", (1.0,"Mpc"))
+          julia> units=Dict("radius"=>"kpc")
+          julia> logs=Dict("radius"=>false)
+          julia> fields=Dict("density","temperature")
+          julia> profile = YT.YTProfile(sp, "radius", fields, n_bins=100, units=units, logs=logs)
+          julia> print(profile.x)
+          julia> print(profile["density"])
+      """ ->
 type YTProfile
     profile::PyObject
     source::DataContainer
@@ -19,6 +68,9 @@ type YTProfile
     y_bins
     z
     z_bins
+    field_dict::Dict
+    var_dict::Dict
+    unit_dict::Dict
     function YTProfile(data_source::DataContainer, bin_fields, fields;
                        n_bins=64, extrema=nothing, logs=nothing,
                        units=nothing, weight_field="cell_mass",
@@ -36,6 +88,9 @@ type YTProfile
                                       accumulation=accumulation,
                                       fractional=fractional)
         ndims = length(bin_fields)
+        if typeof(n_bins) <: Integer
+            n_bins = fill(n_bins, ndims)
+        end
         x = YTArray(profile["x"])
         x_bins = YTArray(profile["x_bins"])
         if ndims >= 2
@@ -53,22 +108,48 @@ type YTProfile
             z_bins = nothing
         end
         new(profile, data_source, bin_fields, fields, weight_field,
-            n_bins, x, x_bins, y, y_bins, z, z_bins)
+            n_bins, x, x_bins, y, y_bins, z, z_bins, Dict(), Dict(), Dict())
     end
 end
 
+@doc doc"""
+      Set the unit of the x-axis of the profile.
+       
+      Arguments:
+      
+      * `profile::YTProfile`: The profile to use.
+      * `new_unit::String`: The new unit.
+      """ ->
 function set_x_unit(profile::YTProfile, new_unit::String)
     profile.profile[:set_x_unit](new_unit)
     profile.x = YTArray(profile.profile["x"])
     profile.x_bins = YTArray(profile.profile["x_bins"])
     return
 end
+
+@doc doc"""
+      Set the unit of the y-axis of the profile.
+       
+      Arguments:
+      
+      * `profile::YTProfile`: The profile to use.
+      * `new_unit::String`: The new unit.
+      """ ->
 function set_y_unit(profile::YTProfile, new_unit::String)
     profile.profile[:set_y_unit](new_unit)
     profile.y = YTArray(profile.profile["y"])
     profile.y_bins = YTArray(profile.profile["y_bins"])
     return
 end
+
+@doc doc"""
+      Set the unit of the z-axis of the profile.
+       
+      Arguments:
+      
+      * `profile::YTProfile`: The profile to use.
+      * `new_unit::String`: The new unit.
+      """ ->
 function set_z_unit(profile::YTProfile, new_unit::String)
     profile.profile[:set_z_unit](new_unit)
     profile.z = YTArray(profile.profile["z"])
@@ -76,22 +157,53 @@ function set_z_unit(profile::YTProfile, new_unit::String)
     return
 end
 
+@doc doc"""
+      Set the unit of a field in the profile.
+       
+      Arguments:
+      
+      * `profile::YTProfile`: The profile to use.
+      * `field::String`: The name of the field to change the unit for. 
+      * `new_unit::String`: The new unit.
+      """ ->
 function set_field_unit(profile::YTProfile, field::String, new_unit::String)
-    profile.profile[:set_field_unit](field, new_unit)
+    profile.unit_dict[field] = new_unit
+    return
 end
 
-getindex(profile::YTProfile, key::String) = YTArray(get(profile.profile, PyObject, key))
-getindex(profile::YTProfile, ftype::String, fname::String) = YTArray(get(profile.profile,
-                                                                         PyObject, (ftype,fname)))
-
-variance(profile::YTProfile, ftype::String, fname::String) = YTArray(get(profile.profile["variance"],
-                                                                         PyObject, (ftype,fname)))
-function variance(profile::YTProfile, key::String)
-    field = profile.source.cont[:_determine_fields](key)
-    variance(profile, field[1][1], field[1][2])
+function getindex(profile::YTProfile, field::ASCIIString)
+    if !haskey(profile.field_dict, field)
+        profile.field_dict[field] = YTArray(get(profile.profile, PyObject, field))
+    end
+    if !haskey(profile.unit_dict, field)
+        profile.unit_dict[field] = profile.field_dict[field].units
+    end
+    convert_to_units(profile.field_dict[field], profile.unit_dict[field])
+    profile.field_dict[field]
 end
 
-show(io::IO, profile::YTProfile) = print(io,profile.profile[:__repr__]())
+@doc doc"""
+      Get the variance of a field from the `YTProfile`.
+      """ ->
+function variance(profile::YTProfile, field::ASCIIString)
+    if !haskey(profile.var_dict, field)
+        fd = profile.source.cont[:_determine_fields](field)
+        profile.var_dict[field] = YTArray(get(profile.profile["variance"],
+                                          PyObject, field))
+    end
+    if !haskey(profile.unit_dict, field)
+        profile.unit_dict[field] = profile.var_dict[field].units
+    end
+    convert_to_units(profile.var_dict[field], profile.unit_dict[field])
+    profile.var_dict[field]
+end
+
+function show(io::IO, profile::YTProfile)
+    dims = length(profile.bin_fields)
+    bin_fields = join(profile.bin_fields, ", ")
+    n_bins = join(profile.n_bins, "x")
+    println(io, "$(dims)-D YTProfile ($(n_bins) bins) over $(bin_fields).")
+end
 
 end
 

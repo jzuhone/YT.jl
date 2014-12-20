@@ -1,3 +1,5 @@
 .idea/*
 *.autosave
 doc/build/*
+*.h5
+*.pyc

@@ -1,9 +1,9 @@
 import PyCall: @pyimport
 
-min_version = v"3.0"
+min_version = v"3.1-"
 
 inst_msg = ("Please install yt version $min_version or higher " *
-            "using Anaconda, pip, or the yt installation script " *
+            "from source, or using Anaconda, pip, or the yt installation script " *
             "found at http://yt-project.org.")
 
 function check_for_yt()

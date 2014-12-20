@@ -1,5 +1,8 @@
 .. _datasets:
 
+.. |glob_package| replace:: Glob.jl package
+.. _glob_package: https://github.com/vtjnash/Glob.jl
+
 Datasets
 ========
 
@@ -101,8 +104,108 @@ it is a FLASH AMR dataset, so statistics regarding the grids and cells are print
     julia> YT.get_smallest_dx(ds)
     7.231875e21 code_length
 
+``get_field_list`` can be used to obtain the list of on-disk fields:
+
+.. code-block:: jlcon
+
+    julia> YT.get_field_list(ds)
+    12-element Array{Any,1}:
+     ("flash","dens")
+     ("flash","temp")
+     ("flash","pres")
+     ("flash","gpot")
+     ("flash","divb")
+     ("flash","velx")
+     ("flash","vely")
+     ("flash","velz")
+     ("flash","magx")
+     ("flash","magy")
+     ("flash","magz")
+     ("flash","magp")
+
+and ``get_derived_field_list`` returns a list of all of the fields that can be generated:
+
+.. code-block:: jlcon
+
+    julia> YT.get_derived_field_list(ds)
+    120-element Array{Any,1}:
+     ("flash","dens")
+     ("flash","divb")
+     ("flash","gpot")
+     ("flash","magp")
+     ("flash","magx")
+     ("flash","magy")
+     ("flash","magz")
+     ("flash","pres")
+     ("flash","temp")
+     ("flash","velx")
+     ⋮
+     ("index","radius")
+     ("index","spherical_phi")
+     ("index","spherical_r")
+     ("index","spherical_theta")
+     ("index","virial_radius_fraction")
+     ("index","x")
+     ("index","y")
+     ("index","z")
+     ("index","zeros")
+
+``find_min`` and ``find_max`` are used to find the minimum or maximum of a field. They return
+the field value and the point of the extremum:
+
+.. code-block:: jlcon
+
+    julia> v, p = YT.find_min(ds, "temperature")
+    yt : [INFO     ] 2014-11-19 11:51:56,612 Min Value is 9.48720e+05 at
+    -3673792499999999619235840.0000000000000000 3673792500000000156106752.0000000000000000
+    -3673792499999999619235840.0000000000000000
+
+    julia> v
+    948720.25 K
+
+    julia> p
+    3-element YTArray (code_length):
+     -3.6737924999999996e24
+      3.6737925e24
+     -3.6737924999999996e24
+
 .. note::
 
     These methods apply to ``Dataset``\ s loaded from disk files and to ``Dataset``\ s created
     from generic in-memory data. For details on how to create the latter,
     see `In-Memory Datasets <in_memory_datasets.html>`_.
+    
+Dataset Series
+--------------
+
+If you have a time-series set of ``Dataset``\ s, you can construct a ``DatasetSeries`` object
+to iterate over them:
+
+.. code-block:: julia
+
+    function DatasetSeries(fns::Array{ASCIIString,1}))
+    
+where ``fns`` is an ``Array`` of strings corresponding to the filenames of the datasets to be
+loaded. Such a list of filenames could be generated using the |glob_package|_. Once a 
+``DatasetSeries`` object is created, it can be iterated over, such as in this script:
+
+.. code-block:: julia
+
+    using YT
+    using Glob
+    fns = sort(glob("sloshing_low_res_hdf5_plt_cnt_0*"))
+    
+    time = YTQuantity[]
+    max_dens = YTQuantity[]
+    
+    ts = DatasetSeries(fns)
+    
+    for ds in ts
+        append!(time, [ds.current_time])
+        sp = Sphere(ds, "c", (100.,"kpc"))
+        append!(max_dens, [maximum(sp["density"])])
+    end
+           
+    time = YTArray(time)
+    max_dens = YTArray(max_dens)
+

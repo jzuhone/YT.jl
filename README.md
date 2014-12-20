@@ -14,7 +14,7 @@ exposes a number of functionalities from `yt`. These include:
 * Slice and projection plots
 * Symbolic units, YTArrays, YTQuantities
 
-`YT` can be installed in Julia version 0.3 or higher. To install it, just run:
+`YT` version 0.2 can be installed in Julia version 0.3 or higher. To install it, just run:
 
     Pkg.add("YT")
 
@@ -24,7 +24,7 @@ which will also install the following dependencies (if you don't already have th
 * [PyPlot](http://github.com/stevengj/PyPlot.jl)
 * [SymPy](http://github.com/jverzani/SymPy.jl)
 
-However, for `YT` to work, `yt` itself must be installed. `YT` requires `yt` version 3.0 or higher.
+However, for `YT` to work, `yt` itself must be installed. `YT` version 0.2 requires `yt` version 3.1 or higher.
 The best ways to install `yt` are via the [install script](http://yt-project.org/#getyt) or via the
 [Anaconda Python Distribution](https://store.continuum.io/cshop/anaconda).
 

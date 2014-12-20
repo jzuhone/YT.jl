@@ -10,3 +10,4 @@
    profiles
    plotting_and_images
    in_memory_datasets
+   configuring

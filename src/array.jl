@@ -102,7 +102,7 @@ function YTQuantity(yt_quantity::PyObject)
                       yt_quantity[:units],
                       yt_quantity[:units][:dimensions])
     value = yt_quantity[:d][1]
-    YTQuantity(value, yt_units)
+    YTQuantity{typeof(value)}(value, yt_units)
 end
 
 # YTArray definition
@@ -136,7 +136,7 @@ function YTArray(yt_array::PyObject)
                       yt_array[:units],
                       yt_array[:units][:dimensions])
     value = PyArray(yt_array["d"])
-    YTArray(value, yt_units)
+    YTArray{eltype(value)}(value, yt_units)
 end
 
 YTArray{T<:Real}(ds, value::Array{T}, units::String) = YTArray{T}(value, units, registry=ds.ds["unit_registry"])

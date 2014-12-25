@@ -12,6 +12,7 @@ export get_derived_field_list
 export YTArray, YTQuantity, YTUnit
 export in_units, in_cgs, in_mks, from_hdf5, write_hdf5
 export to_equivalent, list_equivalencies, has_equivalent
+export convert_to_units, convert_to_cgs, convert_to_mks
 
 # load
 
@@ -57,6 +58,19 @@ check_for_yt()
 @pyimport yt.frontends.stream.api as ytstream
 @pyimport yt.config as ytconfig
 
+import Base: show, help
+
+if VERSION < v"0.4-"
+    macro doc_mstr(x)
+        x
+    end
+    macro doc(args...)
+        mydoc = esc(args[1].args[1])
+        mydef = esc(args[1].args[end])
+        return mydef
+    end
+end
+
 include("array.jl")
 include("fixed_resolution.jl")
 include("data_objects.jl")
@@ -67,7 +81,7 @@ include("profiles.jl")
 
 import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks, YTUnit,
     from_hdf5, write_hdf5, to_equivalent, list_equivalencies,
-    has_equivalent
+    has_equivalent, convert_to_units, convert_to_mks, convert_to_cgs
 import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray,
     Cutting, CutRegion, DataContainer, Region, has_field_parameter,
@@ -79,7 +93,6 @@ import .fixed_resolution: FixedResolutionBuffer
 import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,
     set_field_unit, variance
 import .dataset_series: DatasetSeries
-import Base: show
 
 @doc doc""" Enable the plugins defined in the plugin file.""" ->
 enable_plugins = yt.enable_plugins
@@ -106,27 +119,43 @@ load(fn::ASCIIString; args...) = Dataset(ytconv.load(fn; args...))
 
 # Stream datasets
 
-function load_uniform_grid(data::Dict, domain_dimensions::Array; args...)
-    ds = ytstream.load_uniform_grid(data, domain_dimensions; args...)
+function load_uniform_grid(data::Dict{Array{Float64},ASCIIString}, 
+                           domain_dimensions::Array{Integer}; 
+                           length_unit=nothing, bbox=nothing,
+                           nprocs=1, sim_time=0.0, mass_unit=nothing,
+                           time_unit=nothing, velocity_unit=nothing,
+                           magnetic_unit=nothing, periodicity=(true, true, true), 
+                           geometry="cartesian")
+    ds = ytstream.load_uniform_grid(data, domain_dimensions; length_unit=length_unit,
+                                    bbox=bbox, nprocs=nprocs, sim_time=sim_time,
+                                    mass_unit=mass_unit, time_unit=time_unit,
+                                    velocity_unit=velocity_unit, magnetic_unit=magnetic_unit,
+                                    periodicity=periodicity, geometry=geometry)
     return Dataset(ds)
 end
 
-function load_amr_grids(data::Array, domain_dimensions::Array; args...)
-    ds = ytstream.load_amr_grids(data, domain_dimensions; args...)
+function load_amr_grids(data::Array, domain_dimensions::Array{Integer};
+                        field_units=nothing, bbox=nothing, sim_time=0.0, 
+                        length_unit=nothing, mass_unit=nothing, time_unit=nothing, 
+                        velocity_unit=nothing, magnetic_unit=nothing, 
+                        periodicity=(true, true, true), geometry="cartesian", refine_by=2)
+    ds = ytstream.load_amr_grids(data, domain_dimensions; field_units=field_units,
+                                 bbox=bbox, sim_time=sim_time, length_unit=length_unit,
+                                 mass_unit=mass_unit, time_unit=time_unit,
+                                 velocity_unit=velocity_unit, magnetic_unit=magnetic_unit,
+                                 periodicity=periodicity, geometry=geometry, refine_by=refine_by)
     return Dataset(ds)
 end
 
-function load_particles(data::Dict; args...)
-    ds = ytstream.load_particles(data; args...)
+function load_particles(data::Dict{Array{Float64},ASCIIString}; length_unit=nothing, 
+                        bbox=nothing, sim_time=0.0, mass_unit=nothing, time_unit=nothing, 
+                        velocity_unit=nothing, magnetic_unit=nothing, periodicity=(true, true, true), 
+                        n_ref=64, over_refine_factor=1, geometry="cartesian")
+    ds = ytstream.load_particles(data; length_unit=length_unit, bbox=bbox, sim_time=sim_time,
+                                 mass_unit=mass_unit, time_unit=time_unit, velocity_unit=velocity_unit,
+                                 magnetic_unit=magnetic_unit, periodicity=periodicity, n_ref=n_ref,
+                                 over_refine_factor=over_refine_factor, geometry=geometry)
     return Dataset(ds)
-end
-
-# Parallelism
-
-in_parallel = false
-
-if nprocs() > 1
-    in_parallel = true
 end
 
 end

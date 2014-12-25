@@ -1,16 +1,21 @@
 module array
 
-import Base: cbrt, convert, copy, eltype, hypot, maximum, minimum, ndims,
+import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              show, size, sqrt, exp, log, log10, sin, cos, tan,
              expm1, log2, log1p, sinh, cosh, tanh, csc, sec, cot, csch,
              sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan, sum,
              cumsum, cummin, cummax, cumsum_kbn, diff, display, print,
              showarray, showerror, ones, zeros, eye, summary, linspace,
-             sum_kbn, gradient, dims2string
+             sum_kbn, gradient, dims2string, mean, std, stdm, var, varm,
+             median, middle, midpoints, quantile
 
 import SymPy: Sym
-import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin
+import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin, PyAny
 @pyimport yt.units as units
+
+if VERSION < v"0.4-"
+    import YT: @doc
+end
 
 IntOrRange = Union(Integer,Ranges)
 
@@ -47,103 +52,112 @@ function ^(u::YTUnit, v::Integer)
     YTUnit(yt_unit, yt_unit[:units], yt_unit[:units][:dimensions])
 end
 
-function ^(u::YTUnit, v::Real)
+function ^(u::YTUnit, v::Rational)
     yt_unit = pycall(u.yt_unit["__pow__"], PyObject, v)
     YTUnit(yt_unit, yt_unit[:units], yt_unit[:units][:dimensions])
 end
 
-==(u::YTUnit, v::YTUnit) = ==(u.unit_symbol, v.unit_symbol)
-!=(u::YTUnit, v::YTUnit) = !=(u.unit_symbol, v.unit_symbol)
+function ^(u::YTUnit, v::FloatingPoint)
+    yt_unit = pycall(u.yt_unit["__pow__"], PyObject, v)
+    YTUnit(yt_unit, yt_unit[:units], yt_unit[:units][:dimensions])
+end
+
+function ==(u::YTUnit, v::YTUnit) 
+    pycall(u.yt_unit["units"]["__eq__"], PyAny, v.yt_unit["units"])
+end
+
+function !=(u::YTUnit, v::YTUnit)
+    pycall(u.yt_unit["units"]["__neq__"], PyAny, v.yt_unit["units"])
+end
 
 show(io::IO, u::YTUnit) = show(io, u.unit_symbol)
 
 # YTQuantity definition
 
-type YTQuantity
-    value::Float64
+type YTQuantity{T<:Real}
+    value::T
     units::YTUnit
-    function YTQuantity(yt_quantity::PyObject)
-        yt_units = YTUnit(yt_quantity["unit_quantity"],
-                          yt_quantity[:units],
-                          yt_quantity[:units][:dimensions])
-        new(yt_quantity[:d][1], yt_units)
-    end
-    function YTQuantity(value::Float64, units::String; registry=nothing)
-        unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
-        yt_units = YTUnit(unitary_quan,
-                          unitary_quan[:units],
-                          unitary_quan[:units][:dimensions])
-        new(convert(Float64, value), yt_units)
-    end
 end
 
-YTQuantity(value::Real, units::String; args...) = YTQuantity(convert(Float64, value),
-                                                             units; args...)
-YTQuantity(ds, value::Real, units::String) = YTQuantity(value, units,
-                                                        registry=ds.ds["unit_registry"])
-YTQuantity(value::Real, units::Sym; args...) = YTQuantity(value, string(units); args...)
-YTQuantity(value::Real, units::YTUnit) = YTQuantity(value, string(units.unit_symbol),
-                                                    registry=units.yt_unit["units"]["registry"])
+function YTQuantity{T<:Real}(value::T, units::String; registry=nothing)
+    unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
+    yt_units = YTUnit(unitary_quan,
+                      unitary_quan[:units],
+                      unitary_quan[:units][:dimensions])
+    YTQuantity{T}(value, yt_units)
+end
+
+YTQuantity{T<:Real}(ds, value::T, units::String) = YTQuantity{T}(value, units,
+                                                                 registry=ds.ds["unit_registry"])
+YTQuantity{T<:Real}(value::T, units::Sym; registry=nothing) = YTQuantity(value, string(units); 
+                                                                         registry=registry)
 YTQuantity(value::Bool, units::String) = value
 YTQuantity(value::Bool, units::Sym) = value
 YTQuantity(value::Bool, units::YTUnit) = value
-YTQuantity(value::Real) = YTQuantity(value, "dimensionless")
+YTQuantity(value::Bool) = value
+YTQuantity{T<:Real}(value::T) = YTQuantity(value, "dimensionless")
+
+function YTQuantity(yt_quantity::PyObject)
+    yt_units = YTUnit(yt_quantity["unit_quantity"],
+                      yt_quantity[:units],
+                      yt_quantity[:units][:dimensions])
+    value = yt_quantity[:d][1]
+    YTQuantity(value, yt_units)
+end
 
 # YTArray definition
 
-type YTArray <: AbstractArray
+type YTArray{T<:Real} <: AbstractArray
     value
     units::YTUnit
-    function YTArray(yt_array::PyObject)
-        yt_units = YTUnit(yt_array["unit_quantity"],
-                          yt_array[:units],
-                          yt_array[:units][:dimensions])
-        new(PyArray(yt_array["d"]), yt_units)
-    end
-    function YTArray(value::Array{Float64}, units::String; registry=nothing)
-        unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
-        yt_units = YTUnit(unitary_quan,
-                          unitary_quan[:units],
-                          unitary_quan[:units][:dimensions])
-        new(value, yt_units)
-    end
-    function YTArray(value::PyArray, units::String; registry=nothing)
-        unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
-        yt_units = YTUnit(unitary_quan,
-                          unitary_quan[:units],
-                          unitary_quan[:units][:dimensions])
-        new(value, yt_units)
-    end
-    function YTArray(value::DArray, units::String; registry=nothing)
-        unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
-        yt_units = YTUnit(unitary_quan,
-                          unitary_quan[:units],
-                          unitary_quan[:units][:dimensions])
-        new(value, yt_units)
-    end
 end
-YTArray(value::Array, units::String; args...) = YTArray(convert(Array{Float64}, value),
-                                                        units; args...)
-YTArray(ds, value::Array, units::String) = YTArray(value, units,
-                                                   registry=ds.ds["unit_registry"])
-YTArray(value::Array, units::Sym; args...) = YTArray(value, string(units); args...)
-YTArray(value::Array, units::YTUnit) = YTArray(value, string(units.unit_symbol),
-                                               registry=units.yt_unit["units"]["registry"])
-YTArray(value::PyArray, units::YTUnit) = YTArray(value, string(units.unit_symbol),
-                                               registry=units.yt_unit["units"]["registry"])
-YTArray(value::Real, units::String; args...) = YTQuantity(value, units; args...)
+
+YTArray{T<:Real}(value::Array{T}, units::YTUnit) = YTArray{T}(value, units)
+YTArray{T<:Real}(value::PyArray{T}, units::YTUnit) = YTArray{T}(value, units)
+
+function YTArray{T<:Real}(value::Array{T}, units::String; registry=nothing)
+    unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
+    yt_units = YTUnit(unitary_quan,
+                      unitary_quan[:units],
+                      unitary_quan[:units][:dimensions])
+    YTArray{T}(value, yt_units)
+end
+
+function YTArray{T<:Real}(value::PyArray{T}, units::String; registry=nothing)
+    unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
+    yt_units = YTUnit(unitary_quan,
+                      unitary_quan[:units],
+                      unitary_quan[:units][:dimensions])
+    YTArray{T}(value, yt_units)
+end
+
+function YTArray(yt_array::PyObject)
+    yt_units = YTUnit(yt_array["unit_quantity"],
+                      yt_array[:units],
+                      yt_array[:units][:dimensions])
+    value = PyArray(yt_array["d"])
+    YTArray(value, yt_units)
+end
+
+YTArray{T<:Real}(ds, value::Array{T}, units::String) = YTArray{T}(value, units, registry=ds.ds["unit_registry"])
+YTArray{T<:Real}(value::Array{T}, units::Sym; registry=nothing) = YTArray{T}(value, string(units); registry=registry)
+YTArray{T<:Real}(value::PyArray{T}, units::Sym; registry=nothing) = YTArray{T}(value, string(units); registry=registry)
+
+YTArray(value::Real, units::String; registry=nothing) = YTQuantity(value, units; registry=registry)
 YTArray(ds, value::Real, units::String) = YTQuantity(value, units, registry=ds.ds["unit_registry"])
-YTArray(value::Real, units::Sym; args...) = YTQuantity(value, units; args...)
-YTArray(value::Real, units::YTUnit; args...) = YTQuantity(value, units; args...)
+YTArray(value::Real, units::Sym; registry=nothing) = YTQuantity(value, units; registry=registry)
+YTArray(value::Real, units::YTUnit) = YTQuantity(value, units)
+
 YTArray(value::BitArray, units::String) = value
 YTArray(value::BitArray, units::Sym) = value
 YTArray(value::BitArray, units::YTUnit) = value
-YTArray(value::Array) = YTArray(value, "dimensionless")
+
+YTArray{T<:Real}(value::Array{T}) = YTArray(value, "dimensionless")
 YTArray(value::Real) = YTQuantity(value, "dimensionless")
-YTArray(value::PyArray, units::Sym; registry=nothing) = YTArray(value, string(units), registry=registry)
-YTArray(value::DArray, units::Sym; registry=nothing) = YTArray(value, string(units), registry=registry)
-YTArray(value::DArray, units::YTUnit) = YTArray(value, string(units.unit_symbol),
-                                                registry=units.yt_unit["units"]["registry"])
+
+YTArray(a::Array{YTQuantity}) = YTArray{typeof(a[1].value)}(convert(Array{typeof(a[1].value)},a), a[1].units)
+
+eltype(a::YTArray) = eltype(a.value)
 
 YTObject = Union(YTArray,YTQuantity)
 
@@ -191,20 +205,25 @@ end
 # Copy
 
 copy(q::YTQuantity) = YTQuantity(q.value, q.units)
-copy(a::YTArray) = YTArray(a.value, a.units)
+copy(a::YTArray) = YTArray(copy(a.value), a.units)
 
 # Conversions
 
 convert(::Type{YTArray}, o::PyObject) = YTArray(o)
 convert(::Type{YTQuantity}, o::PyObject) = YTQuantity(o)
-convert(::Type{Array{Float64}}, a::YTArray) = a.value
+convert(::Type{Array}, a::YTArray) = a.value
 convert(::Type{Float64}, q::YTQuantity) = q.value
 convert(::Type{PyObject}, a::YTArray) = pycall(bare_array, PyObject, a.value,
                                                string(a.units.unit_symbol),
-                                               a.units.yt_unit["units"]["registry"])
+                                               a.units.yt_unit["units"]["registry"],
+                                               dtype=lowercase(string(typeof(a[1].value))))
 convert(::Type{PyObject}, a::YTQuantity) = pycall(bare_quan, PyObject, a.value,
                                                   string(a.units.unit_symbol),
-                                                  a.units.yt_unit["units"]["registry"])
+                                                  a.units.yt_unit["units"]["registry"],
+                                                  dtype=lowercase(string(typeof(a.value))))
+convert(::Type{YTArray}, q::YTQuantity) = YTArray([q.value], q.units)
+PyObject(a::YTObject) = convert(PyObject, a)
+
 # Indexing, ranges (slicing)
 
 getindex(a::YTArray, i::Integer) = YTQuantity(a.value[i], a.units)
@@ -212,19 +231,19 @@ getindex(a::YTArray, idxs::Array{Int,1}) = YTArray(getindex(a.value, idxs), a.un
 getindex(a::YTArray, idxs::Ranges) = YTArray(getindex(a.value, idxs), a.units)
 
 function setindex!(a::YTArray, x::Real, i::Integer)
-    a.value[i] = convert(Float64, x)
+    a.value[i] = convert(eltype(a), x)
 end
 function setindex!(a::YTArray, x::Array, idxs::Ranges)
-    YTArray(setindex!(a.value, convert(Array{Float64}, x), idxs), a.units)
+    YTArray(setindex!(a.value, convert(typeof(a.value), x), idxs), a.units)
 end
 function setindex!(a::YTArray, x::Array, idxs::Array{Int,1})
-    YTArray(setindex!(a.value, convert(Array{Float64}, x), idxs), a.units)
+    YTArray(setindex!(a.value, convert(typeof(a.value), x), idxs), a.units)
 end
 function setindex!(a::YTArray, x::Real, idxs::Ranges)
-    YTArray(setindex!(a.value, convert(Float64, x), idxs), a.units)
+    YTArray(setindex!(a.value, convert(eltype(a), x), idxs), a.units)
 end
 function setindex!(a::YTArray, x::Real, idxs::Array{Int,1})
-    YTArray(setindex!(a.value, convert(Float64, x), idxs), a.units)
+    YTArray(setindex!(a.value, convert(eltype(a), x), idxs), a.units)
 end
 
 pyslice(i::Integer) = i
@@ -254,8 +273,9 @@ end
 
 # Unit conversions
 
+
 function in_units(a::YTObject, units::String)
-    a.value*YTQuantity(pycall(a.units.yt_unit["in_units"], PyObject, units))
+    a.value*pycall(a.units.yt_unit["in_units"], YTQuantity, units)
 end
 
 function in_cgs(a::YTObject)
@@ -266,9 +286,34 @@ function in_mks(a::YTObject)
     a.value*pycall(a.units.yt_unit["in_mks"], YTQuantity)
 end
 
-in_units(a::YTObject, units::Sym; args...) = in_units(a, string(units); args...)
-in_units(a::YTObject, units::YTUnit; args...) = in_units(a, units.unit_symbol; args...)
-in_units(a::YTObject, b::YTObject; args...) = in_units(a, b.units; args...)
+function convert_to_units(a::YTObject, units::String)    
+    new_unit = pycall(a.units.yt_unit["in_units"], YTQuantity, units)
+    a.value *= new_unit.value
+    a.units = new_unit.units
+    return
+end
+
+function convert_to_cgs(a::YTObject)
+    new_unit = pycall(a.units.yt_unit["in_cgs"], YTQuantity)
+    a.value *= new_unit.value
+    a.units = new_unit.units
+    return
+end
+
+function convert_to_mks(a::YTObject)
+    new_unit = pycall(a.units.yt_unit["in_mks"], YTQuantity)
+    a.value *= new_unit.value
+    a.units = new_unit.units
+    return
+end
+
+convert_to_units(a::YTObject, units::Sym) = convert_to_units(a, string(units))
+convert_to_units(a::YTObject, units::YTUnit) = convert_to_units(a, units.unit_symbol)
+convert_to_units(a::YTObject, b::YTObject) = convert_to_units(a, b.units)
+
+in_units(a::YTObject, units::Sym) = in_units(a, string(units))
+in_units(a::YTObject, units::YTUnit) = in_units(a, units.unit_symbol)
+in_units(a::YTObject, b::YTObject) = in_units(a, b.units)
 
 # Arithmetic and comparisons
 
@@ -309,13 +354,13 @@ end
 
 # Sadly this is necessary
 for op = (:+, :-, :*, :.*, :/, :./, :\, :.\, :hypot, :.==, :.!=, :.>=, :.<=, :.<, :.>)
-    @eval ($op)(a::PyArray{Float64},b::Real) = ($op)(Array{Float64}(a.o),b)
-    @eval ($op)(a::Real,b::PyArray{Float64}) = ($op)(a,Array{Float64}(b.o))
+    @eval ($op)(a::PyArray{Float64},b::Real) = ($op)(convert(Array{Float64}, a.o),b)
+    @eval ($op)(a::Real,b::PyArray{Float64}) = ($op)(a,convert(Array{Float64}, b.o))
 end
 
 for op = (:*, :/, :\) 
-    @eval ($op)(a::PyArray{Float64},b::YTQuantity) = ($op)(Array{Float64}(a.o),b)
-    @eval ($op)(a::YTQuantity,b::PyArray{Float64}) = ($op)(a,Array{Float64}(b.o))
+    @eval ($op)(a::PyArray{Float64},b::YTQuantity) = ($op)(convert(Array{Float64}, a.o),b)
+    @eval ($op)(a::YTQuantity,b::PyArray{Float64}) = ($op)(a,convert(Array{Float64}, b.o))
 end
 
 -(a::PyArray) = -1*a
@@ -393,8 +438,7 @@ end
 
 # Mathematical functions
 
-sqrt(a::YTObject) = YTArray(sqrt(a.value), a.units^0.5)
-cbrt(a::YTObject) = YTArray(cbrt(a.value), (a.units)^(1/3))
+sqrt(a::YTObject) = YTArray(sqrt(a.value), (a.units)^(1//2))
 
 maximum(a::YTArray) = YTQuantity(maximum(a.value), a.units)
 minimum(a::YTArray) = YTQuantity(minimum(a.value), a.units)
@@ -409,7 +453,6 @@ for op = (:exp, :log, :log2, :log10, :log1p, :expm1,
           :cosh, :tanh, :coth, :sech, :csch, :sinpi,
           :cospi, :asin, :acos, :atan)
     @eval ($op)(a::YTObject) = ($op)(a.value)
-    #@eval ($op)(q::YTQuantity) = ($op)(q.value)
 end
 
 # Show
@@ -447,8 +490,6 @@ size(a::YTArray, n::Integer) = size(a.value, n)
 
 ndims(a::YTArray) = ndims(a.value)
 
-eltype(a::YTArray) = eltype(a.value)
-
 sum(a::YTArray) = YTQuantity(sum(a.value), a.units)
 sum(a::YTArray, dims) = YTQuantity(sum(a.value, dims), a.units)
 
@@ -473,6 +514,30 @@ gradient(a::YTArray) = YTArray(gradient(a.value), a.units)
 gradient(a::YTArray, b::YTObject) = YTArray(gradient(a.value, b.value), a.units/b.units)
 gradient(a::YTArray, b::Real) = YTArray(gradient(a.value, b), a.units)
 
+mean(a::YTArray) = YTQuantity(mean(a.value), a.units)
+mean(a::YTArray, region) = YTQuantity(mean(a.value, region), a.units)
+
+std(a::YTArray) = YTQuantity(std(a.value), a.units)
+std(a::YTArray, region) = YTQuantity(std(a.value, region), a.units)
+
+stdm(a::YTArray, m::YTQuantity) = YTQuantity(stdm(a, in_units(m,a.units).value), a.units)
+
+var(a::YTArray) = YTQuantity(var(a.value), a.units)
+var(a::YTArray, region) = YTQuantity(var(a.value, region), a.units)
+
+varm(a::YTArray, m::YTQuantity) = YTQuantity(varm(a, in_units(m,a.units).value), a.units)
+
+median(a::YTArray) = YTQuantity(median(a.value), a.units)
+middle(a::YTArray) = YTQuantity(middle(a.value), a.units)
+
+middle(a::YTQuantity) = YTQuantity(middle(a.value), a.units)
+middle(a::YTQuantity, b::YTQuantity) = YTQuantity(middle(a.value, in_units(b, a.units).value), a.units)
+
+midpoints(a::YTArray) = YTArray(midpoints(a.value), a.units)
+
+quantile(a::YTArray,q::AbstractArray) = YTArray(quantile(a.value, q), a.units)
+quantile(a::YTArray,q::Number) = YTArray(quantile(a.value, q), a.units)
+
 # To/from HDF5
 
 @doc doc"""
@@ -495,7 +560,7 @@ gradient(a::YTArray, b::Real) = YTArray(gradient(a.value, b), a.units)
           juila> write_hdf5(a, "my_file.h5", dataset_name="velocity")
       """ ->
 function write_hdf5(a::YTArray, filename::ASCIIString; dataset_name=nothing, info=nothing)
-    arr = convert(PyObject, a)
+    arr = PyObject(a)
     arr[:write_hdf5](filename; dataset_name=dataset_name, info=info)
 end
 
@@ -520,18 +585,18 @@ end
 # Unit equivalencies
 
 function to_equivalent(a::YTObject, unit::String, equiv::String; args...)
-    arr = convert(PyObject, a)
+    arr = PyObject(a)
     equ = pycall(arr["to_equivalent"], PyObject, unit, equiv; args...)
     array_or_quan(equ)
 end
 
 function list_equivalencies(a::YTObject)
-    arr = convert(PyObject, a)
+    arr = PyObject(a)
     arr[:list_equivalencies]()
 end
 
 function has_equivalent(a::YTObject, equiv::String)
-    arr = convert(PyObject, a)
+    arr = PyObject(a)
     arr[:has_equivalent](equiv)
 end
 
@@ -543,6 +608,7 @@ eye(a::YTArray) = YTArray(eye(a.value), a.units)
 
 linspace(start::YTQuantity, stop::YTQuantity, n::Integer) = 
     YTArray(linspace(in_units(start, stop.units).value,stop.value,n), start.units)
-linspace(start::YTQuantity, stop::YTQuantity) = linspace(start,stop,100)
+linspace(start::YTQuantity, stop::YTQuantity) = 
+    YTArray(linspace(in_units(start, stop.units).value,stop.value), start.units)
 
 end

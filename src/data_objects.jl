@@ -1,9 +1,13 @@
 module data_objects
 
-import PyCall: PyObject, PyDict, pycall, pystring, PyArray
+import PyCall: PyObject, PyDict, pycall, pystring, PyArray, PyVector
 import Base: size, show, showarray, display, showerror
 import ..array: YTArray, YTQuantity, in_units, array_or_quan
 import ..fixed_resolution: FixedResolutionBuffer
+
+if VERSION < v"0.4-"
+    import YT: @doc
+end
 
 Center = Union(ASCIIString,Array{Float64,1},YTArray,(ASCIIString,ASCIIString))
 Length = Union(FloatingPoint,(FloatingPoint,ASCIIString),YTQuantity)
@@ -60,8 +64,9 @@ end
       minimum of a `field::Field`.
       """ ->
 function find_min(ds::Dataset, field::Field)
-    v, c = pycall(ds.ds["find_min"], (PyObject, PyObject), field)
-    return YTQuantity(v), YTArray(c)
+    a = pycall(ds.ds["find_min"], PyObject, field)
+    v, c = PyVector{PyObject}(a)
+    YTQuantity(v), YTArray(c)
 end
 
 @doc doc"""
@@ -69,8 +74,9 @@ end
       maximum of a `field::Field`.
       """ ->
 function find_max(ds::Dataset, field::Field)
-    v, c = pycall(ds.ds["find_max"], (PyObject, PyObject), field)
-    return YTQuantity(v), YTArray(c)
+    a = pycall(ds.ds["find_max"], PyObject, field)
+    v, c = PyVector{PyObject}(a)
+    YTQuantity(v), YTArray(c)
 end
 
 @doc doc"""
@@ -96,7 +102,7 @@ function parse_fps(field_parameters)
     if field_parameters != nothing
         fps = Dict()
         for key in collect(keys(field_parameters))
-            fps[key] = convert(PyObject, field_parameters[key])
+            fps[key] = PyObject(field_parameters[key])
         end
     end
     return fps
@@ -223,19 +229,19 @@ type Region <: DataContainer
                     left_edge::Union(Array{Float64,1},YTArray),
                     right_edge::Union(Array{Float64,1},YTArray);
                     field_parameters=nothing, data_source=nothing)
-        if typeof(center) == YTArray
-            c = convert(PyObject, center)
+        if typeof(center) <: YTArray
+            c = PyObject(center) 
         else
             c = center
         end
-        if typeof(left_edge) == YTArray
+        if typeof(left_edge) <: YTArray
             le = in_units(YTArray(ds, left_edge.value,
                           repr(left_edge.units.unit_symbol)),
                           "code_length").value
         else
             le = left_edge
         end
-        if typeof(right_edge) == YTArray
+        if typeof(right_edge) <: YTArray
             re = in_units(YTArray(ds, right_edge.value,
                           repr(right_edge.units.unit_symbol)),
                           "code_length").value
@@ -293,18 +299,18 @@ type Disk <: DataContainer
     function Disk(ds::Dataset, center::Center, normal::Array{Float64,1},
                   radius::Length, height::Length; field_parameters=nothing,
                   data_source=nothing)
-        if typeof(center) == YTArray
-            c = convert(PyObject, center)
+        if typeof(center) <: YTArray
+            c = PyObject(center) 
         else
             c = center
         end
-        if typeof(radius) == YTQuantity
-            r = convert(PyObject, radius)
+        if typeof(radius) <: YTQuantity
+            r = PyObject(radius)
         else
             r = radius
         end
-        if typeof(height) == YTQuantity
-            h = convert(PyObject, height)
+        if typeof(height) <: YTQuantity
+            h = PyObject(height)
         else
             h = height
         end
@@ -458,8 +464,8 @@ type Cutting <: DataContainer
     function Cutting(ds::Dataset, normal::Array{Float64,1}, center::Center;
                      north_vector=nothing, field_parameters=nothing,
                      data_source=nothing)
-        if typeof(center) == YTArray
-            c = convert(PyObject, center)
+        if typeof(center) <: YTArray
+            c = PyObject(center)
         else
             c = center
         end
@@ -545,6 +551,7 @@ type Proj <: DataContainer
 end
 
 # Slice
+
 @doc doc"""
       This is a data object corresponding to a slice through the simulation
       domain.
@@ -596,12 +603,52 @@ type Slice <: DataContainer
     end
 end
 
-function to_frb(cont::Union(Slice,Proj), width::Union(Length,(Length,Length)),
+@doc doc"""
+      Create a FixedResolutionBuffer from a slice or projection. 
+      
+      Arguments:
+      
+      * `cont::Union(Slice,Proj)` or `cont::Cutting`: A Slice, Proj, or Cutting DataContainer.
+      * `width::Length`: The width of the FRB.
+      * `nx::Union(Integer,(Integer,Integer))`: Either an integer or a 2-tuple of
+        integers, corresponding to the dimensions of the image. 
+      * `center::Center` (optional): The center of the FRB. If not specified, 
+        defaults to the center of the current object. Not available if `cont` is a
+        `Cutting.`
+      * `height::Length` (optional): The height of the FRB. If not specified,
+        defaults to the `width`. 
+      * `periodic::Bool` (optional): Is the FRB periodic? Default `false`.
+      
+      Examples:
+      
+          julia> slc = Slice(ds, "z", 0.0)
+          julia> frb = to_frb(slc, (500.,"kpc"), 800)
+      """ ->
+function to_frb(cont::Union(Slice,Proj), width::Length,
                 nx::Union(Integer,(Integer,Integer)); center=nothing,
-                height=nothing, args...)
-    FixedResolutionBuffer(cont.ds, cont.cont[:to_frb](width, nx;
+                height=nothing, periodic=false)
+    if typeof(width) <: YTQuantity
+        w = PyObject(width) 
+    else
+        w = width
+    end
+    FixedResolutionBuffer(cont.ds, cont.cont[:to_frb](w, nx;
                                                       center=center,
-                                                      height=height, args...))
+                                                      height=height,
+                                                      periodic=periodic))
+end
+
+function to_frb(cont::Cutting, width::Length,
+                nx::Union(Integer,(Integer,Integer));
+                height=nothing, periodic=false)
+    if typeof(width) <: YTQuantity
+        w = PyObject(width) 
+    else
+        w = width
+    end
+    FixedResolutionBuffer(cont.ds, cont.cont[:to_frb](w, nx;
+                                                      height=height,
+                                                      periodic=periodic))
 end
 
 # Sphere
@@ -634,13 +681,13 @@ type Sphere <: DataContainer
     field_dict::Dict
     function Sphere(ds::Dataset, center::Center, radius::Length;
                     field_parameters=nothing, data_source=nothing)
-        if typeof(center) == YTArray
-            c = convert(PyObject, center)
+        if typeof(center) <: YTArray
+            c = PyObject(center)
         else
             c = center
         end
-        if typeof(radius) == YTQuantity
-            r = convert(PyObject, radius)
+        if typeof(radius) <: YTQuantity
+            r = PyObject(radius) 
         else
             r = radius
         end
@@ -799,7 +846,7 @@ end
 
       """ ->
 function set_field_parameter(dc::DataContainer, key::String, value)
-    v = convert(PyObject, value)
+    v = PyObject(value)
     dc.cont[:set_field_parameter](key, v)
 end
 

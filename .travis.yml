@@ -3,9 +3,12 @@ compiler:
   - clang
 notifications:
   email: false
+env:
+  - JULIAVERSION="juliareleases" 
+  - JULIAVERSION="julianightlies"
 before_install:
   - sudo add-apt-repository ppa:staticfloat/julia-deps -y
-  - sudo add-apt-repository ppa:staticfloat/julianightlies -y
+  - sudo add-apt-repository ppa:staticfloat/${JULIAVERSION} -y
   - sudo apt-get update -qq -y
   - sudo apt-get install libpcre3-dev julia -y
   - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
@@ -16,22 +19,16 @@ before_install:
   # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
   - sudo rm -rf /dev/shm
   - sudo ln -s /run/shm /dev/shm
-  - conda install --yes numpy==1.8.2
-  - conda install --yes matplotlib cython h5py setuptools mercurial sympy
-  - hg clone http://bitbucket.org/yt_analysis/yt yt_test
-  - cd yt_test && hg update tip && python setup.py install
-  - cd ..
+  - conda install --yes binstar
+  - conda install --yes -c https://conda.binstar.org/jzuhone yt==dev
   - wget http://yt-project.org/data/enzo_tiny_cosmology.tar.gz
+  - wget http://yt-project.org/data/WindTunnel.tar.gz
   - tar -zxvf enzo_tiny_cosmology.tar.gz
-  - export PYTHONPATH=test:$PYTHONPATH
-  - python test/test_containers.py
-  - python test/test_frbs.py
+  - tar -zxvf WindTunnel.tar.gz
+  - julia -e 'Pkg.add("Glob")'
 script:
   - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("YT"))`); Pkg.pin("YT"); Pkg.resolve()'
   - julia -e 'using YT; @assert isdefined(:YT); @assert typeof(YT) === Module'
-  - julia --code-coverage test/test_array.jl
-  - julia --code-coverage test/test_containers.jl
-  - julia --code-coverage test/test_frbs.jl
-  - julia --code-coverage test/test_plots.jl
+  - julia --code-coverage test/runtests.jl
 after_success:
   - julia -e 'cd(Pkg.dir("YT")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'

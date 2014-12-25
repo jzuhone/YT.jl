@@ -12,17 +12,9 @@ Field  = Union(ASCIIString,(ASCIIString,ASCIIString))
 type FixedResolutionBuffer
     frb::PyObject
     data::Dict
-    limits::Dict
     buff_size::Tuple
     function FixedResolutionBuffer(ds, frb::PyObject)
-        limits = frb[:limits]
-        for k in keys(limits)
-            if limits[k] != nothing
-                limits[k] = (YTQuantity(ds, limits[k][1][1],"code_length"),
-                             YTQuantity(ds, limits[k][end][1],"code_length"))
-            end
-        end
-        new(frb, Dict(), limits, frb[:buff_size])
+        new(frb, Dict(), frb[:buff_size])
     end
 end
 
@@ -38,13 +30,6 @@ getindex(frb::FixedResolutionBuffer, ftype::ASCIIString,
 
 function show(io::IO, frb::FixedResolutionBuffer)
     println(io,"FixedResolutionBuffer ($(frb.buff_size[1])x$(frb.buff_size[2])):")
-    for k in keys(frb.limits)
-        if frb.limits[k] != nothing
-            a = frb.limits[k][1]
-            b = frb.limits[k][2]
-            println(io,"    $(a.value) code_length <= $k < $(b.value) code_length")
-        end
-    end
 end
 
 end

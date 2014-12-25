@@ -204,7 +204,7 @@ is an optional dictionary which can be stored as dataset attributes to provide a
      0.7789837638416921   0.4639426067506691      0.14832697895106595
      0.6460553973501566   0.04338617942933576     0.6935626833634565
 
-    julia> myinfo = Dict("field"=>"velocity_magnitude", "source"=>"galaxy cluster")
+    julia> myinfo = ["field"=>"velocity_magnitude", "source"=>"galaxy cluster"]
 
     julia> YT.write_hdf5(a, "my_file.h5", dataset_name="cluster", info=myinfo)
 
@@ -319,11 +319,13 @@ Changing Units
 
 Occasionally you will want to change the units of an array or quantity to something more
 appropriate. Taking density as the example, we can change it to units of solar masses per
-kiloparsec:
+kiloparsec, using ``convert_to_units``:
 
 .. code-block:: jlcon
 
-    julia> a = YT.in_units(sp["density"], "Msun/kpc**3")
+    julia> YT.convert_to_units(sp["density"], "Msun/kpc**3")
+    
+    julia> a
     325184-element YTArray (Msun/kpc**3):
      193361.43661723754
      190489.69785225237
@@ -347,11 +349,13 @@ kiloparsec:
      238662.9022094481
      235767.96552301125
 
-We can switch back to cgs units rather easily:
+We can switch back to cgs units rather easily, using ``convert_to_cgs``:
 
 .. code-block:: jlcon
 
-    julia> YT.in_cgs(a)
+    julia> YT.convert_to_cgs(a)
+    
+    julia> a
     325184-element YTArray (g/cm**3):
      1.3086558386643183e-26
      1.28922012403754e-26
@@ -375,11 +379,13 @@ We can switch back to cgs units rather easily:
      1.6152527924542868e-26
      1.595660076018442e-26
 
-or to MKS units:
+or to MKS units, using ``convert_to_mks``:
 
 .. code-block:: jlcon
 
-    julia> YT.in_mks(a)
+    julia> YT.convert_to_mks(a)
+    
+    julia> a
     325184-element YTArray (kg/m**3):
      1.3086558386643184e-23
      1.2892201240375402e-23
@@ -402,6 +408,94 @@ or to MKS units:
      1.6194386856326155e-23
      1.6152527924542868e-23
      1.595660076018442e-23
+
+The above do in-place conversions of the original array or quantity. To create a new array or 
+quantity from a unit conversion of an existing one, use the ``in_units``, ``in_cgs``, and 
+``in_mks`` methods, which have the same signature, and return the new array or quantity:
+
+.. code-block:: jlcon
+
+    julia> b = YT.convert_to_units(sp["density"], "Msun/kpc**3")
+    325184-element YTArray (Msun/kpc**3):
+     193361.43661723754
+     190489.69785225237
+     192620.74223809008
+     192078.1521891412
+     194743.95533346717
+     189558.77596412544
+     191741.79371078173
+     191280.49883112026
+     193917.25335152834
+     193386.3647075119
+     ⋮
+     237787.32295826814
+     243195.01114436015
+     237328.8054548747
+     242544.03512482112
+     241643.02694502342
+     239798.46209161723
+     234058.62702232625
+     239281.3920328031
+     238662.9022094481
+     235767.96552301125
+     
+    julia> sp["density"]
+    325184-element YTArray (g/cm**3):
+     1.3086558386643183e-26
+     1.28922012403754e-26
+     1.303642874130672e-26
+     1.2999706649871096e-26
+     1.318012622631734e-26
+     1.2829197138546696e-26
+     1.297694215792844e-26
+     1.2945722063157944e-26
+     1.3124175650316954e-26
+     1.308824550127447e-26
+     ⋮
+     1.6093269371270004e-26
+     1.64592576904618e-26
+     1.606223724726208e-26
+     1.6415200117053996e-26
+     1.6354220552782833e-26
+     1.622938177378765e-26
+     1.5840914000284966e-26
+     1.6194386856326155e-26
+     1.6152527924542868e-26
+     1.595660076018442e-26
+
+where we can see the original array has been unaltered. 
+
+.. _array_methods:
+
+Mathematical Functions and Array Methods
+----------------------------------------
+
+A number of standard mathematical functions and array methods in Julia work on ``YTArray``\ s:
+
+* ``sqrt`` (square root)
+* ``abs``  (absolute value)
+* ``abs2`` (square of the absolute value)
+* ``minimum`` (minimum of an array)
+* ``maximum`` (maximum of an array)
+* ``hypot`` (square root of the sum of squares)
+* ``size`` (size of an array)
+* ``ndims`` (number of dimensions of an array)
+* ``sum``, ``sum_kbn`` (sum of array elements)
+* ``cumsum``, ``cumsum_kbn`` (cumulative sum of array elements)
+* ``cummin`` (cumulative minimum of array elements)
+* ``cummax`` (cumulative maximum of array elements)
+* ``diff`` (finite difference operator of an array)
+* ``gradient`` (differences along an array with a specified spacing between points)
+* ``mean`` (arithmetic mean of an array)
+* ``std``, ``stdm`` (standard deviation of an array)
+* ``var``, ``varm`` (variance of an array)
+* ``midpoints`` (midpoints of array)
+* ``median`` (median of an array)
+* ``middle`` (middle of an array or two numbers)
+* ``quantile`` (quantile(s) of an array)
+
+For more information on how these methods work in Julia, please consult the 
+`Julia documentation <http://julia.readthedocs.org>`_.
 
 .. _physical-constants:
 
@@ -441,17 +535,100 @@ quantities and arrays:
      5.806717052886709
      5.895867148202309
 
-The physical constants implemented in ``YT.physical_constants`` are (in cgs units):
+Have a look inside ``YT.physical_constants`` to see which constants are implemented. 
 
-* ``G``: Newton's constant of gravitation
-* ``kboltz``: Boltzmann's constant
-* ``clight``: Speed of light in vacuum
-* ``me``: mass of the electron
-* ``mp``: mass of the proton
-* ``qp``: charge of the proton
-* ``hcgs``: Planck's constant
-* ``sigma_thompson``: Thompson cross section
-* ``amu_cgs``: Atomic mass unit
-* ``Na``: Avogadro's number
-* ``Tcmb``: Cosmic microwave background temperature
-* ``stefan_boltzmann``: Stefan-Boltzmann constant
+.. _equivalencies:
+
+Equivalencies
+-------------
+
+"Some physical quantities are directly related to other unitful quantities by a constant, but otherwise do not 
+have the same units. To facilitate conversions between these quantities, ``yt`` implements a system of unit 
+equivalencies (inspired by the `AstroPy implementation <http://docs.astropy.org/en/latest/units/equivalencies.html>`_.
+The possible unit equivalencies are
+
+* ``"thermal"``: conversions between temperature and energy (:math:`E = k_BT`)
+* ``"spectral"``: conversions between wavelength, frequency, and energy (:math:`E = h\nu = hc/\lambda`, :math:`c = \lambda\nu`)
+* ``"mass_energy"``: conversions between mass and energy (:math:`E = mc^2`)
+* ``"lorentz"``: conversions between velocity and Lorentz factor (:math:`\gamma = 1/\sqrt{1-(v/c)^2}`)
+* ``"schwarzschild"``: conversions between mass and Schwarzschild radius (:math:`R_S = 2GM/c^2`)
+* ``"compton"``: conversions between mass and Compton wavelength (:math:`\lambda = h/mc`)
+
+The following unit equivalencies only apply under conditions applicable for an ideal gas with a constant mean molecular 
+weight :math:`\mu` and ratio of specific heats :math:`\gamma`:
+      
+* ``"number_density"``: conversions between density and number density (:math:`n = \rho/\mu{m_p}`)
+* ``"sound_speed"``: conversions between temperature and sound speed assuming an ideal gas (:math:`c_s^2 = \gamma{k_BT}/\mu{m_p}`)
+
+A ``YTArray`` or ``YTQuantity`` can be converted to an equivalent using the ``to_equivalent`` method, where the unit 
+and the equivalence name are provided as arguments:
+
+.. code-block:: jlcon
+
+    julia> T = YTQuantity(1.0e8, "K")
+
+    julia> to_equivalent(T, "keV", "thermal")
+    8.617332401096501 keV
+
+    julia> ds = load('IsolatedGalaxy/galaxy0030/galaxy0030')
+    
+    julia> dd = AllData(ds)
+    
+    julia> to_equivalent(dd["density"], "kpc**-3", "number_density")
+    3644460-element YTArray (kpc**(-3)):
+     1.441658495282944e58 
+     1.445257323866133e58 
+     1.4447291393781058e58
+     1.4441308994269905e58
+     1.443577677934973e58 
+     1.4430142249749788e58
+     1.442458957189366e58 
+     1.441917652348286e58 
+     1.4413998196984475e58
+     1.440917014780153e58 
+     ⋮
+     3.126449826777384e62 
+     4.590495737918272e62 
+     7.282569464375485e62 
+     1.1537277841059746e63
+     1.7350057717608834e63
+     2.4686488054537047e63
+     3.3023848519686545e63
+     4.668116783340724e63 
+     3.2130275999617263e64
+
+    julia> import YT.physical_constants: mp
+    
+    julia> to_equivalent(mp, "GeV", "mass_energy")
+    0.9388966459173169 GeV
+    
+Some equivalencies take optional parameters, such as ``"sound_speed"``, which allows you to change
+the mean molecular weight ``mu`` and ratio of specific heats ``gamma``:
+
+.. code-block:: jlcon
+
+    julia> kT = YTQuantity(4.0, "keV")
+    
+    julia> to_equivalent(kT, "km/s", "sound_speed", gamma=4./3., mu=0.5)
+    1010.476390793905 km/s
+    
+To list the available equivalencies for a given array or quantity, use the ``list_equivalencies`` method:
+
+.. code-block:: jlcon 
+
+    julia> list_equivalencies(kT)
+    spectral: length <-> rate <-> energy
+    sound_speed (ideal gas): velocity <-> temperature <-> energy
+    mass_energy: mass <-> energy
+    thermal: temperature <-> energy
+
+or to check if a specific equivalence exist for an array or quantity, use ``has_equivalent``:
+
+.. code-block:: jlcon
+
+    julia> has_equivalent(kT, "spectral")
+    true
+    
+    julia> has_equivalent(dd["density"], "compton")
+    false
+

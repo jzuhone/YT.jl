@@ -1,6 +1,8 @@
 import yt
 from yt.funcs import camelcase_to_underscore
 import numpy as np
+import sys
+import os
 
 cont_dict = {}
 cont_dict["dd"] = "AllData", (), {}
@@ -19,9 +21,9 @@ cont_dict["cvg"] = "CoveringGrid", (4, np.array([0.2, 0.2, 0.2]), np.array([100,
 cont_dict["prj1"] = "Proj", ("density", "z"), {}
 cont_dict["prj2"] = "Proj", ("density", 2), {"weight_field":"temperature"}
 
-file_to_write = "test/containers.h5"
+def generate_container_data(test_dir):
 
-def generate_container_data():
+    file_to_write = os.path.join(test_dir, "containers.h5")
 
     ds = yt.load("enzo_tiny_cosmology/DD0046/DD0046")
 
@@ -46,5 +48,6 @@ def generate_container_data():
         grid["density"].write_hdf5(file_to_write, dataset_name="grid_%04d" % (i+1))
 
 if __name__ == "__main__":
-    generate_container_data()
+    test_dir = sys.argv[1]
+    generate_container_data(test_dir)
     

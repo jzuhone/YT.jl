@@ -85,15 +85,11 @@ z\y
 @test x/y == y\x
 @test x./a == a.\x
 
-@test_approx_eq abs(a).value sqrt(a.*a).value
-@test_approx_eq abs(x).value sqrt(x*x).value
-@test_approx_eq abs(a).value cbrt(a.^3).value
-@test_approx_eq abs(x).value cbrt(x^3).value
+@test_approx_eq a.value sqrt(a.*a).value
+@test_approx_eq x.value sqrt(x*x).value
 
-@test abs(a).units == sqrt(a.*a).units
-@test abs(x).units == sqrt(x*x).units
-@test abs(a).units == cbrt(a.^3).units
-@test abs(x).units == cbrt(x^3).units
+@test a.units == sqrt(a.*a).units
+@test x.units == sqrt(x*x).units
 
 @test_approx_eq in_cgs(x).value x.value*100.0
 @test_approx_eq in_mks(b).value b.value/1000.0
@@ -146,8 +142,14 @@ z\y
 @test_throws YTUnitOperationError y+z
 @test_throws YTUnitOperationError y-z
 
-myinfo = Dict("field"=>"velocity_magnitude", "source"=>"galaxy cluster")
+myinfo = ["field"=>"velocity_magnitude", "source"=>"galaxy cluster"]
 write_hdf5(a, "test.h5", dataset_name="cluster", info=myinfo)
 b = from_hdf5("test.h5", dataset_name="cluster")
 @test a == b
 @test a.units == b.units
+
+c = YTQuantity(1.0,"kpc")
+d = YTQuantity(1.0,"ly")
+
+@test middle(c,d) == 0.5*(c+d)
+

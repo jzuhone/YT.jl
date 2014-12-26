@@ -5,7 +5,7 @@ module YT
 export Dataset
 export print_stats, get_smallest_dx
 export find_min, find_max, get_field_list
-export get_derived_field_list
+export get_derived_field_list, get_field_info
 
 # YTArrays, YTQuantities, units
 
@@ -46,6 +46,7 @@ export DatasetSeries
 # Other
 
 export enable_plugins, ytcfg, quantities
+export derived_quantities
 
 import PyCall: @pyimport, PyError, pycall, PyObject, set!
 
@@ -71,6 +72,7 @@ if VERSION < v"0.4-"
     end
 end
 
+include("utilities.jl")
 include("array.jl")
 include("fixed_resolution.jl")
 include("data_objects.jl")
@@ -78,6 +80,7 @@ include("physical_constants.jl")
 include("dataset_series.jl")
 include("plots.jl")
 include("profiles.jl")
+include("derived_quantities.jl")
 
 import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks, YTUnit,
     from_hdf5, write_hdf5, to_equivalent, list_equivalencies,
@@ -87,12 +90,13 @@ import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     Cutting, CutRegion, DataContainer, Region, has_field_parameter,
     set_field_parameter, get_field_parameter, get_field_parameters,
     Point, find_min, find_max, get_field_list, get_derived_field_list,
-    OrthoRay
+    OrthoRay, get_field_info
 import .plots: SlicePlot, ProjectionPlot, show_plot
 import .fixed_resolution: FixedResolutionBuffer
 import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,
     set_field_unit, variance
 import .dataset_series: DatasetSeries
+import .derived_quantities
 
 @doc doc""" Enable the plugins defined in the plugin file.""" ->
 enable_plugins = yt.enable_plugins

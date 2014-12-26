@@ -4,6 +4,7 @@ import PyCall: @pyimport, PyObject, pystring
 import Base.show
 import ..data_objects: DataContainer
 import ..array: YTArray, convert_to_units
+import ..utilities: ensure_array
 @pyimport yt.data_objects.profiles as prof
 
 if VERSION < v"0.4-"
@@ -75,12 +76,8 @@ type YTProfile
                        n_bins=64, extrema=nothing, logs=nothing,
                        units=nothing, weight_field="cell_mass",
                        accumulation=false, fractional=false)
-        if (typeof(bin_fields) <: String) | (typeof(bin_fields) <: Tuple)
-            bin_fields = [bin_fields]
-        end
-        if (typeof(fields) <: String) | (typeof(fields) <: Tuple)
-            fields = [fields]
-        end
+        bin_fields = ensure_array(bin_fields)
+        fields = ensure_array(fields)
         profile = prof.create_profile(data_source.cont, bin_fields, fields;
                                       n_bins=n_bins, extrema=extrema,
                                       logs=logs, units=units,

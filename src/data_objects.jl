@@ -93,6 +93,14 @@ function get_derived_field_list(ds::Dataset)
     ds.ds[:derived_field_list]
 end
 
+function get_field_info(ds::Dataset, field::Field)
+    try
+        return ds.ds[:_get_field_info](field)
+    catch
+        return nothing
+    end
+end
+
 # Data containers
 
 abstract DataContainer

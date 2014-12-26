@@ -3,6 +3,10 @@ module derived_quantities
 import ..array: YTArray, YTQuantity
 import ..data_objects: DataContainer, get_field_info
 
+if VERSION < v"0.4-"
+    import YT: @doc
+end
+
 in_parallel = nprocs() > 1
 
 Field = Union(ASCIIString,(ASCIIString,ASCIIString))

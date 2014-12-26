@@ -3,18 +3,30 @@ module derived_quantities
 import ..array: YTArray, YTQuantity
 import ..data_objects: DataContainer, get_field_info
 
+in_parallel = nprocs() > 1
+
 Field = Union(ASCIIString,(ASCIIString,ASCIIString))
 
+if in_parallel
+    function preduce(f,d)
+        dd = distribute(d.value)
+        m = map(fetch, [(@spawnat p f(localpart(dd))) for p=procs(dd)])
+        YTQuantity(f(m), d.units)
+    end
+else
+    preduce(f,d) = f(d)
+end
+
 function total_quantity(dc::DataContainer, field::Field)
-    sum(dc[field])
+    preduce(sum, dc[field])
 end
 
 function extrema(dc::DataContainer, field::Field)
-    minimum(dc[field]), maximum(dc[field])
+    preduce(minimum, dc[field]), preduce(maximum, dc[field])
 end
 
 function weighted_average_quantity(dc::DataContainer, field::Field, weight::Field)
-    sum(dc[field]*dc[weight])/sum(dc[weight])
+    preduce(sum, dc[field]*dc[weight])/preduce(sum, dc[weight])
 end
 
 function weighted_average_quantity(dc::DataContainer, fields::Array, weight::Field)

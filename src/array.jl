@@ -7,7 +7,8 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              cumsum, cummin, cummax, cumsum_kbn, diff, display, print,
              showarray, showerror, ones, zeros, eye, summary, linspace,
              sum_kbn, gradient, dims2string, mean, std, stdm, var, varm,
-             median, middle, midpoints, quantile
+             median, middle, midpoints, quantile, findmin, findmax,
+             indmin, indmax
 
 import SymPy: Sym
 import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin, PyAny
@@ -442,6 +443,19 @@ sqrt(a::YTObject) = YTArray(sqrt(a.value), (a.units)^(1//2))
 
 maximum(a::YTArray) = YTQuantity(maximum(a.value), a.units)
 minimum(a::YTArray) = YTQuantity(minimum(a.value), a.units)
+
+function findmin(a::YTArray)
+    q, i = findmin(a.value)
+    YTQuantity(q, a.units), i
+end
+
+function findmax(a::YTArray)
+    q, i = findmax(a.value)
+    YTQuantity(q, a.units), i
+end
+
+indmin(a::YTArray) = indmin(a.value)
+indmax(a::YTArray) = indmax(a.value)
 
 hypot(a::YTObject, b::YTObject, c::YTObject) = hypot(hypot(a,b), c)
 

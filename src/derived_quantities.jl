@@ -34,16 +34,14 @@ function weighted_average_quantity(dc::DataContainer, fields::Array, weight::Fie
 end
 
 function min_location(dc::DataContainer, field::Field)
-    mini = indmin(dc[field])
-    minf = dc[field][mini]
-    mpos = [dc[ax][mini] for ax in "xyz"]
+    minf, mini = findmin(dc[field])
+    mpos = [dc[string(ax)][mini] for ax in "xyz"]
     minf, mini, mpos[1], mpos[2], mpos[3]
 end
 
 function max_location(dc::DataContainer, field::Field)
-    maxi = indmax(dc[field])
-    maxf = dc[field][maxi]
-    mpos = [dc[ax][maxi] for ax in "xyz"]
+    maxf, maxi = findmax(dc[field])
+    mpos = [dc[string(ax)][maxi] for ax in "xyz"]
     maxf, maxi, mpos[1], mpos[2], mpos[3]
 end
 

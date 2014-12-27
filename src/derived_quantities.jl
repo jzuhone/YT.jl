@@ -69,4 +69,24 @@ function total_mass(dc::DataContainer)
     end
 end
 
+function center_of_mass(dc::DataContainer; use_gas=true, use_particles=false)
+    x = YTQuantity(dc.ds, 0.0, "code_length*code_mass")
+    y = YTQuantity(dc.ds, 0.0, "code_length*code_mass")
+    z = YTQuantity(dc.ds, 0.0, "code_length*code_mass")
+    w = YTQuantity(dc.ds, 0.0, "code_mass")
+    if use_gas & (get_field_info(dc.ds, ("gas","cell_mass")) != nothing)
+        x += sum(dc["cell_mass"].*dc["x"])
+        y += sum(dc["cell_mass"].*dc["y"])
+        z += sum(dc["cell_mass"].*dc["z"])
+        w += sum(dc["cell_mass"])
+    end
+    if use_particles & (get_field_info(dc.ds, ("all","particle_mass")) != nothing)
+        x += sum(dc["particle_mass"].*dc["particle_position_x"])
+        y += sum(dc["particle_mass"].*dc["particle_position_y"])
+        z += sum(dc["particle_mass"].*dc["particle_position_z"])
+        w += sum(dc["particle_mass"])
+    end
+    YTArray([x,y,z])/w
+end
+
 end

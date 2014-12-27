@@ -89,8 +89,8 @@ function YTQuantity{T<:Real}(value::T, units::String; registry=nothing)
     YTQuantity{T}(value, yt_units)
 end
 
-YTQuantity{T<:Real}(ds, value::T, units::String) = YTQuantity{T}(value, units,
-                                                                 registry=ds.ds["unit_registry"])
+YTQuantity{T<:Real}(ds, value::T, units::String) = YTQuantity(value, units;
+                                                              registry=ds.ds["unit_registry"])
 YTQuantity{T<:Real}(value::T, units::Sym; registry=nothing) = YTQuantity(value, string(units); 
                                                                          registry=registry)
 YTQuantity(value::Bool, units::String) = value
@@ -139,7 +139,7 @@ function YTArray{T<:Real}(value::DArray{T}, units::String; registry=nothing)
     YTArray{T}(value, yt_units)
 end
 
-YTArray{T<:Real}(ds, value::Array{T}, units::String) = YTArray{T}(value, units, registry=ds.ds["unit_registry"])
+YTArray{T<:Real}(ds, value::Array{T}, units::String) = YTArray{T}(value, units; registry=ds.ds["unit_registry"])
 YTArray{T<:Real}(value::Array{T}, units::Sym; registry=nothing) = YTArray{T}(value, string(units); registry=registry)
 YTArray{T<:Real}(value::PyArray{T}, units::Sym; registry=nothing) = YTArray{T}(value, string(units); registry=registry)
 YTArray{T<:Real}(value::DArray{T}, units::Sym; registry=nothing) = YTArray{T}(value, string(units); registry=registry)
@@ -156,7 +156,7 @@ YTArray(value::BitArray, units::YTUnit) = value
 YTArray{T<:Real}(value::Array{T}) = YTArray(value, "dimensionless")
 YTArray(value::Real) = YTQuantity(value, "dimensionless")
 
-YTArray(a::Array{YTQuantity}) = YTArray{typeof(a[1].value)}(convert(Array{typeof(a[1].value)},a), a[1].units)
+YTArray{T<:Real}(a::Array{YTQuantity{T}}) = YTArray{typeof(a[1].value)}([aa.value for aa in a], a[1].units)
 
 eltype(a::YTArray) = eltype(a.value)
 

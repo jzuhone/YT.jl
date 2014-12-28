@@ -1,7 +1,10 @@
 module derived_quantities
 
+import PyCall: PyObject
+
 import ..array: YTArray, YTQuantity
 import ..data_objects: DataContainer, get_field_info
+import ..utilities: ensure_array
 
 if VERSION < v"0.4-"
     import YT: @doc
@@ -21,12 +24,46 @@ else
     preduce(f,d) = f(d)
 end
 
-function total_quantity(dc::DataContainer, field::Field)
-    preduce(sum, dc[field])
+function creduce(f, chunks, fields)
+    qs = []
+    for field in fields
+        sto = []
+        for chunk in chunks
+            arr = YTArray(get(chunk, PyObject, field))
+            append!(sto, [f(arr)])
+        end
+        append!(qs, [f(sto)])
+    end
+    if length(qs) == 1
+        return qs[1]
+    else
+        return qs
+    end
 end
 
-function extrema(dc::DataContainer, field::Field)
-    preduce(minimum, dc[field]), preduce(maximum, dc[field])
+function prepare_chunks(dc, fields)
+    fields = ensure_array(fields)
+    chunks = []
+    for chunk in dc.cont[:chunks](fields, "io")
+        append!(chunks, [chunk])
+    end
+    fields, chunks
+end
+
+function total_quantity(dc::DataContainer, fields)
+    fields, chunks = prepare_chunks(dc, fields)
+    creduce(sum, chunks, fields)
+end
+
+function extrema(dc::DataContainer, fields)
+    fields, chunks = prepare_chunks(dc, fields)
+    mini = creduce(minimum, chunks, fields)
+    maxi = creduce(maximum, chunks, fields)
+    if length(fields) == 1
+        return (mi, mx)
+    else
+        return [(mi,mx) for (mi,mx) in zip(mini,maxi)]
+    end
 end
 
 function weighted_average_quantity(dc::DataContainer, field::Field, weight::Field)
@@ -47,10 +84,6 @@ function max_location(dc::DataContainer, field::Field)
     maxf, maxi = findmax(dc[field])
     mpos = [dc[string(ax)][maxi] for ax in "xyz"]
     maxf, maxi, mpos[1], mpos[2], mpos[3]
-end
-
-for dq = (:total_quantity, :extrema)
-    @eval ($dq)(dc::DataContainer, fields::Array) = [($dq)(dc, field) for field in fields]
 end
 
 function total_mass(dc::DataContainer)

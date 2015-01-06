@@ -78,6 +78,7 @@ include("physical_constants.jl")
 include("dataset_series.jl")
 include("plots.jl")
 include("profiles.jl")
+include("units.jl")
 
 import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks, YTUnit,
     from_hdf5, write_hdf5, to_equivalent, list_equivalencies,
@@ -119,12 +120,12 @@ load(fn::ASCIIString; args...) = Dataset(ytconv.load(fn; args...))
 
 # Stream datasets
 
-function load_uniform_grid(data::Dict{Array{Float64},ASCIIString}, 
-                           domain_dimensions::Array{Integer}; 
+function load_uniform_grid(data::Dict{Array{Float64},ASCIIString},
+                           domain_dimensions::Array{Integer};
                            length_unit=nothing, bbox=nothing,
                            nprocs=1, sim_time=0.0, mass_unit=nothing,
                            time_unit=nothing, velocity_unit=nothing,
-                           magnetic_unit=nothing, periodicity=(true, true, true), 
+                           magnetic_unit=nothing, periodicity=(true, true, true),
                            geometry="cartesian")
     ds = ytstream.load_uniform_grid(data, domain_dimensions; length_unit=length_unit,
                                     bbox=bbox, nprocs=nprocs, sim_time=sim_time,
@@ -135,9 +136,9 @@ function load_uniform_grid(data::Dict{Array{Float64},ASCIIString},
 end
 
 function load_amr_grids(data::Array, domain_dimensions::Array{Integer};
-                        field_units=nothing, bbox=nothing, sim_time=0.0, 
-                        length_unit=nothing, mass_unit=nothing, time_unit=nothing, 
-                        velocity_unit=nothing, magnetic_unit=nothing, 
+                        field_units=nothing, bbox=nothing, sim_time=0.0,
+                        length_unit=nothing, mass_unit=nothing, time_unit=nothing,
+                        velocity_unit=nothing, magnetic_unit=nothing,
                         periodicity=(true, true, true), geometry="cartesian", refine_by=2)
     ds = ytstream.load_amr_grids(data, domain_dimensions; field_units=field_units,
                                  bbox=bbox, sim_time=sim_time, length_unit=length_unit,
@@ -147,9 +148,9 @@ function load_amr_grids(data::Array, domain_dimensions::Array{Integer};
     return Dataset(ds)
 end
 
-function load_particles(data::Dict{Array{Float64},ASCIIString}; length_unit=nothing, 
-                        bbox=nothing, sim_time=0.0, mass_unit=nothing, time_unit=nothing, 
-                        velocity_unit=nothing, magnetic_unit=nothing, periodicity=(true, true, true), 
+function load_particles(data::Dict{Array{Float64},ASCIIString}; length_unit=nothing,
+                        bbox=nothing, sim_time=0.0, mass_unit=nothing, time_unit=nothing,
+                        velocity_unit=nothing, magnetic_unit=nothing, periodicity=(true, true, true),
                         n_ref=64, over_refine_factor=1, geometry="cartesian")
     ds = ytstream.load_particles(data; length_unit=length_unit, bbox=bbox, sim_time=sim_time,
                                  mass_unit=mass_unit, time_unit=time_unit, velocity_unit=velocity_unit,

@@ -1,56 +1,25 @@
 module units
 
+import PyCall: @pyimport
 import ..array: YTQuantity
 
-prefixes = [
-    "Y",  # yotta
-    "Z",  # zetta
-    "E",  # exa
-    "P",  # peta
-    "T",  # tera
-    "G",  # giga
-    "M",  # mega
-    "k",  # kilo
-    "d",  # deci
-    "c",  # centi
-    "m",  # milli
-    "u",  # micro
-    "n",  # nano
-    "p",  # pico
-    "f",  # femto
-    "a",  # atto
-    "z",  # zepto
-    "y",  # yocto
-    "",   # nothing
-]
+@pyimport yt.units.unit_lookup_table as lut
 
-prefixable_units = [
-    "m",
-    "pc",
-    "g",
-    "eV",
-    "s",
-    "yr",
-    "K",
-    "dyne",
-    "erg",
-    "esu",
-    "J",
-    "Hz",
-    "W",
-    "gauss",
-    "G",
-    "Jy",
-    "N",
-    "T",
-    "A",
-    "C",
-]
+base_units = collect(keys(lut.default_unit_symbol_lut))
+prefixes = collect(keys(lut.unit_prefixes))
+prefixable_units = lut.prefixable_units
 
-for unit in prefixable_units
-    for prefix in prefixes
-        u = symbol(prefix * unit)
-        @eval $u = YTQuantity(1.0,$unit)
+for unit in base_units
+    u = symbol(unit)
+    @eval $u = YTQuantity(1.0, $unit)
+    if unit in lut.prefixable_units
+        for prefix in prefixes
+            pu = string(prefix*unit)
+            if pu != "as"
+                u = symbol(pu)
+                @eval $u = YTQuantity(1.0, $pu)
+            end
+        end
     end
 end
 

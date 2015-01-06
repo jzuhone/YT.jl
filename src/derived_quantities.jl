@@ -14,25 +14,13 @@ in_parallel = nprocs() > 1
 
 Field = Union(ASCIIString,(ASCIIString,ASCIIString))
 
-if in_parallel
-    function preduce(f,d)
-        dd = distribute(d.value)
-        m = map(fetch, [(@spawnat p f(localpart(dd))) for p=procs(dd)])
-        YTQuantity(f(m), d.units)
-    end
-else
-    preduce(f,d) = f(d)
-end
-
-function creduce(f, chunks, fields)
+function creduce(f, g, chunks, fields)
     qs = []
     for field in fields
-        sto = []
-        for chunk in chunks
-            arr = YTArray(get(chunk, PyObject, field))
-            append!(sto, [f(arr)])
+        q = @parallel (g) for chunk in chunks
+            f(chunk[field])
         end
-        append!(qs, [f(sto)])
+        append!(qs, [q])
     end
     if length(qs) == 1
         return qs[1]
@@ -45,20 +33,25 @@ function prepare_chunks(dc, fields)
     fields = ensure_array(fields)
     chunks = []
     for chunk in dc.cont[:chunks](fields, "io")
-        append!(chunks, [chunk])
+        chk = Dict()
+        for field in fields
+            chk[field] = YTArray(get(chunk, PyObject, field))
+            println(sum(chk[field]))
+        end
+        append!(chunks, [chk])
     end
     fields, chunks
 end
 
 function total_quantity(dc::DataContainer, fields)
     fields, chunks = prepare_chunks(dc, fields)
-    creduce(sum, chunks, fields)
+    creduce(sum, +, chunks, fields)
 end
 
 function extrema(dc::DataContainer, fields)
     fields, chunks = prepare_chunks(dc, fields)
-    mini = creduce(minimum, chunks, fields)
-    maxi = creduce(maximum, chunks, fields)
+    mini = creduce(minimum, min, chunks, fields)
+    maxi = creduce(maximum, max, chunks, fields)
     if length(fields) == 1
         return (mi, mx)
     else
@@ -67,7 +60,7 @@ function extrema(dc::DataContainer, fields)
 end
 
 function weighted_average_quantity(dc::DataContainer, field::Field, weight::Field)
-    preduce(sum, dc[field]*dc[weight])/preduce(sum, dc[weight])
+    creduce(sum, dc[field]*dc[weight])/creduce(sum, dc[weight])
 end
 
 function weighted_average_quantity(dc::DataContainer, fields::Array, weight::Field)
@@ -108,16 +101,16 @@ function center_of_mass(dc::DataContainer; use_gas=true, use_particles=false)
     z = YTQuantity(dc.ds, 0.0, "code_length*code_mass")
     w = YTQuantity(dc.ds, 0.0, "code_mass")
     if use_gas & (get_field_info(dc.ds, ("gas","cell_mass")) != nothing)
-        x += preduce(sum, dc["cell_mass"].*dc["x"])
-        y += preduce(sum, dc["cell_mass"].*dc["y"])
-        z += preduce(sum, dc["cell_mass"].*dc["z"])
-        w += preduce(sum, dc["cell_mass"])
+        x += creduce(sum, dc["cell_mass"].*dc["x"])
+        y += creduce(sum, dc["cell_mass"].*dc["y"])
+        z += creduce(sum, dc["cell_mass"].*dc["z"])
+        w += creduce(sum, dc["cell_mass"])
     end
     if use_particles & (get_field_info(dc.ds, ("all","particle_mass")) != nothing)
-        x += preduce(sum, dc["particle_mass"].*dc["particle_position_x"])
-        y += preduce(sum, dc["particle_mass"].*dc["particle_position_y"])
-        z += preduce(sum, dc["particle_mass"].*dc["particle_position_z"])
-        w += preduce(sum, dc["particle_mass"])
+        x += creduce(sum, dc["particle_mass"].*dc["particle_position_x"])
+        y += creduce(sum, dc["particle_mass"].*dc["particle_position_y"])
+        z += creduce(sum, dc["particle_mass"].*dc["particle_position_z"])
+        w += creduce(sum, dc["particle_mass"])
     end
     YTArray([x,y,z])/w
 end

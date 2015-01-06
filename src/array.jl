@@ -7,7 +7,7 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              cumsum, cummin, cummax, cumsum_kbn, diff, display, print,
              showarray, showerror, ones, zeros, eye, summary, linspace,
              sum_kbn, gradient, dims2string, mean, std, stdm, var, varm,
-             median, middle, midpoints, quantile
+             median, middle, midpoints, quantile, fill
 
 import SymPy: Sym
 import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin, PyAny
@@ -62,7 +62,7 @@ function ^(u::YTUnit, v::FloatingPoint)
     YTUnit(yt_unit, yt_unit[:units], yt_unit[:units][:dimensions])
 end
 
-function ==(u::YTUnit, v::YTUnit) 
+function ==(u::YTUnit, v::YTUnit)
     pycall(u.yt_unit["units"]["__eq__"], PyAny, v.yt_unit["units"])
 end
 
@@ -89,7 +89,7 @@ end
 
 YTQuantity{T<:Real}(ds, value::T, units::String) = YTQuantity{T}(value, units,
                                                                  registry=ds.ds["unit_registry"])
-YTQuantity{T<:Real}(value::T, units::Sym; registry=nothing) = YTQuantity(value, string(units); 
+YTQuantity{T<:Real}(value::T, units::Sym; registry=nothing) = YTQuantity(value, string(units);
                                                                          registry=registry)
 YTQuantity(value::Bool, units::String) = value
 YTQuantity(value::Bool, units::Sym) = value
@@ -249,7 +249,7 @@ end
 pyslice(i::Integer) = i
 pyslice(i::UnitRange) = pycall(pybuiltin("slice"), PyObject, i.start-1, i.stop)
 pyslice(i::StepRange) = pycall(pybuiltin("slice"), PyObject, i.start-1, i.stop, i.step)
- 
+
 # For grids
 function getindex(a::YTArray, i::IntOrRange, j::IntOrRange, k::IntOrRange)
     YTArray(getindex(a.value, i, j, k), a.units)
@@ -286,7 +286,7 @@ function in_mks(a::YTObject)
     a.value*pycall(a.units.yt_unit["in_mks"], YTQuantity)
 end
 
-function convert_to_units(a::YTObject, units::String)    
+function convert_to_units(a::YTObject, units::String)
     new_unit = pycall(a.units.yt_unit["in_units"], YTQuantity, units)
     a.value *= new_unit.value
     a.units = new_unit.units
@@ -358,7 +358,7 @@ for op = (:+, :-, :*, :.*, :/, :./, :\, :.\, :hypot, :.==, :.!=, :.>=, :.<=, :.<
     @eval ($op)(a::Real,b::PyArray{Float64}) = ($op)(a,convert(Array{Float64}, b.o))
 end
 
-for op = (:*, :/, :\) 
+for op = (:*, :/, :\)
     @eval ($op)(a::PyArray{Float64},b::YTQuantity) = ($op)(convert(Array{Float64}, a.o),b)
     @eval ($op)(a::YTQuantity,b::PyArray{Float64}) = ($op)(a,convert(Array{Float64}, b.o))
 end
@@ -606,9 +606,12 @@ ones(a::YTArray) = YTArray(ones(a.value), a.units)
 zeros(a::YTArray) = YTArray(zeros(a.value), a.units)
 eye(a::YTArray) = YTArray(eye(a.value), a.units)
 
-linspace(start::YTQuantity, stop::YTQuantity, n::Integer) = 
+linspace(start::YTQuantity, stop::YTQuantity, n::Integer) =
     YTArray(linspace(in_units(start, stop.units).value,stop.value,n), start.units)
-linspace(start::YTQuantity, stop::YTQuantity) = 
+linspace(start::YTQuantity, stop::YTQuantity) =
     YTArray(linspace(in_units(start, stop.units).value,stop.value), start.units)
+
+fill(a::YTQuantity, dims::(Int64...,)) = YTArray(fill(a.value,dims), a.units)
+fill(a::YTQuantity, dims::Integer...) = YTArray(fill(a.value,dims), a.units)
 
 end

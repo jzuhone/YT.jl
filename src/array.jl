@@ -196,8 +196,12 @@ end
 
 macro array_mult_op(a,b,op1,op2)
     quote
-        c = ($op1)(($a.value), ($b.value))
         units = ($op2)(($a.units), ($b.units))
+        if units.dimensions == 1
+            c = ($op1)((in_cgs($a).value), (in_cgs($b).value))
+        else
+            c = ($op1)(($a.value), ($b.value))
+        end
         return YTArray(c, units)
     end
 end

@@ -153,3 +153,5 @@ d = YTQuantity(1.0,"ly")
 
 @test middle(c,d) == 0.5*(c+d)
 
+@test string((c/d).units) == "dimensionless"
+@test string((c\d).units) == "dimensionless"

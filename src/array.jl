@@ -12,6 +12,7 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
 import SymPy: Sym
 import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin, PyAny
 @pyimport yt.units as units
+@pyimport yt.units.dimensions as ytdims
 
 if VERSION < v"0.4-"
     import YT: @doc
@@ -197,12 +198,13 @@ end
 macro array_mult_op(a,b,op1,op2)
     quote
         units = ($op2)(($a.units), ($b.units))
-        if units.dimensions == 1
+        if units.dimensions == ytdims.dimensionless
             c = ($op1)((in_cgs($a).value), (in_cgs($b).value))
+            return YTArray(c, "dimensionless")
         else
             c = ($op1)(($a.value), ($b.value))
+            return YTArray(c, units)
         end
-        return YTArray(c, units)
     end
 end
 

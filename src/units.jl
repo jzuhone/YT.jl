@@ -1,7 +1,7 @@
 module units
 
 import PyCall: @pyimport
-import ..array: YTQuantity
+import YT.array: YTQuantity
 
 @pyimport yt.units.unit_lookup_table as lut
 

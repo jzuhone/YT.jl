@@ -1,6 +1,6 @@
 module physical_constants
 
-import ..array: YTQuantity
+import YT.array: YTQuantity
 
 import PyCall: @pyimport
 

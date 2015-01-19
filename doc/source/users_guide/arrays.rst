@@ -537,6 +537,30 @@ quantities and arrays:
 
 Have a look inside ``YT.physical_constants`` to see which constants are implemented. 
 
+.. _unit_quantities:
+
+Unit Quantities
+---------------
+
+Similarly, for convenience, all units implemented in ``YT``, as well as prefixed versions where appropriate, have
+corresponding ``YTQuantities`` which can be imported from the ``YT.units`` module. They can then be multiplied by 
+``Real``\ s or ``Array``\ s to generate ``YTArray``\ s and ``YTQuantities``:
+
+.. code-block:: jlcon
+
+    julia> u = YT.units
+     
+    julia> rand(5)*u.Msun
+    5-element YTArray (Msun):
+     0.5900909369710552 
+     0.6986179232738041 
+     0.5927434843676787 
+     0.06661577151448839
+     0.22312016546257163
+    
+    julia> 3.0*u.kpc
+    3.0 kpc
+
 .. _equivalencies:
 
 Equivalencies

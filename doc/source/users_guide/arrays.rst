@@ -231,6 +231,11 @@ The data can be read back into a ``YTArray`` using ``from_hdf5``:
 
 which is obviously the same array.
 
+.. _special_arrays:
+
+Special Arrays
+--------------
+
 It may be useful to generate ``YTArray``\ s of ones or zeros similar to an existing ``YTArray``. This
 can be done with ``ones`` and ``zeros``, in the same manner as the standard Julia ``Array``:
 
@@ -281,6 +286,85 @@ can be done with ``ones`` and ``zeros``, in the same manner as the standard Juli
      0.0
      0.0
      0.0
+
+To create a ``YTArray`` by taking a ``YTQuantity`` and repeating it, use ``fill``. This can be done for 
+multi-dimensional ``Array``\ s as well:
+
+.. code-block:: jlcon
+
+    julia> a = YT.YTQuantity(200., "nG")
+    
+    julia> fill(a, 10)
+    10-element YTArray (nG):
+     200.0
+     200.0
+     200.0
+     200.0
+     200.0
+     200.0
+     200.0
+     200.0
+     200.0
+     200.0
+    
+    julia> fill(a, (10,10))
+    10x10 YTArray (nG):
+     200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0
+     200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0
+     200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0
+     200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0
+     200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0
+     200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0
+     200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0
+     200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0
+     200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0
+     200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0  200.0
+
+If you have a 2D ``YTArray`` and would like to create an identity matrix with the same shape, use 
+``eye``:
+
+.. code-block:: jlcon
+
+    julia> a = YT.YTArray(rand(5,5), "kC")
+    5x5 YTArray (kC):
+     0.6497387907259173    0.8468229422300773  …  0.06551310346461081
+     0.8456231775916168    0.5706881420016294     0.519674848896863
+     0.33596233849091184   0.6751684885779692     0.9287453227644731 
+     0.049299731653781986  0.5431688217562218     0.7982447959045598 
+     0.8085262384616441    0.9848972956549693     0.6015654643236037 
+
+    julia> eye(a)
+    5x5 YTArray (kC):
+     1.0  0.0  0.0  0.0  0.0
+     0.0  1.0  0.0  0.0  0.0
+     0.0  0.0  1.0  0.0  0.0
+     0.0  0.0  0.0  1.0  0.0
+     0.0  0.0  0.0  0.0  1.0
+ 
+You can create a ``YTArray`` from a linear spacing between two ``YTQuantities`` using ``linspace``:
+
+.. code-block:: jlcon
+
+    julia> istart = YT.YTQuantity(1.0, "kpc")
+    1.0 kpc
+
+    julia> iend = YT.YTQuantity(10.,"kpc")
+    10.0 kpc
+
+    julia> linspace(istart, iend, 12)
+    12-element YTArray (kpc):
+     1.0
+     1.8181818181818183
+     2.6363636363636367
+     3.454545454545454 
+     4.272727272727273 
+     5.09090909090909
+     5.909090909090908 
+     6.727272727272727 
+     7.545454545454546 
+     8.363636363636363 
+     9.181818181818182 
+     10.0
 
 .. _quantities:
 

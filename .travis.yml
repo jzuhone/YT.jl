@@ -31,4 +31,4 @@ script:
   - julia -e 'using YT; @assert isdefined(:YT); @assert typeof(YT) === Module'
   - julia --code-coverage test/runtests.jl
 after_success:
-  - julia -e 'cd(Pkg.dir("YT")); Pkg.add("Coverage"); using Glob; using Coverage; fns = glob("src/*.jl"); splice!(fns, findfirst(fns, "src/units.jl")); splice!(fns, findfirst(fns, "src/physical_constants.jl")); Coveralls.submit([Coveralls.process_file(fn) for fn in fns])'
+  - julia -e 'cd(Pkg.dir("YT")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'

@@ -8,6 +8,8 @@ x = YTQuantity(rand(), "m")
 y = YTQuantity(rand(), "Msun")
 z = rand()
 
+@test eltype(a, Float64)
+
 # These should pass
 
 a.*b
@@ -91,6 +93,11 @@ z\y
 @test a.units == sqrt(a.*a).units
 @test x.units == sqrt(x*x).units
 
+@test a.units^2 == a.units*a.units
+@test (a.*a).units == a.units*a.units
+
+@test a.units/b.units == b.units\a.units
+
 @test_approx_eq in_cgs(x).value x.value*100.0
 @test_approx_eq in_mks(b).value b.value/1000.0
 
@@ -155,3 +162,6 @@ d = YTQuantity(1.0,"ly")
 
 @test string((c/d).units) == "dimensionless"
 @test string((c\d).units) == "dimensionless"
+
+@test ones(a) == ones(10)*a.units
+@test zeros(a) == zeros(10)*a.units

@@ -2,13 +2,16 @@ using Base.Test
 using YT
 import YT.array: YTUnitOperationError
 
+u = YT.units
+pc = YT.physical_constants
+
 a = YTArray(rand(10), "cm")
 b = YTArray(rand(10), "g")
 x = YTQuantity(rand(), "m")
 y = YTQuantity(rand(), "Msun")
 z = rand()
 
-@test eltype(a, Float64)
+@test eltype(a) == Float64
 
 # These should pass
 
@@ -163,5 +166,20 @@ d = YTQuantity(1.0,"ly")
 @test string((c/d).units) == "dimensionless"
 @test string((c\d).units) == "dimensionless"
 
-@test ones(a) == ones(10)*a.units
-@test zeros(a) == zeros(10)*a.units
+oa = ones(a)
+za = zeros(a)
+
+@test sum(oa).value == 10.0
+@test sum(za).value == 0.0
+
+@test oa.units == a.units
+@test za.units == a.units
+
+kT = 5.0*u.keV
+
+list_equivalencies(kT)
+
+@test has_equivalent(kT, "spectral")
+@test !has_equivalent(kT, "compton")
+
+@test to_equivalent(kT,"K","thermal") == in_units(kT/pc.kboltz, "K")

@@ -8,7 +8,7 @@ cont_dict = test_containers.cont_dict
 ds = YT.load("enzo_tiny_cosmology/DD0046/DD0046")
 
 YT.print_stats(ds)
-Yt.get_field_list(ds)
+YT.get_field_list(ds)
 YT.get_derived_field_list(ds)
 show(ds)
 

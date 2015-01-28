@@ -281,6 +281,7 @@ list_equivalencies(kT)
 @test !has_equivalent(kT, "compton")
 
 @test to_equivalent(kT,"K","thermal") == in_units(kT/pc.kboltz, "K")
+@test_approx_eq to_equivalent(a,"g","schwarzschild").value in_cgs(0.5*a*pc.clight^2/pc.G).value
 
 # Dimensionless
 
@@ -290,7 +291,10 @@ h = YTQuantity(5.0)
 w = YTArray(rand(10))
 @test string(w.units) == "dimensionless"
 
-# Just catch these
+v = YTArray(5.0)
+@test string(v.units) == "dimensionless"
+
+# Just make sure these don't throw errors
 
 summary(a)
 show(a)
@@ -299,3 +303,4 @@ println(a)
 show(x)
 print(x)
 println(x)
+display(a)

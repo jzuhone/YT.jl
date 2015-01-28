@@ -67,7 +67,6 @@ for i in 1:num_grids
 end
 
 show(grids)
-showarray(grids)
 
 # Find minima and maxima
 

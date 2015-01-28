@@ -135,8 +135,8 @@ convert_to_cgs(xx)
 @test in_mks(a) == aa
 @test in_cgs(x) == xx
 
-convert_to_units(xx, "ly")
-@test_approx_eq xx in_units(x, "ly")
+convert_to_units(aa, "ly")
+@test_approx_eq aa in_units(a, "ly")
 
 # These should fail
 

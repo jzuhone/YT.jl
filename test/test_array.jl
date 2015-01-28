@@ -209,6 +209,7 @@ c = YTQuantity(1.0,"kpc")
 d = YTQuantity(1.0,"ly")
 
 @test middle(c,d) == 0.5*(c+d)
+@test middle(c) == c
 
 @test string((c/d).units) == "dimensionless"
 @test string((c\d).units) == "dimensionless"
@@ -223,6 +224,12 @@ d = YTQuantity(1.0,"ly")
 @test !YTQuantity(false,a.units)
 @test YTQuantity(true,a.units.unit_symbol)
 @test !YTQuantity(false,a.units.unit_symbol)
+
+bb = rand(10) .< rand(10)
+
+@test YTArray(bb,"cm") == bb
+@test YTArray(bb,a.units) == bb
+@test YTArray(bb,a.units.unit_symbol) == bb
 
 # Ones, zeros, fill, linspace
 

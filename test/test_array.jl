@@ -114,10 +114,12 @@ c.\a
 @test_approx_eq a.value sqrt(a.*a).value
 @test_approx_eq a.value sqrt(a.^2).value
 @test_approx_eq x.value sqrt(x*x).value
+@test_approx_eq x.value sqrt(x^2).value
 
 @test a.units == sqrt(a.*a).units
 @test a.units == sqrt(a.^2).units
 @test x.units == sqrt(x*x).units
+@test x.units == sqrt(x^2).units
 
 @test a.units^2 == a.units*a.units
 @test (a.*a).units == a.units*a.units
@@ -145,6 +147,18 @@ l = sqrt(i*i+j*j+k*k)
 
 @test var(a).value == var(a.value)
 @test var(a).units == a.units
+
+@test median(a).value == median(a.value)
+@test median(a).units == a.units
+
+@test middle(a).value == middle(a.value)
+@test middle(a).units == a.units
+
+@test_approx_eq cumsum(a).value cumsum(a.value)
+@test cumsum(a).units == a.units
+
+@test_approx_eq cumsum_kbn(a).value cumsum_kbn(a.value)
+@test cumsum_kbn(a).units == a.units
 
 # Conversions
 
@@ -275,3 +289,13 @@ h = YTQuantity(5.0)
 
 w = YTArray(rand(10))
 @test string(w.units) == "dimensionless"
+
+# Just catch these
+
+summary(a)
+show(a)
+print(a)
+println(a)
+show(x)
+print(x)
+println(x)

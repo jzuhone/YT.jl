@@ -85,6 +85,10 @@ vmax, cmax = YT.find_max(ds, "density")
 
 @test get_smallest_dx(ds) == minimum(dd["dx"])
 
+# Quick field name check
+
+@test sp2["density"].value == sp2["gas","density"].value
+
 # Field Parameters
 
 @test YT.has_field_parameter(sp2, "center")
@@ -93,4 +97,4 @@ YT.set_field_parameter(sp2, "center", [0.1,-0.3,0.2])
 
 fp_keys = collect(keys(YT.get_field_parameters(sp2)))
 
-@test all(sort(fp_keys) == ["bulk_velocity","center","normal","radius"])
+@test sort(fp_keys) == ["bulk_velocity","center","normal","radius"]

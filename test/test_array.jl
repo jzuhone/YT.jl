@@ -136,7 +136,7 @@ convert_to_cgs(xx)
 @test in_cgs(x) == xx
 
 convert_to_units(xx, "ly")
-@test xx == in_units(x, "ly")
+@test_approx_eq xx in_units(x, "ly")
 
 # These should fail
 

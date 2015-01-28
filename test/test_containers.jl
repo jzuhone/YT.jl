@@ -90,3 +90,7 @@ vmax, cmax = YT.find_max(ds, "density")
 @test YT.has_field_parameter(sp2, "center")
 YT.set_field_parameter(sp2, "center", [0.1,-0.3,0.2])
 @test all(YT.get_field_parameter(sp2, "center") .== [0.1,-0.3,0.2])
+
+fp_keys = collect(keys(YT.get_field_parameters(sp2)))
+
+@test all(sort(fp_keys) == ["bulk_velocity","center","normal","radius"])

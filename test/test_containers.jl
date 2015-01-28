@@ -10,7 +10,7 @@ ds = YT.load("enzo_tiny_cosmology/DD0046/DD0046")
 YT.print_stats(ds)
 YT.get_field_list(ds)
 YT.get_derived_field_list(ds)
-show(ds)
+show(STDOUT, ds)
 
 test_dir = Pkg.dir("YT") * "/test"
 
@@ -30,6 +30,7 @@ for key in keys(cont_dict)
     b = YT.from_hdf5(file_to_read, dataset_name=key)
     @test all(a.value .== b.value)
     @test a.units.unit_symbol == b.units.unit_symbol
+end
 
 # Special handling
 
@@ -58,6 +59,7 @@ kT = YT.YTQuantity(0.5, "keV")
 
 grids = YT.Grids(ds)
 num_grids = length(grids)
+@test size(grids)[1] == num_grids
 
 for i in 1:num_grids
     a = grids[i]["density"]
@@ -66,11 +68,14 @@ for i in 1:num_grids
     @test a.units.unit_symbol == b.units.unit_symbol
 end
 
-show(grids)
+show(STDOUT, grids)
+display(grids)
 
 # Find minima and maxima
 
 dd = YT.AllData(ds)
+
+show(STDOUT, dd)
 
 vmin, cmin = YT.find_min(ds, "density")
 vmax, cmax = YT.find_max(ds, "density")
@@ -78,5 +83,10 @@ vmax, cmax = YT.find_max(ds, "density")
 @test vmin == minimum(dd["density"])
 @test vmax == maximum(dd["density"])
 
-end
+@test get_smallest_dx(ds) == minimum(dd["dx"])
 
+# Field Parameters
+
+@test YT.has_field_parameter(sp2, "center")
+YT.set_field_parameter(sp2, "center", [0.1,-0.3,0.2])
+@test YT.get_field_parameter(sp2, center) .== [0.1,-0.3,0.2]

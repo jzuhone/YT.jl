@@ -14,6 +14,9 @@ z = rand()
 c = rand(10)
 
 @test eltype(a) == Float64
+@test ndims(a) == 1
+@test size(a)[1] == 10
+@test size(a,1) == 10
 
 # These should pass
 
@@ -130,6 +133,18 @@ k = YTQuantity(3.0,"cm")
 l = sqrt(i*i+j*j+k*k)
 
 @test hypot(i,j,k) == l
+
+@test sum(a).value == sum(a.value)
+@test sum(a).units == a.units
+
+@test mean(a).value == mean(a.value)
+@test mean(a).units == a.units
+
+@test std(a).value == std(a.value)
+@test std(a).units == a.units
+
+@test var(a).value == var(a.value)
+@test var(a).units == a.units
 
 # Conversions
 

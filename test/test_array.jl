@@ -90,6 +90,8 @@ z\y
 @test x/y == y\x
 @test x./a == a.\x
 
+@test -a == -1*a
+
 @test_approx_eq a.value sqrt(a.*a).value
 @test_approx_eq x.value sqrt(x*x).value
 
@@ -100,6 +102,8 @@ z\y
 @test (a.*a).units == a.units*a.units
 
 @test a.units/b.units == b.units\a.units
+
+# Conversions
 
 @test_approx_eq in_cgs(x).value x.value*100.0
 @test_approx_eq in_mks(b).value b.value/1000.0
@@ -120,6 +124,9 @@ convert_to_cgs(xx)
 
 @test in_mks(a) == aa
 @test in_cgs(x) == xx
+
+convert_to_units(xx, "ly")
+@test xx == in_units(x, "ly")
 
 # These should fail
 
@@ -161,6 +168,8 @@ convert_to_cgs(xx)
 @test_throws YTUnitOperationError y+z
 @test_throws YTUnitOperationError y-z
 
+# Reading / writing from HDF5 files
+
 myinfo = ["field"=>"velocity_magnitude", "source"=>"galaxy cluster"]
 write_hdf5(a, "test.h5", dataset_name="cluster", info=myinfo)
 b = from_hdf5("test.h5", dataset_name="cluster")
@@ -175,6 +184,19 @@ d = YTQuantity(1.0,"ly")
 @test string((c/d).units) == "dimensionless"
 @test string((c\d).units) == "dimensionless"
 
+# Boolean stuff
+
+@test YTQuantity(true)
+@test !YTQuantity(false)
+@test YTQuantity(true,"cm")
+@test !YTQuantity(false,"cm")
+@test YTQuantity(true,a.units)
+@test !YTQuantity(false,a.units)
+@test YTQuantity(true,a.units.unit_symbol)
+@test !YTQuantity(false,a.units.unit_symbol)
+
+# Ones, zeros, fill, linspace
+
 oa = ones(a)
 za = zeros(a)
 
@@ -183,6 +205,8 @@ za = zeros(a)
 
 @test oa.units == a.units
 @test za.units == a.units
+
+# Unit equivalencies
 
 kT = 5.0*u.keV
 

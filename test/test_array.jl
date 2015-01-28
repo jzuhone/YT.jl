@@ -112,6 +112,15 @@ z\y
 
 @test_approx_eq in_mks(in_units(x, "ly")).value x.value
 
+aa = copy(a)
+xx = copy(x)
+
+convert_to_mks(aa)
+convert_to_cgs(xx)
+
+@test in_mks(a) == aa
+@test in_cgs(x) == xx
+
 # These should fail
 
 @test_throws YTUnitOperationError a+b

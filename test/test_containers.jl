@@ -89,4 +89,4 @@ vmax, cmax = YT.find_max(ds, "density")
 
 @test YT.has_field_parameter(sp2, "center")
 YT.set_field_parameter(sp2, "center", [0.1,-0.3,0.2])
-@test YT.get_field_parameter(sp2, center) .== [0.1,-0.3,0.2]
+@test YT.get_field_parameter(sp2, "center") .== [0.1,-0.3,0.2]

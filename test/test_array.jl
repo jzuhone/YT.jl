@@ -103,6 +103,16 @@ z\y
 
 @test a.units/b.units == b.units\a.units
 
+@test hypot(YTQuantity(3.,"cm"),YTQuantity(4.,"cm")) == YTQuantity(5.,"cm")
+
+i = YTQuantity(1.0,"cm")
+j = YTQuantity(2.0,"cm")
+k = YTQuantity(3.0,"cm")
+
+l = sqrt(i*i+j*j+k*k)
+
+@test hypot(i,j,k) == l
+
 # Conversions
 
 @test_approx_eq in_cgs(x).value x.value*100.0

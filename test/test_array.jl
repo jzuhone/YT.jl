@@ -109,9 +109,11 @@ c.\a
 @test -a == -1*a
 
 @test_approx_eq a.value sqrt(a.*a).value
+@test_approx_eq a.value sqrt(a.^2).value
 @test_approx_eq x.value sqrt(x*x).value
 
 @test a.units == sqrt(a.*a).units
+@test a.units == sqrt(a.^2).units
 @test x.units == sqrt(x*x).units
 
 @test a.units^2 == a.units*a.units
@@ -243,3 +245,11 @@ list_equivalencies(kT)
 @test !has_equivalent(kT, "compton")
 
 @test to_equivalent(kT,"K","thermal") == in_units(kT/pc.kboltz, "K")
+
+# Dimensionless
+
+h = YTQuantity(5.0)
+@test string(h.units) == "dimensionless"
+
+w = YTArray(rand(10))
+@test string(w.units) == "dimensionless"

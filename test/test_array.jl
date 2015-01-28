@@ -18,7 +18,9 @@ c = rand(10)
 @test size(a)[1] == 10
 @test size(a,1) == 10
 
-# These should pass
+# Arithmetic
+
+# These just are supposed to go without erroring out
 
 a.*b
 a./b
@@ -102,6 +104,8 @@ c./a
 a.\c
 c.\a
 
+# Check inverse/commutative operations
+
 @test a.*b == b.*a
 @test x*y == y*x
 @test a*y == y*a
@@ -111,20 +115,27 @@ c.\a
 
 @test -a == -1*a
 
+# sqrt, abs, etc.
+
 @test_approx_eq a.value sqrt(a.*a).value
 @test_approx_eq a.value sqrt(a.^2).value
 @test_approx_eq x.value sqrt(x*x).value
 @test_approx_eq x.value sqrt(x^2).value
 
+# Various unit tests
+
 @test a.units == sqrt(a.*a).units
 @test a.units == sqrt(a.^2).units
 @test x.units == sqrt(x*x).units
 @test x.units == sqrt(x^2).units
-
 @test a.units^2 == a.units*a.units
 @test (a.*a).units == a.units*a.units
-
 @test a.units/b.units == b.units\a.units
+
+@test a.units.dimensions == x.units.dimensions
+@test a.units != x.units
+
+# math function tests
 
 @test hypot(YTQuantity(3.,"cm"),YTQuantity(4.,"cm")) == YTQuantity(5.,"cm")
 
@@ -163,6 +174,12 @@ l = sqrt(i*i+j*j+k*k)
 @test_approx_eq cumsum_kbn(a).value cumsum_kbn(a.value)
 @test cumsum_kbn(a).units == a.units
 
+c = YTQuantity(1.0,"kpc")
+d = YTQuantity(1.0,"ly")
+
+@test middle(c,d) == 0.5*(c+d)
+@test middle(c) == c
+
 # Conversions
 
 @test_approx_eq in_cgs(x).value x.value*100.0
@@ -188,6 +205,22 @@ convert_to_cgs(xx)
 convert_to_units(aa, "ly")
 @test_approx_eq aa.value in_units(a, "ly").value
 @test aa.units == in_units(a, "ly").units
+
+@test in_units(x, a.units) == in_units(x, string(a.units))
+@test in_units(x, a.units.unit_symbol) == in_units(x, string(a.units))
+@test in_units(x, a) == in_units(x, string(a.units))
+
+xx = copy(x)
+convert_to_units(xx, a.units)
+@test xx == in_units(x, string(a.units))
+
+xx = copy(x)
+convert_to_units(xx, a.units.unit_symbol)
+@test xx == in_units(x, string(a.units))
+
+xx = copy(x)
+convert_to_units(xx, a)
+@test xx == in_units(x, string(a.units))
 
 # These should fail
 
@@ -236,15 +269,6 @@ write_hdf5(a, "test.h5", dataset_name="cluster", info=myinfo)
 b = from_hdf5("test.h5", dataset_name="cluster")
 @test a == b
 @test a.units == b.units
-
-c = YTQuantity(1.0,"kpc")
-d = YTQuantity(1.0,"ly")
-
-@test middle(c,d) == 0.5*(c+d)
-@test middle(c) == c
-
-@test string((c/d).units) == "dimensionless"
-@test string((c\d).units) == "dimensionless"
 
 # Boolean stuff
 
@@ -296,6 +320,9 @@ w = YTArray(rand(10))
 
 v = YTArray(5.0)
 @test string(v.units) == "dimensionless"
+
+@test string((c/d).units) == "dimensionless"
+@test string((c\d).units) == "dimensionless"
 
 # Just make sure these don't throw errors
 

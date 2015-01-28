@@ -68,7 +68,7 @@ function ==(u::YTUnit, v::YTUnit)
 end
 
 function !=(u::YTUnit, v::YTUnit)
-    pycall(u.yt_unit["units"]["__neq__"], PyAny, v.yt_unit["units"])
+    pycall(u.yt_unit["units"]["__ne__"], PyAny, v.yt_unit["units"])
 end
 
 show(io::IO, u::YTUnit) = show(io, u.unit_symbol)

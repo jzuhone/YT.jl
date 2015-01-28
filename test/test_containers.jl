@@ -7,6 +7,11 @@ cont_dict = test_containers.cont_dict
 
 ds = YT.load("enzo_tiny_cosmology/DD0046/DD0046")
 
+YT.print_stats(ds)
+Yt.get_field_list(ds)
+YT.get_derived_field_list(ds)
+show(ds)
+
 test_dir = Pkg.dir("YT") * "/test"
 
 file_to_read = "$(test_dir)/containers.h5"
@@ -61,4 +66,18 @@ for i in 1:num_grids
     @test a.units.unit_symbol == b.units.unit_symbol
 end
 
+show(grids)
+showarray(grids)
+
+# Find minima and maxima
+
+dd = YT.AllData(ds)
+
+vmin, cmin = YT.find_min(ds, "density")
+vmax, cmax = YT.find_max(ds, "density")
+
+@test vmin == minimum(dd["density"])
+@test vmax == maximum(dd["density"])
+
 end
+

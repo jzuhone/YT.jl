@@ -139,6 +139,9 @@ l = sqrt(i*i+j*j+k*k)
 @test sum(a).value == sum(a.value)
 @test sum(a).units == a.units
 
+@test sum_kbn(a).value == sum_kbn(a.value)
+@test sum_kbn(a).units == a.units
+
 @test mean(a).value == mean(a.value)
 @test mean(a).units == a.units
 

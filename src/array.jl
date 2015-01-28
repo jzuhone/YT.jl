@@ -356,7 +356,7 @@ end
 ./(a::YTQuantity, b::Array) = *(a, 1.0./b)
 /(a::Array, b::YTQuantity) = *(a, 1.0/b)
 \(a::YTQuantity, b::Array) = /(b,a)
-.\(a::Array, b::YTQuantity) = /(b,a)
+.\(a::Array, b::YTQuantity) = ./(b,a)
 
 # Sadly this is necessary
 for op = (:+, :-, :*, :.*, :/, :./, :\, :.\, :hypot, :.==, :.!=, :.>=, :.<=, :.<, :.>)
@@ -403,8 +403,8 @@ end
 
 .*(a::YTArray, b::Array) = YTArray(b.*a.value, a.units)
 .*(a::Array, b::YTArray) = .*(b, a)
-./(a::YTArray, b::Array) = .*(a, 1.0/b)
-./(a::Array, b::YTArray) = .*(a, 1.0/b)
+./(a::YTArray, b::Array) = .*(a, 1.0./b)
+./(a::Array, b::YTArray) = .*(a, 1.0./b)
 .\(a::YTArray, b::Array) = ./(b, a)
 .\(a::Array, b::YTArray) = ./(b, a)
 

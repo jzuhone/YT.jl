@@ -11,6 +11,8 @@ x = YTQuantity(rand(), "m")
 y = YTQuantity(rand(), "Msun")
 z = rand()
 
+c = rand(10)
+
 @test eltype(a) == Float64
 
 # These should pass
@@ -83,6 +85,20 @@ z\b
 z\x
 z\y
 
+x*c
+c*x
+x./c
+c/x
+x\c
+c.\x
+
+a.*c
+c.*a
+a./c
+c./a
+a.\c
+c.\a
+
 @test a.*b == b.*a
 @test x*y == y*x
 @test a*y == y*a
@@ -136,7 +152,8 @@ convert_to_cgs(xx)
 @test in_cgs(x) == xx
 
 convert_to_units(aa, "ly")
-@test_approx_eq aa in_units(a, "ly")
+@test_approx_eq aa.value in_units(a, "ly").value
+@test aa.units == in_units(a, "ly").units
 
 # These should fail
 

@@ -121,6 +121,7 @@ c.\a
 @test_approx_eq a.value sqrt(a.^2).value
 @test_approx_eq x.value sqrt(x*x).value
 @test_approx_eq x.value sqrt(x^2).value
+@test_approx_eq sqrt(x).value (x^0.5).value
 
 # Various unit tests
 
@@ -324,10 +325,21 @@ v = YTArray(5.0)
 @test string((c/d).units) == "dimensionless"
 @test string((c\d).units) == "dimensionless"
 
+# Indexing
+
+aa = copy(a)
+aa[2] = 2.0
+@test aa[2].value == 2.0
+@test string(aa[2].units) == "cm"
+bb = rand(8)
+aa[3:end] = bb
+@test sum(aa[3:end]) == sum(bb)*u.cm
+
 # Just make sure these don't throw errors
 
 summary(a)
 show(a)
+show(a.units)
 print(a)
 println(a)
 show(x)

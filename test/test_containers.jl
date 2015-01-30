@@ -65,6 +65,8 @@ for i in 1:num_grids
     a = grids[i]["density"]
     b = YT.from_hdf5(file_to_read, dataset_name=@sprintf("grid_%04d", i))
     @test all(a.value .== b.value)
+    @test all(a[1,2,3].value .== b[1,2,3].value)
+    @test all(a[1:3,4:6,3:7].value .== b[1:3,4:6,3:7].value)
     @test a.units.unit_symbol == b.units.unit_symbol
 end
 

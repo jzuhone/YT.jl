@@ -30,3 +30,8 @@ b = from_hdf5(file_to_read, dataset_name="frb3")
 @test all(a.value .== b.value)
 @test a.units == b.units
 
+show(STDOUT, frb3)
+
+# Quick field name check
+
+@test frb3["density"].value == frb3["gas","density"].value

@@ -27,3 +27,6 @@ a = max_dens
 b = from_hdf5(file_to_read, dataset_name="max_dens")
 @test all(a.value .== b.value)
 @test a.units == b.units
+
+@test ts[1].current_time == a[1]
+@test length(fns) == length(ts)

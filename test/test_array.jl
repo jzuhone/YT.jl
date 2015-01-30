@@ -123,6 +123,7 @@ c.\a
 @test_approx_eq x.value sqrt(x^2).value
 @test_approx_eq sqrt(x).value (x^0.5).value
 
+
 # Various unit tests
 
 @test a.units == sqrt(a.*a).units
@@ -147,6 +148,9 @@ k = YTQuantity(3.0,"cm")
 l = sqrt(i*i+j*j+k*k)
 
 @test hypot(i,j,k) == l
+
+@test sum(a).value == sum(a.value)
+@test sum(a).units == a.units
 
 @test sum(a).value == sum(a.value)
 @test sum(a).units == a.units
@@ -288,7 +292,13 @@ bb = rand(10) .< rand(10)
 @test YTArray(bb,a.units) == bb
 @test YTArray(bb,a.units.unit_symbol) == bb
 
-# Ones, zeros, fill, linspace
+# Ones, zeros, fill, linspace, eye
+
+j = rand(10,10)*u.kg
+
+i = eye(j)
+
+@test sum(i) == 10*u.kg
 
 oa = ones(a)
 za = zeros(a)
@@ -298,6 +308,14 @@ za = zeros(a)
 
 @test oa.units == a.units
 @test za.units == a.units
+
+w = fill(x, 12)
+@test_approx_eq sum(w).value x.value*12.
+@test w.units == x.units
+
+v = fill(x, (4,4,4))
+@test_approx_eq sum(v).value x.value*64.
+@test v.units == x.units
 
 # Unit equivalencies
 
@@ -335,14 +353,19 @@ bb = rand(8)
 aa[3:end] = bb
 @test sum(aa[3:end]) == sum(bb)*u.cm
 
+# Misc YTArray/YTQuantity
+
+@test YTArray(5.0,"kpc") == 5.0*u.kpc
+
 # Just make sure these don't throw errors
 
 summary(a)
 show(a)
-show(a.units)
+show(STDOUT, a.units)
 print(a)
 println(a)
 show(x)
+show(STDOUT, x)
 print(x)
 println(x)
 display(a)

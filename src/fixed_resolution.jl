@@ -29,7 +29,7 @@ getindex(frb::FixedResolutionBuffer, ftype::ASCIIString,
          fname::ASCIIString) = getindex(frb, (ftype, fname))
 
 function show(io::IO, frb::FixedResolutionBuffer)
-    println(io,"FixedResolutionBuffer ($(frb.buff_size[1])x$(frb.buff_size[2])):")
+    println(io,"FixedResolutionBuffer ($(frb.buff_size[1])x$(frb.buff_size[2]))")
 end
 
 end

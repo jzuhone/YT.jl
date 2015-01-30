@@ -88,8 +88,8 @@ function YTQuantity{T<:Real}(value::T, units::String; registry=nothing)
     YTQuantity{T}(value, yt_units)
 end
 
-YTQuantity{T<:Real}(ds, value::T, units::String) = YTQuantity{T}(value, units,
-                                                                 registry=ds.ds["unit_registry"])
+YTQuantity{T<:Real}(ds, value::T, units::String) = YTQuantity(value, units,
+                                                              registry=ds.ds["unit_registry"])
 YTQuantity{T<:Real}(value::T, units::Sym; registry=nothing) = YTQuantity(value, string(units);
                                                                          registry=registry)
 YTQuantity(value::Bool, units::String) = value
@@ -140,7 +140,7 @@ function YTArray(yt_array::PyObject)
     YTArray{eltype(value)}(value, yt_units)
 end
 
-YTArray{T<:Real}(ds, value::Array{T}, units::String) = YTArray{T}(value, units, registry=ds.ds["unit_registry"])
+YTArray{T<:Real}(ds, value::Array{T}, units::String) = YTArray(value, units, registry=ds.ds["unit_registry"])
 YTArray{T<:Real}(value::Array{T}, units::Sym; registry=nothing) = YTArray{T}(value, string(units); registry=registry)
 YTArray{T<:Real}(value::PyArray{T}, units::Sym; registry=nothing) = YTArray{T}(value, string(units); registry=registry)
 

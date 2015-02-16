@@ -2,6 +2,9 @@ using YT
 using Glob
 using Base.Test
 
+ytcfg["yt","loglevel"] = "30"
+@test ytcfg["yt","loglevel"] == "30"
+
 test_dir = Pkg.dir("YT") * "/test"
 
 file_to_read = "$(test_dir)/dataset_series.h5"

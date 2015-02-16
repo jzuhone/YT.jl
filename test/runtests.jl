@@ -1,6 +1,3 @@
-import YT
-using Base.Test
-
 test_dir = Pkg.dir("YT") * "/test"
 
 if haskey(ENV,"PYTHONPATH")
@@ -8,9 +5,6 @@ if haskey(ENV,"PYTHONPATH")
 else
     ENV["PYTHONPATH"] = "$(test_dir)"
 end
-
-YT.ytcfg["yt","loglevel"] = "30"
-@test YT.ytcfg["yt","loglevel"] == "30"
 
 run(`python $(test_dir)/test_containers.py $(test_dir)`)
 run(`python $(test_dir)/test_frbs.py $(test_dir)`)

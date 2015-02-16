@@ -176,6 +176,12 @@ l = sqrt(i*i+j*j+k*k)
 @test_approx_eq cumsum(a).value cumsum(a.value)
 @test cumsum(a).units == a.units
 
+@test cummin(a).value == cummin(a.value)
+@test cummin(a).units == a.units
+
+@test cummax(a).value == cummax(a.value)
+@test cummax(a).units == a.units
+
 @test_approx_eq cumsum_kbn(a).value cumsum_kbn(a.value)
 @test cumsum_kbn(a).units == a.units
 

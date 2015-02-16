@@ -519,3 +519,7 @@ symx = YTQuantity(x.value, x.units.unit_symbol)
 
 @test convert(Array, a) == a.value
 @test convert(Float64, x) == x.value
+arr_x = convert(YTArray, x)
+@test length(arr_x) == 1
+@test arr_x[1] == x
+@test arr_x.units == x.units

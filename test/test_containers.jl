@@ -5,6 +5,8 @@ using PyCall
 @pyimport test_containers
 cont_dict = test_containers.cont_dict
 
+u = YT.units
+
 ds = YT.load("enzo_tiny_cosmology/DD0046/DD0046")
 
 YT.print_stats(ds)
@@ -118,3 +120,15 @@ sp3 = Sphere(ds, cont_dict["sp2"][2]..., field_parameters=fps)
 @test YT.has_field_parameter(sp3, "distance_from_earth")
 @test YT.get_field_parameter(sp3, "num_dinosaurs") == 10000
 @test YT.get_field_parameter(sp3, "distance_from_earth") == 3000.
+
+# Make sure these run without erroring out
+
+val, ctr = YT.find_max(ds, "density")
+YT.convert_to_units(ctr, "Mpc")
+le = ctr - 0.5*u.Mpc
+re = ctr + 0.5*u.Mpc
+rad = YT.YTQuantity(0.5,"Mpc")
+hgt = YT.YTQuantity(0.5,"Mpc")
+
+reg = YT.Region(ds, ctr, le, re)
+dk = YT.Disk(ds, ctr, [1.0,0.2,0.3], rad, hgt)

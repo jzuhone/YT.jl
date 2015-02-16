@@ -528,10 +528,10 @@ std(a::YTArray, region) = YTQuantity(std(a.value, region), a.units)
 
 stdm(a::YTArray, m::YTQuantity) = YTQuantity(stdm(a.value, in_units(m,a.units).value), a.units)
 
-var(a::YTArray) = YTQuantity(var(a.value), a.units)
-var(a::YTArray, region) = YTQuantity(var(a.value, region), a.units)
+var(a::YTArray) = YTQuantity(var(a.value), a.units*a.units)
+var(a::YTArray, region) = YTQuantity(var(a.value, region), a.units*a.units)
 
-varm(a::YTArray, m::YTQuantity) = YTQuantity(varm(a, in_units(m,a.units).value), a.units)
+varm(a::YTArray, m::YTQuantity) = YTQuantity(varm(a.value, in_units(m,a.units).value), a.units*a.units)
 
 median(a::YTArray) = YTQuantity(median(a.value), a.units)
 middle(a::YTArray) = YTQuantity(middle(a.value), a.units)

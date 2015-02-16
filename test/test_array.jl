@@ -167,8 +167,11 @@ l = sqrt(i*i+j*j+k*k)
 @test stdm(a, x).value == stdm(a.value, in_units(x,a.units).value)
 @test stdm(a, x).units == a.units
 
+@test varm(a, x).value == varm(a.value, in_units(x,a.units).value)
+@test varm(a, x).units == a.units*a.units
+
 @test var(a).value == var(a.value)
-@test var(a).units == a.units
+@test var(a).units == a.units*a.units
 
 @test median(a).value == median(a.value)
 @test median(a).units == a.units

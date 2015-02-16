@@ -11,9 +11,11 @@ profile = YTProfile(sp, "radius", ["density","temperature"], weight_field="ones"
 set_field_unit(profile, "density", "Msun/kpc**3")
 @test string(profile["density"].units) == "Msun/kpc**3"
 
+@test string(variance(profile, "density").units) == "Msun/kpc**3"
+
 show(STDOUT, profile)
 
-profile3 = YTProfile(sp, ["x","y","z"], ["cell_mass"], weight_field=nothing)
+profile3 = YTProfile(sp, ["x","y","z"], "cell_mass", weight_field=nothing)
 
 show(STDOUT, profile3)
 
@@ -24,3 +26,4 @@ set_z_unit(profile3, "mile")
 @test string(profile3.x.units) == "kpc"
 @test string(profile3.y.units) == "ly"
 @test string(profile3.z.units) == "mile"
+

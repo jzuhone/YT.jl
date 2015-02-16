@@ -176,6 +176,12 @@ l = sqrt(i*i+j*j+k*k)
 @test middle(a).value == middle(a.value)
 @test middle(a).units == a.units
 
+@test diff(a).value == diff(a.value)
+@test diff(a).units == a.units
+
+@test diff(a, 3).value == diff(a.value, 3)
+@test diff(a, 3).units == a.units
+
 @test_approx_eq cumsum(a).value cumsum(a.value)
 @test cumsum(a).units == a.units
 
@@ -372,6 +378,8 @@ v = YTArray(5.0)
 
 @test w+w.value == 2*w
 @test w.value+w == 2*w
+
+@test exp(x) == exp(x.value)
 
 # Indexing
 

@@ -503,6 +503,9 @@ dens = YTArray(dd["density"].value, dd["density"].units.unit_symbol)
 @test dens == dd["density"]
 @test dens.units == dd["density"].units
 
+@test -dd["density"].value == (-1*dd["density"]).value
+@test 5.0*dd["density"].value == dd["density"].value*5.0
+
 # SymPy symbols
 
 syma = YTArray(a.value, a.units.unit_symbol)

@@ -15,4 +15,5 @@ include("test_containers.jl")
 include("test_frbs.jl")
 include("test_plots.jl")
 include("test_dataset_series.jl")
+include("test_profiles.jl")
 

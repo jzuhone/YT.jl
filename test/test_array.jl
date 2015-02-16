@@ -2,6 +2,8 @@ using Base.Test
 using YT
 import YT.array: YTUnitOperationError
 
+ds = load("enzo_tiny_cosmology/DD0046/DD0046")
+
 u = YT.units
 pc = YT.physical_constants
 
@@ -224,6 +226,9 @@ l = sqrt(i*i+j*j+k*k)
 
 @test_approx_eq cumsum_kbn(a).value cumsum_kbn(a.value)
 @test cumsum_kbn(a).units == a.units
+
+@test_approx_eq cumsum_kbn(xy, 2).value cumsum_kbn(xy.value, 2)
+@test cumsum_kbn(xy, 2).units == xy.units
 
 @test abs(a).value == abs(a.value)
 @test abs(a).units == a.units
@@ -466,6 +471,37 @@ print(x)
 println(x)
 display(a)
 
+# Iteration
+
 for aa in a
     @test aa.units == a.units
 end
+
+# Stuff that requires a dataset
+
+dsa = YTArray(ds, a.value, string(a.units))
+@test dsa.value == a.value
+@test dsa.units == a.units
+
+convert_to_units(dsa,"code_length")
+@test string(dsa.units) == "code_length"
+
+dsx = YTQuantity(ds, x.value, string(x.units))
+@test dsx.value == x.value
+@test dsx.units == x.units
+
+convert_to_units(dsx,"code_length")
+@test string(dsx.units) == "code_length"
+
+# SymPy symbols
+
+syma = YTArray(a.value, a.units.unit_symbol)
+@test syma.value == a.value
+@test syma.units == a.units
+
+symx = YTArray(x.value, x.units.unit_symbol)
+@test symx.value == x.value
+@test symx.units == x.units
+
+@test YTArray(0.5, a.units.unit_symbol) == YTQuantity(0.5, a.units.unit_symbol)
+

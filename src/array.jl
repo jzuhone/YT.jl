@@ -141,8 +141,8 @@ function YTArray(yt_array::PyObject)
 end
 
 YTArray{T<:Real}(ds, value::Array{T}, units::String) = YTArray(value, units, registry=ds.ds["unit_registry"])
-YTArray{T<:Real}(value::Array{T}, units::Sym; registry=nothing) = YTArray{T}(value, string(units); registry=registry)
-YTArray{T<:Real}(value::PyArray{T}, units::Sym; registry=nothing) = YTArray{T}(value, string(units); registry=registry)
+YTArray{T<:Real}(value::Array{T}, units::Sym; registry=nothing) = YTArray(value, string(units); registry=registry)
+YTArray{T<:Real}(value::PyArray{T}, units::Sym; registry=nothing) = YTArray(value, string(units); registry=registry)
 
 YTArray(value::Real, units::String; registry=nothing) = YTQuantity(value, units; registry=registry)
 YTArray(ds, value::Real, units::String) = YTQuantity(value, units, registry=ds.ds["unit_registry"])

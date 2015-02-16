@@ -164,7 +164,7 @@ l = sqrt(i*i+j*j+k*k)
 @test std(a).value == std(a.value)
 @test std(a).units == a.units
 
-@test stdm(a, x).value == stdm(a.value, in_units(m,a.units).value)
+@test stdm(a, x).value == stdm(a.value, in_units(x,a.units).value)
 @test stdm(a, x).units == a.units
 
 @test var(a).value == var(a.value)

@@ -370,6 +370,9 @@ v = YTArray(5.0)
 @test string((c/d).units) == "dimensionless"
 @test string((c\d).units) == "dimensionless"
 
+@test w+w.value == 2*w
+@test w.value+w == 2*w
+
 # Indexing
 
 aa = copy(a)

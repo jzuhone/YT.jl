@@ -114,7 +114,7 @@ end
       Arguments:
 
       * `ds::Dataset`: The dataset to be used.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
         field parameters than can be accessed by derived fields.
       * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
@@ -153,7 +153,7 @@ end
       * `p::Array{Float64,1}`: A point defined within the domain. If the domain is periodic
         its position will be corrected to lie inside the range [DLE,DRE) to ensure
         one and only one cell may match that point.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
         field parameters than can be accessed by derived fields.
       * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
@@ -202,7 +202,7 @@ end
         the region
       * `right_edge::Union(Array{Float64,1},YTArray)`: The right edge of
         the region
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
         field parameters than can be accessed by derived fields.
       * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
@@ -228,7 +228,7 @@ type Region <: DataContainer
                     right_edge::Union(Array{Float64,1},YTArray);
                     field_parameters=nothing, data_source=nothing)
         if typeof(center) <: YTArray
-            c = PyObject(center) 
+            c = PyObject(center)
         else
             c = center
         end
@@ -276,7 +276,7 @@ end
       * `radius::Length`: The radius of the cylinder
       * `height::Length`: The distance from the midplane of the
         cylinder to the top and bottom planes
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
         field parameters than can be accessed by derived fields.
       * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
@@ -298,7 +298,7 @@ type Disk <: DataContainer
                   radius::Length, height::Length; field_parameters=nothing,
                   data_source=nothing)
         if typeof(center) <: YTArray
-            c = PyObject(center) 
+            c = PyObject(center)
         else
             c = center
         end
@@ -340,7 +340,7 @@ end
       * `ds::Dataset`: The dataset to be used.
       * `start_point::Array{Float64,1}`: The place where the ray starts.
       * `end_point::Array{Float64,1}`: The place where the ray ends.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
         field parameters than can be accessed by derived fields.
       * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
@@ -390,7 +390,7 @@ end
         which to cast the ray. Note that this is in the plane coordinates:
         so if you are casting along x, this will be (y,z). If you are casting
         along y, this will be (x,z). If you are casting along z, this will be (x,y).
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
         field parameters than can be accessed by derived fields.
       * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
@@ -442,7 +442,7 @@ end
         The center of the cutting plane, where the normal vector is anchored.
       * `north_vector::Array{Float64,1}` (optional): An optional vector to describe the
         north-facing direction in the resulting plane.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
         field parameters than can be accessed by derived fields.
       * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
@@ -533,7 +533,7 @@ type Proj <: DataContainer
     field_dict::Dict
     function Proj(ds::Dataset, field, axis::Union(Integer,ASCIIString);
                   weight_field=nothing, center=nothing,
-                  field_parameters=nothing, data_source=nothing, 
+                  field_parameters=nothing, data_source=nothing,
                   method="integrate")
         if data_source != nothing
             source = data_source.cont
@@ -566,7 +566,7 @@ end
         slice. This is in "domain" coordinates.
       * `center::Array{Float64,1}` (optional): The 'center' supplied to fields that
         use it. Note that this does not have to have `coord` as one value.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
         field parameters than can be accessed by derived fields.
       * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
@@ -602,23 +602,23 @@ type Slice <: DataContainer
 end
 
 @doc doc"""
-      Create a FixedResolutionBuffer from a slice or projection. 
-      
+      Create a FixedResolutionBuffer from a slice or projection.
+
       Arguments:
-      
+
       * `cont::Union(Slice,Proj)` or `cont::Cutting`: A Slice, Proj, or Cutting DataContainer.
       * `width::Length`: The width of the FRB.
       * `nx::Union(Integer,(Integer,Integer))`: Either an integer or a 2-tuple of
-        integers, corresponding to the dimensions of the image. 
-      * `center::Center` (optional): The center of the FRB. If not specified, 
+        integers, corresponding to the dimensions of the image.
+      * `center::Center` (optional): The center of the FRB. If not specified,
         defaults to the center of the current object. Not available if `cont` is a
         `Cutting.`
       * `height::Length` (optional): The height of the FRB. If not specified,
-        defaults to the `width`. 
+        defaults to the `width`.
       * `periodic::Bool` (optional): Is the FRB periodic? Default `false`.
-      
+
       Examples:
-      
+
           julia> slc = Slice(ds, "z", 0.0)
           julia> frb = to_frb(slc, (500.,"kpc"), 800)
       """ ->
@@ -626,7 +626,7 @@ function to_frb(cont::Union(Slice,Proj), width::Length,
                 nx::Union(Integer,(Integer,Integer)); center=nothing,
                 height=nothing, periodic=false)
     if typeof(width) <: YTQuantity
-        w = PyObject(width) 
+        w = PyObject(width)
     else
         w = width
     end
@@ -640,7 +640,7 @@ function to_frb(cont::Cutting, width::Length,
                 nx::Union(Integer,(Integer,Integer));
                 height=nothing, periodic=false)
     if typeof(width) <: YTQuantity
-        w = PyObject(width) 
+        w = PyObject(width)
     else
         w = width
     end
@@ -659,7 +659,7 @@ end
       * `ds::Dataset`: The dataset to be used.
       * `center::Center`: The center of the sphere.
       * `radius::Length`: The radius of the sphere.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of 
+      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
         field parameters than can be accessed by derived fields.
       * `data_source::DataContainer` (optional): Draw the selection from the
         provided data source rather than all data associated with the dataset
@@ -685,7 +685,7 @@ type Sphere <: DataContainer
             c = center
         end
         if typeof(radius) <: YTQuantity
-            r = PyObject(radius) 
+            r = PyObject(radius)
         else
             r = radius
         end

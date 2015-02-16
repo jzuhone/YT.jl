@@ -7,7 +7,7 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              cumsum, cummin, cummax, cumsum_kbn, diff, display, print,
              showarray, showerror, ones, zeros, eye, summary, linspace,
              sum_kbn, gradient, dims2string, mean, std, stdm, var, varm,
-             median, middle, midpoints, quantile, fill
+             median, middle, midpoints, quantile, fill, start, next, done
 
 import SymPy: Sym
 import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin, PyAny
@@ -619,5 +619,9 @@ linspace(start::YTQuantity, stop::YTQuantity) =
 
 fill(a::YTQuantity, dims::(Int64...,)) = YTArray(fill(a.value,dims), a.units)
 fill(a::YTQuantity, dims::Integer...) = YTArray(fill(a.value,dims), a.units)
+
+start(a::YTArray) = 1
+next(a::YTArray,i) = (a[i],i+1)
+done(a::YTArray,i) = (i > length(a))
 
 end

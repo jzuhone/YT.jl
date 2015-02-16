@@ -179,6 +179,12 @@ l = sqrt(i*i+j*j+k*k)
 @test_approx_eq cumsum_kbn(a).value cumsum_kbn(a.value)
 @test cumsum_kbn(a).units == a.units
 
+@test abs(a).value == abs(a.value)
+@test abs(a).units == a.units
+
+@test abs2(a).value == abs2(a.value)
+@test abs2(a).units == a.units*a.units
+
 c = YTQuantity(1.0,"kpc")
 d = YTQuantity(1.0,"ly")
 
@@ -317,6 +323,18 @@ v = fill(x, (4,4,4))
 @test_approx_eq sum(v).value x.value*64.
 @test v.units == x.units
 
+xlin1 = linspace(x, 10*x, 100)
+xlin2 = linspace(x.value, 10*x.value, 100)
+
+@test xlin1.value == xlin2
+@test xlin1.units == x.units
+
+ylin1 = linspace(y, 5*y)
+ylin2 = linspace(y.value, 5*y.value)
+
+@test ylin1.value == ylin2
+@test ylin1.units == y.units
+
 # Unit equivalencies
 
 kT = 5.0*u.keV
@@ -369,3 +387,7 @@ show(STDOUT, x)
 print(x)
 println(x)
 display(a)
+
+for aa in a
+    @test aa.units == a.units
+end

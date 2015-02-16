@@ -1,7 +1,7 @@
 test_dir = Pkg.dir("YT") * "/test"
 
 if haskey(ENV,"PYTHONPATH")
-    ENV["PYTHONPATH"] = "$(test_dir):" * ENV["PYTHONPATH"] 
+    ENV["PYTHONPATH"] = "$(test_dir):" * ENV["PYTHONPATH"]
 else
     ENV["PYTHONPATH"] = "$(test_dir)"
 end

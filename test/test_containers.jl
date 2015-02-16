@@ -70,6 +70,11 @@ for i in 1:num_grids
     @test a.units.unit_symbol == b.units.unit_symbol
 end
 
+grids_subset = grids[5:num_grids-5]
+for grid in grids_subset
+    split(string(grid))[1]
+end
+
 show(STDOUT, grids)
 display(grids)
 

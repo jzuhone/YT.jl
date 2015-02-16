@@ -10,6 +10,7 @@ b = YTArray(rand(10), "g")
 x = YTQuantity(rand(), "m")
 y = YTQuantity(rand(), "Msun")
 z = rand()
+xy = YTArray(rand(10,10), "km/s")
 
 c = rand(10)
 
@@ -152,8 +153,8 @@ l = sqrt(i*i+j*j+k*k)
 @test sum(a).value == sum(a.value)
 @test sum(a).units == a.units
 
-@test sum(a).value == sum(a.value)
-@test sum(a).units == a.units
+@test sum(xy, 2).value == sum(xy.value, 2)
+@test sum(xy, 2).units == xy.units
 
 @test sum_kbn(a).value == sum_kbn(a.value)
 @test sum_kbn(a).units == a.units
@@ -161,8 +162,14 @@ l = sqrt(i*i+j*j+k*k)
 @test mean(a).value == mean(a.value)
 @test mean(a).units == a.units
 
+@test mean(xy,2).value == mean(xy.value,2)
+@test mean(xy,2).units == xy.units
+
 @test std(a).value == std(a.value)
 @test std(a).units == a.units
+
+@test std(xy,2).value == std(xy.value,2)
+@test std(xy,2).units == xy.units
 
 @test stdm(a, x).value == stdm(a.value, in_units(x,a.units).value)
 @test stdm(a, x).units == a.units
@@ -173,6 +180,9 @@ l = sqrt(i*i+j*j+k*k)
 @test var(a).value == var(a.value)
 @test var(a).units == a.units*a.units
 
+@test var(xy,2).value == var(xy.value,2)
+@test var(xy,2).units == xy.units*xy.units
+
 @test median(a).value == median(a.value)
 @test median(a).units == a.units
 
@@ -181,6 +191,9 @@ l = sqrt(i*i+j*j+k*k)
 
 @test diff(a).value == diff(a.value)
 @test diff(a).units == a.units
+
+@test diff(xy,2).value == diff(xy.value, 2)
+@test diff(xy,2).units == xy.units
 
 @test gradient(a).value == gradient(a.value)
 @test gradient(a).units == a.units
@@ -194,11 +207,20 @@ l = sqrt(i*i+j*j+k*k)
 @test_approx_eq cumsum(a).value cumsum(a.value)
 @test cumsum(a).units == a.units
 
+@test_approx_eq cumsum(xy, 2).value cumsum(xy.value, 2)
+@test cumsum(xy, 2).units == xy.units
+
 @test cummin(a).value == cummin(a.value)
 @test cummin(a).units == a.units
 
+@test cummin(xy, 2).value == cummin(xy.value, 2)
+@test cummin(xy, 2).units == xy.units
+
 @test cummax(a).value == cummax(a.value)
 @test cummax(a).units == a.units
+
+@test cummax(xy, 2).value == cummax(xy.value, 2)
+@test cummax(xy, 2).units == xy.units
 
 @test_approx_eq cumsum_kbn(a).value cumsum_kbn(a.value)
 @test cumsum_kbn(a).units == a.units
@@ -420,6 +442,9 @@ aa[2:5] = 3.0
 aa[[1,3,6]] = 7.0
 @test aa[[1,3,6]].value == [7.0,7.0,7.0]
 @test string(aa[[1,3,6]].units) == "cm"
+aa[[2,4,5]] = [10.0,4.0,12.0]
+@test aa[[2,4,5]].value == [10.0,4.0,12.0]
+@test string(aa[[2,4,5]].units) == "cm"
 bb = rand(8)
 aa[3:end] = bb
 @test sum(aa[3:end]) == sum(bb)*u.cm

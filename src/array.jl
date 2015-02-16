@@ -497,7 +497,7 @@ size(a::YTArray, n::Integer) = size(a.value, n)
 ndims(a::YTArray) = ndims(a.value)
 
 sum(a::YTArray) = YTQuantity(sum(a.value), a.units)
-sum(a::YTArray, dims) = YTQuantity(sum(a.value, dims), a.units)
+sum(a::YTArray, dims) = YTArray(sum(a.value, dims), a.units)
 
 sum_kbn(a::YTArray) = YTArray(sum_kbn(a.value), a.units)
 
@@ -521,15 +521,15 @@ gradient(a::YTArray, b::YTObject) = YTArray(gradient(a.value, b.value), a.units/
 gradient(a::YTArray, b::Real) = YTArray(gradient(a.value, b), a.units)
 
 mean(a::YTArray) = YTQuantity(mean(a.value), a.units)
-mean(a::YTArray, region) = YTQuantity(mean(a.value, region), a.units)
+mean(a::YTArray, region) = YTArray(mean(a.value, region), a.units)
 
 std(a::YTArray) = YTQuantity(std(a.value), a.units)
-std(a::YTArray, region) = YTQuantity(std(a.value, region), a.units)
+std(a::YTArray, region) = YTArray(std(a.value, region), a.units)
 
 stdm(a::YTArray, m::YTQuantity) = YTQuantity(stdm(a.value, in_units(m,a.units).value), a.units)
 
 var(a::YTArray) = YTQuantity(var(a.value), a.units*a.units)
-var(a::YTArray, region) = YTQuantity(var(a.value, region), a.units*a.units)
+var(a::YTArray, region) = YTArray(var(a.value, region), a.units*a.units)
 
 varm(a::YTArray, m::YTQuantity) = YTQuantity(varm(a.value, in_units(m,a.units).value), a.units*a.units)
 

@@ -1,7 +1,7 @@
 module data_objects
 
 import PyCall: PyObject, PyDict, pycall, pystring, PyArray, PyVector
-import Base: size, show, showarray, display, showerror
+import Base: size, show, showarray, display, showerror, start, next, done
 import ..array: YTArray, YTQuantity, in_units, array_or_quan
 import ..fixed_resolution: FixedResolutionBuffer
 

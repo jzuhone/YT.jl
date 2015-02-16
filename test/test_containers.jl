@@ -71,8 +71,8 @@ for i in 1:num_grids
 end
 
 grids_subset = grids[5:num_grids-5]
-for grid in grids_subset
-    split(string(grid))[1]
+for (i, grid) in enumerate(grids_subset)
+    @test int(split(string(grid))[1][end-3:end]) == i+4
 end
 
 show(STDOUT, grids)

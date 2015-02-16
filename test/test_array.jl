@@ -200,6 +200,9 @@ l = sqrt(i*i+j*j+k*k)
 @test abs2(a).value == abs2(a.value)
 @test abs2(a).units == a.units*a.units
 
+@test quantile(a, 0.75).value == quantile(a.value, 0.75)
+@test quantile(a, 0.75).units == a.units
+
 c = YTQuantity(1.0,"kpc")
 d = YTQuantity(1.0,"ly")
 
@@ -324,6 +327,9 @@ i = eye(j)
 oa = ones(a)
 za = zeros(a)
 
+@test midpoints(a).value == midpoints(a.value)
+@test midpoints(a).units == a.units
+
 @test sum(oa).value == 10.0
 @test sum(za).value == 0.0
 
@@ -380,6 +386,15 @@ v = YTArray(5.0)
 @test w.value+w == 2*w
 
 @test exp(x) == exp(x.value)
+
+# Boolean
+
+@test (a .== x) == (x .== a)
+@test (a .!= x) == (x .!= a)
+@test (a .>= x) == (x .< a)
+@test (a .<= x) == (x .> a)
+@test (a .> x) == (x .<= a)
+@test (a .< x) == (x .>= a)
 
 # Indexing
 

@@ -430,10 +430,10 @@ end
 
 .==(a::YTQuantity, b::YTArray) = .==(b,a)
 .!=(a::YTQuantity, b::YTArray) = .!=(b,a)
-.>=(a::YTQuantity, b::YTArray) = .<=(b,a)
-.<=(a::YTQuantity, b::YTArray) = .>=(b,a)
-.>(a::YTQuantity, b::YTArray) = .<(b,a)
-.<(a::YTQuantity, b::YTArray) = .>(b,a)
+.>=(a::YTQuantity, b::YTArray) = .<(b,a)
+.<=(a::YTQuantity, b::YTArray) = .>(b,a)
+.>(a::YTQuantity, b::YTArray) = .<=(b,a)
+.<(a::YTQuantity, b::YTArray) = .>=(b,a)
 
 for op = (:+, :-, :hypot)
     @eval ($op)(a::YTObject,b::Real) = @array_same_units(a,YTQuantity(b,"dimensionless"),($op))

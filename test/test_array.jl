@@ -179,9 +179,6 @@ l = sqrt(i*i+j*j+k*k)
 @test diff(a).value == diff(a.value)
 @test diff(a).units == a.units
 
-@test diff(a, 3).value == diff(a.value, 3)
-@test diff(a, 3).units == a.units
-
 @test_approx_eq cumsum(a).value cumsum(a.value)
 @test cumsum(a).units == a.units
 

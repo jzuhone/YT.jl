@@ -4,6 +4,7 @@ using Base.Test
 
 ytcfg["yt","loglevel"] = "30"
 @test ytcfg["yt","loglevel"] == "30"
+show(ytcfg)
 
 test_dir = Pkg.dir("YT") * "/test"
 

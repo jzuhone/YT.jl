@@ -120,8 +120,7 @@ load(fn::ASCIIString; args...) = Dataset(ytconv.load(fn; args...))
 
 # Stream datasets
 
-function load_uniform_grid(data::Dict{Array{Float64},ASCIIString},
-                           domain_dimensions::Array{Integer};
+function load_uniform_grid(data::Dict{Any,Any}, domain_dimensions::Array;
                            length_unit=nothing, bbox=nothing,
                            nprocs=1, sim_time=0.0, mass_unit=nothing,
                            time_unit=nothing, velocity_unit=nothing,
@@ -135,7 +134,7 @@ function load_uniform_grid(data::Dict{Array{Float64},ASCIIString},
     return Dataset(ds)
 end
 
-function load_amr_grids(data::Array, domain_dimensions::Array{Integer};
+function load_amr_grids(data::Array, domain_dimensions::Array;
                         field_units=nothing, bbox=nothing, sim_time=0.0,
                         length_unit=nothing, mass_unit=nothing, time_unit=nothing,
                         velocity_unit=nothing, magnetic_unit=nothing,
@@ -148,10 +147,9 @@ function load_amr_grids(data::Array, domain_dimensions::Array{Integer};
     return Dataset(ds)
 end
 
-function load_particles(data::Dict{Array{Float64},ASCIIString}; length_unit=nothing,
-                        bbox=nothing, sim_time=0.0, mass_unit=nothing, time_unit=nothing,
-                        velocity_unit=nothing, magnetic_unit=nothing, periodicity=(true, true, true),
-                        n_ref=64, over_refine_factor=1, geometry="cartesian")
+function load_particles(data::Dict{Any,Any}; length_unit=nothing, bbox=nothing, sim_time=0.0,
+                        mass_unit=nothing, time_unit=nothing, velocity_unit=nothing, magnetic_unit=nothing,
+                        periodicity=(true, true, true), n_ref=64, over_refine_factor=1, geometry="cartesian")
     ds = ytstream.load_particles(data; length_unit=length_unit, bbox=bbox, sim_time=sim_time,
                                  mass_unit=mass_unit, time_unit=time_unit, velocity_unit=velocity_unit,
                                  magnetic_unit=magnetic_unit, periodicity=periodicity, n_ref=n_ref,

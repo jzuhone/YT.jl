@@ -526,7 +526,7 @@ mean(a::YTArray, region) = YTQuantity(mean(a.value, region), a.units)
 std(a::YTArray) = YTQuantity(std(a.value), a.units)
 std(a::YTArray, region) = YTQuantity(std(a.value, region), a.units)
 
-stdm(a::YTArray, m::YTQuantity) = YTQuantity(stdm(a, in_units(m,a.units).value), a.units)
+stdm(a::YTArray, m::YTQuantity) = YTQuantity(stdm(a.value, in_units(m,a.units).value), a.units)
 
 var(a::YTArray) = YTQuantity(var(a.value), a.units)
 var(a::YTArray, region) = YTQuantity(var(a.value, region), a.units)

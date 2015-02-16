@@ -509,9 +509,13 @@ syma = YTArray(a.value, a.units.unit_symbol)
 @test syma.value == a.value
 @test syma.units == a.units
 
-symx = YTArray(x.value, x.units.unit_symbol)
+symx = YTQuantity(x.value, x.units.unit_symbol)
 @test symx.value == x.value
 @test symx.units == x.units
 
 @test YTArray(0.5, a.units.unit_symbol) == YTQuantity(0.5, a.units.unit_symbol)
 
+# Conversions
+
+@test convert(Array, a) == a.value
+@test convert(Float64, x) == x.value

@@ -20,6 +20,9 @@ a = frb1["density"]
 b = from_hdf5(file_to_read, dataset_name="frb1")
 @test all(a.value .== b.value)
 @test a.units == b.units
+@test a[1,50] == b[1,50]
+@test a[1,50].units == b[1,50].units
+@test a.value[1,50] == b.value[1,50]
 
 a = frb2["density"]
 b = from_hdf5(file_to_read, dataset_name="frb2")
@@ -30,8 +33,6 @@ a = frb3["density"]
 b = from_hdf5(file_to_read, dataset_name="frb3")
 @test all(a.value .== b.value)
 @test a.units == b.units
-@test a[1,50] == b[1,50]
-@test a[1,50].units == b[1,50].units
 
 c = frb4["density"]
 @test all(a.value .== c.value)

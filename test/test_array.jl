@@ -182,6 +182,15 @@ l = sqrt(i*i+j*j+k*k)
 @test diff(a).value == diff(a.value)
 @test diff(a).units == a.units
 
+@test gradient(a).value == gradient(a.value)
+@test gradient(a).units == a.units
+
+@test gradient(a,y).value == gradient(a.value, y.value)
+@test gradient(a,y).units == a.units/y.units
+
+@test gradient(a,0.34).value == gradient(a.value, 0.34)
+@test gradient(a,0.34).units == a.units
+
 @test_approx_eq cumsum(a).value cumsum(a.value)
 @test cumsum(a).units == a.units
 
@@ -202,6 +211,9 @@ l = sqrt(i*i+j*j+k*k)
 
 @test quantile(a, 0.75).value == quantile(a.value, 0.75)
 @test quantile(a, 0.75).units == a.units
+
+@test quantile(a, [0.25,0.36,0.75]).value == quantile(a.value, [0.25,0.36,0.75])
+@test quantile(a, [0.25,0.36,0.75]).units == a.units
 
 c = YTQuantity(1.0,"kpc")
 d = YTQuantity(1.0,"ly")
@@ -402,6 +414,12 @@ aa = copy(a)
 aa[2] = 2.0
 @test aa[2].value == 2.0
 @test string(aa[2].units) == "cm"
+aa[2:5] = 3.0
+@test aa[2:5].value == [3.0,3.0,3.0,3.0]
+@test string(aa[2:5].units) == "cm"
+aa[[1,3,6]] = 7.0
+@test aa[[1,3,6]].value == [7.0,7.0,7.0]
+@test string(aa[[1,3,6]].units) == "cm"
 bb = rand(8)
 aa[3:end] = bb
 @test sum(aa[3:end]) == sum(bb)*u.cm

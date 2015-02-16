@@ -493,6 +493,16 @@ dsx = YTQuantity(ds, x.value, string(x.units))
 convert_to_units(dsx,"code_length")
 @test string(dsx.units) == "code_length"
 
+dd = Sphere(ds, "max", (0.1,"unitary"))
+
+dens = YTArray(dd["density"].value, string(dd["density"].units))
+@test dens == dd["density"]
+@test dens.units == dd["density"].units
+
+dens = YTArray(dd["density"].value, dd["density"].units.unit_symbol)
+@test dens == dd["density"]
+@test dens.units == dd["density"].units
+
 # SymPy symbols
 
 syma = YTArray(a.value, a.units.unit_symbol)

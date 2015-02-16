@@ -981,4 +981,8 @@ end
 show(io::IO, grids::Grids) = showarray(io, grids)
 display(grids::Grids) = show(STDOUT, grids)
 
+start(grids::YTArray) = 1
+next(grids::YTArray,i) = (grids[i],i+1)
+done(grids::YTArray,i) = (i > length(grids))
+
 end

@@ -1,7 +1,6 @@
 import YT
 
 arr = rand(64,64,64)
-
 data = Dict()
 data["density"] = (arr, "g/cm**3")
 bbox = [-1.5 1.5; -1.5 1.5; -1.5 1.5]

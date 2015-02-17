@@ -159,7 +159,8 @@ load(fn::ASCIIString; args...) = Dataset(ytconv.load(fn; args...))
           julia> data = Dict()
           julia> data["density"] = (arr, "g/cm**3")
           julia> bbox = [-1.5 1.5; -1.5 1.5; -1.5 1.5]
-          julia> ds = YT.load_uniform_grid(data, [64,64,64]; length_unit="Mpc", bbox=bbox, nprocs=64)
+          julia> ds = YT.load_uniform_grid(data, [64,64,64]; length_unit="Mpc",
+                                           bbox=bbox, nprocs=64)
       """ ->
 function load_uniform_grid(data::Dict{Any,Any}, domain_dimensions::Array;
                            length_unit=nothing, bbox=nothing,
@@ -278,10 +279,14 @@ end
           julia> data["particle_position_y"] = 1.0e6*randn(n_particles)
           julia> data["particle_position_z"] = 1.0e6*randn(n_particles)
           julia> data["particle_mass"] = ones(n_particles)
-          julia> bbox = 1.1*[minimum(data["particle_position_x"]) maximum(data["particle_position_x"]);
-                minimum(data["particle_position_y"]) maximum(data["particle_position_y"]);
-                minimum(data["particle_position_z"]) maximum(data["particle_position_z"])]
-          julia> ds = YT.load_particles(data, length_unit="pc", mass_unit=(1e8, "Msun"),
+          julia> bbox = 1.1*[minimum(data["particle_position_x"])
+                             maximum(data["particle_position_x"]);
+                             minimum(data["particle_position_y"])
+                             maximum(data["particle_position_y"]);
+                             minimum(data["particle_position_z"])
+                             maximum(data["particle_position_z"])]
+          julia> ds = YT.load_particles(data, length_unit="pc",
+                                        mass_unit=(1e8, "Msun"),
                                         n_ref=256, bbox=bbox)
       """ ->
 function load_particles(data::Dict{Any,Any}; length_unit=nothing, bbox=nothing, sim_time=0.0,

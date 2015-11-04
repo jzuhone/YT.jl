@@ -126,14 +126,14 @@ function YTArray{T<:Real}(value::PyArray{T}, units::ASCIIString; registry=nothin
     unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
     yt_units = YTUnit(unitary_quan,
                       unitary_quan[:units],
-                      unitary_quan[:units][:dimensions])
+                      unitary_quan["units"][:dimensions])
     YTArray{T}(value, yt_units)
 end
 
 function YTArray(yt_array::PyObject)
     yt_units = YTUnit(yt_array["unit_quantity"],
                       yt_array[:units],
-                      yt_array[:units][:dimensions])
+                      yt_array["units"][:dimensions])
     value = PyArray(yt_array["d"])
     YTArray{eltype(value)}(value, yt_units)
 end

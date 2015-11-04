@@ -7,16 +7,12 @@ import PyCall: @pyimport, PyObject
 
 @pyimport yt.data_objects.time_series as time_series
 
-if VERSION < v"0.4-"
-    import YT: @doc
-end
-
 @doc doc"""
       Construct a time series sequence of datasets
       from an array of filenames, `fns::Array{Union(ASCIIString,UTF8String),1}`.
-      
+
       Examples:
-      
+
           julia> using YT
           julia> using Glob
           julia> fns = sort(glob("sloshing_low_res_hdf5_plt_cnt_0*"))
@@ -30,12 +26,12 @@ end
                  end
           julia> time = YTArray(time)
           julia> max_dens = YTArray(max_dens)
-          
+
       """ ->
 type DatasetSeries
     ts::PyObject
     num_ds::Int
-    function DatasetSeries(fns::Array{Union(ASCIIString,UTF8String),1})
+    function DatasetSeries(fns::Array{Union{ASCIIString,UTF8String},1})
         ts = time_series.DatasetSeries(fns)
         num_ds = length(fns)
         new(ts, num_ds)

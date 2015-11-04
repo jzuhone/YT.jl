@@ -6,11 +6,7 @@ import ..data_objects: DataContainer
 import ..array: YTArray, convert_to_units
 @pyimport yt.data_objects.profiles as prof
 
-if VERSION < v"0.4-"
-    import YT: @doc
-end
-
-Field  = Union(ASCIIString,(ASCIIString,ASCIIString))
+Field  = Union{ASCIIString,Union{ASCIIString,ASCIIString}}
 
 @doc doc"""
 
@@ -120,7 +116,7 @@ end
       * `profile::YTProfile`: The profile to use.
       * `new_unit::String`: The new unit.
       """ ->
-function set_x_unit(profile::YTProfile, new_unit::String)
+function set_x_unit(profile::YTProfile, new_unit::ASCIIString)
     profile.profile[:set_x_unit](new_unit)
     profile.x = YTArray(profile.profile["x"])
     profile.x_bins = YTArray(profile.profile["x_bins"])
@@ -135,7 +131,7 @@ end
       * `profile::YTProfile`: The profile to use.
       * `new_unit::String`: The new unit.
       """ ->
-function set_y_unit(profile::YTProfile, new_unit::String)
+function set_y_unit(profile::YTProfile, new_unit::ASCIIString)
     profile.profile[:set_y_unit](new_unit)
     profile.y = YTArray(profile.profile["y"])
     profile.y_bins = YTArray(profile.profile["y_bins"])
@@ -150,7 +146,7 @@ end
       * `profile::YTProfile`: The profile to use.
       * `new_unit::String`: The new unit.
       """ ->
-function set_z_unit(profile::YTProfile, new_unit::String)
+function set_z_unit(profile::YTProfile, new_unit::ASCIIString)
     profile.profile[:set_z_unit](new_unit)
     profile.z = YTArray(profile.profile["z"])
     profile.z_bins = YTArray(profile.profile["z_bins"])
@@ -166,7 +162,7 @@ end
       * `field::String`: The name of the field to change the unit for.
       * `new_unit::String`: The new unit.
       """ ->
-function set_field_unit(profile::YTProfile, field::String, new_unit::String)
+function set_field_unit(profile::YTProfile, field::ASCIIString, new_unit::ASCIIString)
     profile.unit_dict[field] = new_unit
     return
 end
@@ -206,4 +202,3 @@ function show(io::IO, profile::YTProfile)
 end
 
 end
-

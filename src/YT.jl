@@ -1,5 +1,7 @@
 module YT
 
+import Base: setindex!, getindex, show
+
 # Datasets, Indices
 
 export Dataset
@@ -58,7 +60,7 @@ check_for_yt()
 @pyimport yt.frontends.stream.api as ytstream
 @pyimport yt.config as ytconfig
 
-import Base: show, help
+import Base: show
 
 include("array.jl")
 include("fixed_resolution.jl")
@@ -91,12 +93,12 @@ type YTConfig
     ytcfg::PyObject
 end
 
-function setindex!(ytcfg::YTConfig, value::String, section::String, param::String)
+function setindex!(ytcfg::YTConfig, value::ASCIIString, section::ASCIIString, param::ASCIIString)
     set!(ytcfg.ytcfg, (section,param), value)
 end
 
-function getindex(ytcfg::YTConfig, section::String, param::String)
-    pycall(ytcfg.ytcfg["get"], String, section, param)
+function getindex(ytcfg::YTConfig, section::ASCIIString, param::ASCIIString)
+    pycall(ytcfg.ytcfg["get"], ASCIIString, section, param)
 end
 
 show(ytcfg::YTConfig) = typeof(ytcfg)

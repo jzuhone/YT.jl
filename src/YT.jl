@@ -60,17 +60,6 @@ check_for_yt()
 
 import Base: show, help
 
-if VERSION < v"0.4-"
-    macro doc_mstr(x)
-        x
-    end
-    macro doc(args...)
-        mydoc = esc(args[1].args[1])
-        mydef = esc(args[1].args[end])
-        return mydef
-    end
-end
-
 include("array.jl")
 include("fixed_resolution.jl")
 include("data_objects.jl")

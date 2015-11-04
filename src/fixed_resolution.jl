@@ -3,9 +3,9 @@ module fixed_resolution
 import PyCall: PyObject
 
 import ..array: YTArray, YTQuantity
-import Base.show
+import Base: show, getindex
 
-Field  = Union(ASCIIString,(ASCIIString,ASCIIString))
+Field  = Union{ASCIIString,Tuple{ASCIIString,ASCIIString}}
 
 # FixedResolutionBuffer
 

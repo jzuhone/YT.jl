@@ -8,7 +8,7 @@ import ..fixed_resolution: FixedResolutionBuffer
 
 Center = Union{ASCIIString,Array{Float64,1},YTArray,
                Tuple{ASCIIString,ASCIIString}}
-Length = Union{FloatingPoint,Tuple{FloatingPoint,ASCIIString},YTQuantity}
+Length = Union{AbstractFloat,Tuple{AbstractFloat,ASCIIString},YTQuantity}
 Field  = Union{ASCIIString,Tuple{ASCIIString,ASCIIString}}
 
 # Dataset
@@ -23,7 +23,7 @@ type Dataset
     domain_dimensions::Array{Int,1}
     dimensionality::Integer
     current_time::YTQuantity
-    current_redshift::FloatingPoint
+    current_redshift::AbstractFloat
     max_level::Integer
     function Dataset(ds::PyObject)
         new(ds,
@@ -222,8 +222,8 @@ type Region <: DataContainer
     right_edge::YTArray
     field_dict::Dict
     function Region(ds::Dataset, center::Center,
-                    left_edge::Union(Array{Float64,1},YTArray),
-                    right_edge::Union(Array{Float64,1},YTArray);
+                    left_edge::Union{Array{Float64,1},YTArray},
+                    right_edge::Union{Array{Float64,1},YTArray};
                     field_parameters=nothing, data_source=nothing)
         if typeof(center) <: YTArray
             c = PyObject(center)
@@ -403,9 +403,9 @@ type OrthoRay <: DataContainer
     cont::PyObject
     ds::Dataset
     axis::Integer
-    coords::(Float64,Float64)
+    coords::Tuple{Float64,Float64}
     field_dict::Dict
-    function OrthoRay(ds::Dataset, axis::Integer, coords::(Float64,Float64),
+    function OrthoRay(ds::Dataset, axis::Integer, coords::Tuple{Float64,Float64},
                       field_parameters=nothing, data_source=nothing)
         if data_source != nothing
             source = data_source.cont
@@ -529,7 +529,7 @@ type Proj <: DataContainer
     axis::Integer
     weight_field
     field_dict::Dict
-    function Proj(ds::Dataset, field, axis::Union(Integer,ASCIIString);
+    function Proj(ds::Dataset, field, axis::Union{Integer,ASCIIString};
                   weight_field=nothing, center=nothing,
                   field_parameters=nothing, data_source=nothing,
                   method="integrate")
@@ -560,7 +560,7 @@ end
       * `ds::Dataset`: The dataset to be used.
       * `axis::Union(Integer,ASCIIString)`: The axis along which to slice.
         Can be 0, 1, or 2, or "x", "y", or "z", for x, y, z.
-      * `coord::FloatingPoint`: The coordinate along the axis at which to
+      * `coord::AbstractFloat`: The coordinate along the axis at which to
         slice. This is in "domain" coordinates.
       * `center::Array{Float64,1}` (optional): The 'center' supplied to fields that
         use it. Note that this does not have to have `coord` as one value.
@@ -582,8 +582,8 @@ type Slice <: DataContainer
     axis::Integer
     coord::Float64
     field_dict::Dict
-    function Slice(ds::Dataset, axis::Union(Integer,ASCIIString),
-                   coord::FloatingPoint; center=nothing,
+    function Slice(ds::Dataset, axis::Union{Integer,ASCIIString},
+                   coord::AbstractFloat; center=nothing,
                    field_parameters=nothing,
                    data_source=nothing)
         if data_source != nothing
@@ -620,8 +620,8 @@ end
           julia> slc = Slice(ds, "z", 0.0)
           julia> frb = to_frb(slc, (500.,"kpc"), 800)
       """ ->
-function to_frb(cont::Union(Slice,Proj), width::Length,
-                nx::Union(Integer,(Integer,Integer)); center=nothing,
+function to_frb(cont::Union{Slice,Proj}, width::Length,
+                nx::Union{Integer,Union{Integer,Integer}}; center=nothing,
                 height=nothing, periodic=false)
     if typeof(width) <: YTQuantity
         w = PyObject(width)
@@ -635,7 +635,7 @@ function to_frb(cont::Union(Slice,Proj), width::Length,
 end
 
 function to_frb(cont::Cutting, width::Length,
-                nx::Union(Integer,(Integer,Integer));
+                nx::Union{Integer,Union{Integer,Integer}};
                 height=nothing, periodic=false)
     if typeof(width) <: YTQuantity
         w = PyObject(width)
@@ -830,7 +830,7 @@ end
 
       * `dc::DataContainer`: The data container object to set the
         parameter for.
-      * `key::String`: The name of the parameter to set.
+      * `key::ASCIIString`: The name of the parameter to set.
       * `value::Any`: The value of the parameter.
 
       Examples:
@@ -841,7 +841,7 @@ end
           julia> set_field_parameter(sp, "mu", 0.592)
 
       """ ->
-function set_field_parameter(dc::DataContainer, key::String, value)
+function set_field_parameter(dc::DataContainer, key::ASCIIString, value)
     v = PyObject(value)
     dc.cont[:set_field_parameter](key, v)
 end
@@ -853,7 +853,7 @@ end
 
       * `dc::DataContainer`: The data container object to check for
         a parameter.
-      * `key::String`: The name of the parameter to check.
+      * `key::ASCIIString`: The name of the parameter to check.
 
       Examples:
 
@@ -862,7 +862,7 @@ end
           julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
           julia> has_field_parameter(sp, "center")
       """ ->
-function has_field_parameter(dc::DataContainer, key::String)
+function has_field_parameter(dc::DataContainer, key::ASCIIString)
     dc.cont[:has_field_parameter](key)
 end
 
@@ -873,7 +873,7 @@ end
 
       * `dc::DataContainer`: The data container object to get the
         parameter from.
-      * `key::String`: The name of the parameter to get.
+      * `key::ASCIIString`: The name of the parameter to get.
 
       Examples:
 
@@ -883,7 +883,7 @@ end
           julia> ctr = get_field_parameter(sp, "center")
 
       """ ->
-function get_field_parameter(dc::DataContainer, key::String)
+function get_field_parameter(dc::DataContainer, key::ASCIIString)
     v = pycall(dc.cont["get_field_parameter"], PyObject, key)
     if contains(pystring(v), "YTArray") || contains(pystring(v), "YTQuantity")
         v = YTArray(v)
@@ -945,7 +945,7 @@ function getindex(grids::Grids, i::Integer)
     return grids.grid_dict[i]
 end
 
-getindex(grids::Grids, idxs::Ranges) = Grids(grids.grids[idxs])
+getindex(grids::Grids, idxs::Range) = Grids(grids.grids[idxs])
 
 # Show
 

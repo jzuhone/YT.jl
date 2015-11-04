@@ -99,7 +99,7 @@ YTQuantity{T<:Real}(value::T) = YTQuantity(value, "dimensionless")
 function YTQuantity(yt_quantity::PyObject)
     yt_units = YTUnit(yt_quantity["unit_quantity"],
                       yt_quantity[:units],
-                      yt_quantity[:units][:dimensions])
+                      yt_quantity["units"][:dimensions])
     value = yt_quantity[:d][1]
     YTQuantity{typeof(value)}(value, yt_units)
 end
@@ -118,7 +118,7 @@ function YTArray{T<:Real}(value::Array{T}, units::ASCIIString; registry=nothing)
     unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
     yt_units = YTUnit(unitary_quan,
                       unitary_quan[:units],
-                      unitary_quan[:units][:dimensions])
+                      unitary_quan["units"][:dimensions])
     YTArray{T}(value, yt_units)
 end
 

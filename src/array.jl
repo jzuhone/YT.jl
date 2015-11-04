@@ -7,7 +7,9 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              cumsum, cummin, cummax, cumsum_kbn, diff, display, print,
              showarray, showerror, ones, zeros, eye, summary, linspace,
              sum_kbn, gradient, dims2string, mean, std, stdm, var, varm,
-             median, middle, midpoints, quantile, fill, start, next, done
+             median, middle, midpoints, quantile, fill, start, next, done,
+             +, -, *, /, \, ==, !=, >=, <=, >, <, ./, .\, .*, .==, .!=,
+             .>=, .<=, .>, .<, .^, ^, getindex, setindex!
 
 import SymPy: Sym
 import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin, PyAny
@@ -18,7 +20,7 @@ if VERSION < v"0.4-"
     import YT: @doc
 end
 
-IntOrRange = Union(Integer,Ranges)
+IntOrRange = Union(Integer,Range)
 
 # Grab the classes for creating YTArrays and YTQuantities
 
@@ -234,18 +236,18 @@ PyObject(a::YTObject) = convert(PyObject, a)
 
 getindex(a::YTArray, i::Integer) = YTQuantity(a.value[i], a.units)
 getindex(a::YTArray, idxs::Array{Int,1}) = YTArray(getindex(a.value, idxs), a.units)
-getindex(a::YTArray, idxs::Ranges) = YTArray(getindex(a.value, idxs), a.units)
+getindex(a::YTArray, idxs::Range) = YTArray(getindex(a.value, idxs), a.units)
 
 function setindex!(a::YTArray, x::Real, i::Integer)
     a.value[i] = convert(eltype(a), x)
 end
-function setindex!(a::YTArray, x::Array, idxs::Ranges)
+function setindex!(a::YTArray, x::Array, idxs::Range)
     YTArray(setindex!(a.value, convert(typeof(a.value), x), idxs), a.units)
 end
 function setindex!(a::YTArray, x::Array, idxs::Array{Int,1})
     YTArray(setindex!(a.value, convert(typeof(a.value), x), idxs), a.units)
 end
-function setindex!(a::YTArray, x::Real, idxs::Ranges)
+function setindex!(a::YTArray, x::Real, idxs::Range)
     YTArray(setindex!(a.value, convert(eltype(a), x), idxs), a.units)
 end
 function setindex!(a::YTArray, x::Real, idxs::Array{Int,1})

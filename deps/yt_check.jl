@@ -10,10 +10,19 @@ function check_for_yt()
     try
         @pyimport yt
     catch
+        Pkg.add("Conda")
+        Conda.add("yt")
+        #err_msg = "Cannot import yt! "
+        #error(err_msg * inst_msg)
+    end
+
+    try
+        @pyimport yt
+    catch
         err_msg = "Cannot import yt! "
         error(err_msg * inst_msg)
     end
-
+    
     @pyimport yt
     yt_version = convert(VersionNumber, yt.__version__)
     if yt_version < min_version

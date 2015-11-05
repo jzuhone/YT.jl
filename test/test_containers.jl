@@ -113,7 +113,7 @@ fp_keys = collect(keys(YT.get_field_parameters(sp2)))
 
 @test sort(fp_keys) == ["bulk_velocity","center","normal","radius"]
 
-fps = ["num_dinosaurs"=>10000,"distance_from_earth"=>3000.]
+fps = Dict("num_dinosaurs"=>10000,"distance_from_earth"=>3000.)
 
 sp3 = Sphere(ds, cont_dict["sp2"][2]..., field_parameters=fps)
 @test YT.has_field_parameter(sp3, "num_dinosaurs")

@@ -80,6 +80,7 @@ type YTQuantity{T<:Real}
 end
 
 function YTQuantity{T<:Real}(value::T, units::ASCIIString; registry=nothing)
+    units = replace(units, "^", "**")
     unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
     yt_units = YTUnit(unitary_quan,
                       unitary_quan[:units],
@@ -116,6 +117,7 @@ YTArray{T<:Real}(value::Array{T}, units::YTUnit) = YTArray{T}(value, units)
 YTArray{T<:Real}(value::PyArray{T}, units::YTUnit) = YTArray{T}(value, units)
 
 function YTArray{T<:Real}(value::Array{T}, units::ASCIIString; registry=nothing)
+    units = replace(units, "^", "**")
     unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
     yt_units = YTUnit(unitary_quan,
                       unitary_quan[:units],
@@ -124,6 +126,7 @@ function YTArray{T<:Real}(value::Array{T}, units::ASCIIString; registry=nothing)
 end
 
 function YTArray{T<:Real}(value::PyArray{T}, units::ASCIIString; registry=nothing)
+    units = replace(units, "^", "**")
     unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
     yt_units = YTUnit(unitary_quan,
                       unitary_quan[:units],

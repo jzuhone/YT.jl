@@ -21,7 +21,7 @@ before_install:
   - sudo ln -s /run/shm /dev/shm
   #- conda install --yes binstar
   #- conda install --yes -c https://conda.binstar.org/jzuhone yt==dev
-  - julia -e 'Pkg.add("Conda"); Conda.add("yt")'
+  - julia -e 'Pkg.add("Conda"); using Conda; Conda.add("yt")'
   - wget http://yt-project.org/data/enzo_tiny_cosmology.tar.gz
   - wget http://yt-project.org/data/WindTunnel.tar.gz
   - tar -zxvf enzo_tiny_cosmology.tar.gz

@@ -71,10 +71,10 @@ type YTProfile
                        n_bins=64, extrema=nothing, logs=nothing,
                        units=nothing, weight_field="cell_mass",
                        accumulation=false, fractional=false)
-        if (typeof(bin_fields) <: String) | (typeof(bin_fields) <: Tuple)
+        if (typeof(bin_fields) <: AbstractString) | (typeof(bin_fields) <: Tuple)
             bin_fields = [bin_fields]
         end
-        if (typeof(fields) <: String) | (typeof(fields) <: Tuple)
+        if (typeof(fields) <: AbstractString) | (typeof(fields) <: Tuple)
             fields = [fields]
         end
         profile = prof.create_profile(data_source.cont, bin_fields, fields;

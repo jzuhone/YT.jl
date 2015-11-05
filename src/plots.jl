@@ -8,10 +8,6 @@ import PyCall: @pyimport, PyObject, pywrap
 @pyimport yt.visualization.plot_window as pw
 @pyimport yt.visualization.profile_plotter as pp
 
-if VERSION < v"0.4-"
-    import YT: @doc
-end
-
 @doc doc"""
       A plot of a slice through the simulation domain.
 

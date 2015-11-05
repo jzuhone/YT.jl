@@ -23,7 +23,7 @@ If we grab the ``"density"`` field from a sphere, it will be returned as a ``YTA
     radius=100.0 kpc
 
     julia> sp["density"]
-    325184-element YTArray (g/cm**3):
+    325184-element YTArray (g/cm^3):
      1.3086558386643183e-26
      1.28922012403754e-26
      1.3036428741306716e-26
@@ -54,7 +54,7 @@ Finding the maximum density:
 .. code-block:: jlcon
 
     julia> maximum(sp["density"])
-    9.256136409265674e-26 g/cm**3
+    9.256136409265674e-26 g/cm^3
 
 Multiplying the temperature by a constant unitless number:
 
@@ -117,7 +117,7 @@ Multiplying element-wise one ``YTArray`` by another:
 .. code-block:: jlcon
 
     julia> sp["density"].*sp["temperature"]
-    325184-element YTArray (K*g/cm**3):
+    325184-element YTArray (K*g/cm^3):
      1.1558781214352911e-18
      1.1463113109392978e-18
      1.1566705936668994e-18
@@ -148,8 +148,8 @@ which aren't the same type of physical quantity:
 
     julia> sp["density"]+sp["temperature"]
     ERROR: The + operator for YTArrays with units
-    (g/cm**3) and (K) is not well defined.
-     in + at /Users/jzuhone/.julia/YT/src/array.jl:141
+    (g/cm^3) and (K) is not well defined.
+     in + at /Users/jzuhone/.julia/YT/src/array.jl:192
 
 It is also possible to create a ``YTArray`` from a regular Julia ``Array``, like so:
 
@@ -184,7 +184,7 @@ A ``YTArray`` can be saved to an `HDF5 <http://www.hdfgroup.org>`_ file for re-l
 
 .. code-block:: julia
 
-    function write_hdf5(a::YTArray, filename::String; dataset_name=nothing, info=nothing)
+    function write_hdf5(a::YTArray, filename::ASCIIString; dataset_name=nothing, info=nothing)
 
 where ``dataset_name`` is the name of the dataset to store the array in (defaults to ``"array_data"``), and ``info``
 is an optional dictionary which can be stored as dataset attributes to provide additional information:
@@ -242,7 +242,7 @@ can be done with ``ones`` and ``zeros``, in the same manner as the standard Juli
 .. code-block:: jlcon
 
     julia> ones(sp["density"])
-    325184-element YTArray (g/cm**3):
+    325184-element YTArray (g/cm^3):
      1.0
      1.0
      1.0
@@ -265,7 +265,7 @@ can be done with ``ones`` and ``zeros``, in the same manner as the standard Juli
      1.0
 
     julia> zeros(sp["density"])
-    325184-element YTArray (g/cm**3):
+    325184-element YTArray (g/cm^3):
      0.0
      0.0
      0.0
@@ -382,10 +382,10 @@ kiloparsec, using ``convert_to_units``:
 
 .. code-block:: jlcon
 
-    julia> YT.convert_to_units(sp["density"], "Msun/kpc**3")
+    julia> YT.convert_to_units(sp["density"], "Msun/kpc^3")
 
     julia> a
-    325184-element YTArray (Msun/kpc**3):
+    325184-element YTArray (Msun/kpc^3):
      193361.43661723754
      190489.69785225237
      192620.74223809008
@@ -415,7 +415,7 @@ We can switch back to cgs units rather easily, using ``convert_to_cgs``:
     julia> YT.convert_to_cgs(a)
 
     julia> a
-    325184-element YTArray (g/cm**3):
+    325184-element YTArray (g/cm^3):
      1.3086558386643183e-26
      1.28922012403754e-26
      1.303642874130672e-26
@@ -445,7 +445,7 @@ or to MKS units, using ``convert_to_mks``:
     julia> YT.convert_to_mks(a)
 
     julia> a
-    325184-element YTArray (kg/m**3):
+    325184-element YTArray (kg/m^3):
      1.3086558386643184e-23
      1.2892201240375402e-23
      1.3036428741306718e-23
@@ -474,8 +474,8 @@ quantity from a unit conversion of an existing one, use the ``in_units``, ``in_c
 
 .. code-block:: jlcon
 
-    julia> b = YT.convert_to_units(sp["density"], "Msun/kpc**3")
-    325184-element YTArray (Msun/kpc**3):
+    julia> b = YT.convert_to_units(sp["density"], "Msun/kpc^3")
+    325184-element YTArray (Msun/kpc^3):
      193361.43661723754
      190489.69785225237
      192620.74223809008
@@ -499,7 +499,7 @@ quantity from a unit conversion of an existing one, use the ``in_units``, ``in_c
      235767.96552301125
 
     julia> sp["density"]
-    325184-element YTArray (g/cm**3):
+    325184-element YTArray (g/cm^3):
      1.3086558386643183e-26
      1.28922012403754e-26
      1.303642874130672e-26
@@ -657,8 +657,8 @@ and the equivalence name are provided as arguments:
 
     julia> dd = AllData(ds)
 
-    julia> to_equivalent(dd["density"], "kpc**-3", "number_density")
-    3644460-element YTArray (kpc**(-3)):
+    julia> to_equivalent(dd["density"], "kpc^-3", "number_density")
+    3644460-element YTArray (kpc^(-3)):
      1.441658495282944e58
      1.445257323866133e58
      1.4447291393781058e58

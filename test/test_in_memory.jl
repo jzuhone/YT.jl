@@ -7,21 +7,21 @@ bbox = [-1.5 1.5; -1.5 1.5; -1.5 1.5]
 ds = YT.load_uniform_grid(data, [64,64,64]; length_unit="Mpc", bbox=bbox, nprocs=64)
 
 grid_data = [
-  ["left_edge"=>[0.0, 0.0, 0.0],
-   "right_edge"=>[1.0, 1.0, 1.0],
-   "level"=>0,
-   "dimensions"=>[32, 32, 32]],
-  ["left_edge"=>[0.25, 0.25, 0.25],
-   "right_edge"=>[0.75, 0.75, 0.75],
-   "level"=>1,
-   "dimensions"=>[32, 32, 32]]
+  Dict("left_edge"=>[0.0, 0.0, 0.0],
+       "right_edge"=>[1.0, 1.0, 1.0],
+       "level"=>0,
+       "dimensions"=>[32, 32, 32]),
+  Dict("left_edge"=>[0.25, 0.25, 0.25],
+       "right_edge"=>[0.75, 0.75, 0.75],
+       "level"=>1,
+       "dimensions"=>[32, 32, 32])
   ]
 
 for g in grid_data
     g["density"] = rand(g["dimensions"]...) * 2^g["level"]
 end
 
-field_units = ["density"=>"code_mass/code_length**3"]
+field_units = Dict("density"=>"code_mass/code_length**3")
 
 ds = YT.load_amr_grids(grid_data, [32, 32, 32]; field_units=field_units)
 

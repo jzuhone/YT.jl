@@ -221,14 +221,20 @@ convert(::Type{YTArray}, o::PyObject) = YTArray(o)
 convert(::Type{YTQuantity}, o::PyObject) = YTQuantity(o)
 convert(::Type{Array}, a::YTArray) = a.value
 convert(::Type{Float64}, q::YTQuantity) = q.value
-convert(::Type{PyObject}, a::YTArray) = pycall(bare_array, PyObject, a.value,
-                                               string(a.units.unit_symbol),
-                                               a.units.yt_unit["units"]["registry"],
-                                               dtype=lowercase(string(typeof(a[1].value))))
-convert(::Type{PyObject}, a::YTQuantity) = pycall(bare_quan, PyObject, a.value,
-                                                  string(a.units.unit_symbol),
-                                                  a.units.yt_unit["units"]["registry"],
-                                                  dtype=lowercase(string(typeof(a.value))))
+function convert(::Type{PyObject}, a::YTArray)
+    units = string(a.units.unit_symbol)
+    units = replace(units, "^", "**")
+    pycall(bare_array, PyObject, a.value, units,
+           a.units.yt_unit["units"]["registry"],
+           dtype=lowercase(string(typeof(a[1].value))))
+end
+function convert(::Type{PyObject}, a::YTQuantity)
+    units = string(a.units.unit_symbol)
+    units = replace(units, "^", "**")
+    pycall(bare_quan, PyObject, a.value, units,
+           a.units.yt_unit["units"]["registry"],
+           dtype=lowercase(string(typeof(a.value))))
+end
 convert(::Type{YTArray}, q::YTQuantity) = YTArray([q.value], q.units)
 PyObject(a::YTObject) = convert(PyObject, a)
 
@@ -600,6 +606,7 @@ end
 
 function to_equivalent(a::YTObject, unit::ASCIIString, equiv::ASCIIString; args...)
     arr = PyObject(a)
+    unit = replace(unit, "^", "**")
     equ = pycall(arr["to_equivalent"], PyObject, unit, equiv; args...)
     array_or_quan(equ)
 end

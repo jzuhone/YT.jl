@@ -19,8 +19,8 @@ methods below for creating different objects.
 A ``Length``-type argument is for length quantities such as ``radius`` or ``height`` and can be
 one of the following:
 
-  * A ``FloatingPoint`` number. If so, the assumed units are ``"code_length"``.
-  * A ``(FloatingPoint, ASCIIString)`` tuple, e.g., ``(1.5, "Mpc")``.
+  * A ``AbstractFloat`` number. If so, the assumed units are ``"code_length"``.
+  * A ``(AbstractFloat, ASCIIString)`` tuple, e.g., ``(1.5, "Mpc")``.
   * A ``YTQuantity``.
 
 A ``Center``-type argument is for the ``center`` of an object and can be one of the following:
@@ -29,7 +29,7 @@ A ``Center``-type argument is for the ``center`` of an object and can be one of 
     corresponding to the point with maximum density and the center of the domain, respectively.
   * A ``(ASCIIString, ASCIIString)`` tuple, e.g. ``("min", "temperature")``,
     or ``("max","velocity_x")``, corresponding to maxima and minima of specific fields.
-  * An ``Array`` of ``FloatingPoint`` numbers. If so, the assumed units are ``"code_length"``.
+  * An ``Array`` of ``AbstractFloat`` numbers. If so, the assumed units are ``"code_length"``.
   * A ``YTArray``.
 
 .. |yt_cont_docs| replace:: ``yt`` Documentation on data container objects
@@ -76,7 +76,7 @@ located at a coordinate ``coord`` in units of ``code_length``:
 
 .. code-block:: julia
 
-  function Point(ds::Dataset, coord::Array{Float64,1}; 
+  function Point(ds::Dataset, coord::Array{Float64,1};
                  field_parameters=nothing,
                  data_source=nothing)
 
@@ -95,7 +95,7 @@ A ``Sphere`` is an object with a ``center`` and a ``radius``.
 
 .. code-block:: julia
 
-  function Sphere(ds::Dataset, center::Center, radius::Length; 
+  function Sphere(ds::Dataset, center::Center, radius::Length;
                   field_parameters=nothing,
                   data_source=nothing)
 
@@ -124,8 +124,8 @@ or ``Array``\ s of ``Float64``\ s, in which case they will be assumed to be in u
 .. code-block:: julia
 
   function Region(ds::Dataset, center::Center,
-                  left_edge::Union(YTArray,Array{Float64,1}),
-                  right_edge::Union(YTArray,Array{Float64,1}); 
+                  left_edge::Union{YTArray,Array{Float64,1}},
+                  right_edge::Union{YTArray,Array{Float64,1}};
                   field_parameters=nothing,
                   data_source=nothing)
 
@@ -162,7 +162,7 @@ Examples:
 
 .. code-block:: jlcon
 
-  julia> dk = YT.Disk(ds, "c", [1.0,0.2,-0.3], (100,"kpc"), (0.5,"Mpc"))
+  julia> dk = YT.Disk(ds, "c", [1.0,0.2,-0.3], (100, "kpc"), (0.5, "Mpc"))
 
 .. _ray:
 
@@ -197,7 +197,7 @@ goes through.
 
 .. code-block:: julia
 
-  function OrthoRay(ds::Dataset, axis::Integer, coords::(Float64,Float64),
+  function OrthoRay(ds::Dataset, axis::Integer, coords::Tuple{Float64,Float64},
                     field_parameters=nothing, data_source=nothing)
 
 Examples:
@@ -217,8 +217,8 @@ string ("x","y","z") or an integer (0,1,2), centered at some coordinate
 
 .. code-block:: julia
 
-  function Slice(ds::Dataset, axis::Union(Integer,ASCIIString),
-                 coord::FloatingPoint;
+  function Slice(ds::Dataset, axis::Union{Integer,ASCIIString},
+                 coord::AbstractFloat;
                  field_parameters=nothing,
                  data_source=nothing)
 
@@ -237,7 +237,7 @@ A ``Proj`` is an integral of a given ``field`` along a sight line corresponding 
 
 .. code-block:: julia
 
-  function Proj(ds::Dataset, field, axis::Union(Integer,ASCIIString);
+  function Proj(ds::Dataset, field, axis::Union{Integer,ASCIIString};
                 weight_field=nothing, data_source=nothing,
                 field_parameters=nothing, method=nothing)
 
@@ -342,7 +342,7 @@ A ``CoveringGrid`` is a 3D ``DataContainer`` of cells extracted at a fixed resol
 
 .. code-block:: julia
 
-  function CoveringGrid(ds::Dataset, level::Integer, left_edge::Array{Float64,1}, 
+  function CoveringGrid(ds::Dataset, level::Integer, left_edge::Array{Float64,1},
                         dims::Array{Int,1}; field_parameters=nothing)
 
 ``level`` is the refinement level at which to extract the data, ``left_edge`` is the left edge of
@@ -455,7 +455,7 @@ Data can be accessed from containers in ``Dict``-like fashion, the same way as i
 .. code-block:: jlcon
 
   julia> sp["density"]
-  325405-element YTArray (g/cm**3):
+  325405-element YTArray (g/cm^3):
    1.2992312619628604e-26
    1.2946242834614906e-26
    1.3086558386643183e-26
@@ -484,7 +484,7 @@ field type. The ``"density"`` field has a field type of ``"gas"``:
 .. code-block:: jlcon
 
   julia> sp["gas","density"]
-  325405-element YTArray (g/cm**3):
+  325405-element YTArray (g/cm^3):
    1.2992312619628604e-26
    1.2946242834614906e-26
    1.3086558386643183e-26
@@ -512,7 +512,7 @@ whereas you could get at the original FLASH field like this:
 .. code-block:: jlcon
 
   julia> sp["flash","dens"]
-  325405-element YTArray (code_mass/code_length**3):
+  325405-element YTArray (code_mass/code_length^3):
    1.2992312619628604e-26
    1.2946242834614906e-26
    1.3086558386643183e-26

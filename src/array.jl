@@ -9,7 +9,7 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              sum_kbn, gradient, dims2string, mean, std, stdm, var, varm,
              median, middle, midpoints, quantile, fill, start, next, done,
              +, -, *, /, \, ==, !=, >=, <=, >, <, ./, .\, .*, .==, .!=,
-             .>=, .<=, .>, .<, .^, ^, getindex, setindex!
+             .>=, .<=, .>, .<, .^, ^, getindex, setindex!, isequal
 
 import SymPy: Sym
 import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin, PyAny
@@ -387,6 +387,10 @@ end
 for (op1, op2) in zip((:.*, :./),(:*,:/))
     @eval ($op1)(a::YTArray,b::YTArray) = @array_mult_op(a,b,($op1),($op2))
 end
+
+==(a::YTArray, b::YTArray) = a.value == b.value && a.units == b.units
+!=(a::YTarray, b::YTarray) = !(==(a,b))
+isequal(a::YTArray, b::YTArray) = ==(a, b)
 
 # YTArrays and Reals
 

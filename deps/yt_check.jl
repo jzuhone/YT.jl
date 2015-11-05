@@ -14,6 +14,7 @@ function check_for_yt()
         Conda.add("yt")
         ENV["PYTHON"] = abspath(Conda.PYTHONDIR, "python" * (@windows? ".exe" : ""))
         Pkg.build("PyCall")
+        reload("PyCall")
         #err_msg = "Cannot import yt! "
         #error(err_msg * inst_msg)
     end

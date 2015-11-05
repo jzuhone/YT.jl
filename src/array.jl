@@ -31,34 +31,35 @@ end
 
 function *(u::YTUnit, v::YTUnit)
     yt_unit = pycall(u.yt_unit["__mul__"], PyObject, v.yt_unit)
-    YTUnit(yt_unit, yt_unit[:units], yt_unit[:units][:dimensions])
+    YTUnit(yt_unit, yt_unit[:units], yt_unit["units"][:dimensions])
 end
 
 function /(u::YTUnit, v::YTUnit)
     yt_unit = pycall(u.yt_unit["__div__"], PyObject, v.yt_unit)
-    YTUnit(yt_unit, yt_unit[:units], yt_unit[:units][:dimensions])
+    YTUnit(yt_unit, yt_unit[:units], yt_unit["units"][:dimensions])
 end
 
 \(u::YTUnit, v::YTUnit) = /(v,u)
 
 function /(u::Real, v::YTUnit)
+
     yt_unit = pycall(v.yt_unit["__rdiv__"], PyObject, u)
-    YTUnit(yt_unit, yt_unit[:units], yt_unit[:units][:dimensions])
+    YTUnit(yt_unit, yt_unit[:units], yt_unit["units"][:dimensions])
 end
 
 function ^(u::YTUnit, v::Integer)
     yt_unit = pycall(u.yt_unit["__pow__"], PyObject, v)
-    YTUnit(yt_unit, yt_unit[:units], yt_unit[:units][:dimensions])
+    YTUnit(yt_unit, yt_unit[:units], yt_unit["units"][:dimensions])
 end
 
 function ^(u::YTUnit, v::Rational)
     yt_unit = pycall(u.yt_unit["__pow__"], PyObject, v)
-    YTUnit(yt_unit, yt_unit[:units], yt_unit[:units][:dimensions])
+    YTUnit(yt_unit, yt_unit[:units], yt_unit["units"][:dimensions])
 end
 
 function ^(u::YTUnit, v::AbstractFloat)
     yt_unit = pycall(u.yt_unit["__pow__"], PyObject, v)
-    YTUnit(yt_unit, yt_unit[:units], yt_unit[:units][:dimensions])
+    YTUnit(yt_unit, yt_unit[:units], yt_unit["units"][:dimensions])
 end
 
 function ==(u::YTUnit, v::YTUnit)
@@ -82,7 +83,7 @@ function YTQuantity{T<:Real}(value::T, units::ASCIIString; registry=nothing)
     unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
     yt_units = YTUnit(unitary_quan,
                       unitary_quan[:units],
-                      unitary_quan[:units][:dimensions])
+                      unitary_quan["units"][:dimensions])
     YTQuantity{T}(value, yt_units)
 end
 
@@ -279,6 +280,7 @@ end
 
 
 function in_units(a::YTObject, units::ASCIIString)
+    units = replace(units, "^", "**")
     a.value*pycall(a.units.yt_unit["in_units"], YTQuantity, units)
 end
 
@@ -291,6 +293,7 @@ function in_mks(a::YTObject)
 end
 
 function convert_to_units(a::YTObject, units::ASCIIString)
+    units = replace(units, "^",	"**")
     new_unit = pycall(a.units.yt_unit["in_units"], YTQuantity, units)
     a.value *= new_unit.value
     a.units = new_unit.units

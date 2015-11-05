@@ -11,7 +11,10 @@ function check_for_yt()
         @pyimport yt
     catch
         Pkg.add("Conda")
+        import Conda
         Conda.add("yt")
+        ENV["PYTHON"] = abspath(Conda.PYTHONDIR, "python" * (@windows? ".exe" : ""))
+        Pkg.rebuild("PyCall")
         #err_msg = "Cannot import yt! "
         #error(err_msg * inst_msg)
     end
@@ -22,7 +25,7 @@ function check_for_yt()
         err_msg = "Cannot import yt! "
         error(err_msg * inst_msg)
     end
-    
+
     @pyimport yt
     yt_version = convert(VersionNumber, yt.__version__)
     if yt_version < min_version

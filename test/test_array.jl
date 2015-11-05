@@ -336,7 +336,7 @@ convert_to_units(xx, a)
 
 # Reading / writing from HDF5 files
 
-myinfo = ["field"=>"velocity_magnitude", "source"=>"galaxy cluster"]
+myinfo = Dict("field"=>"velocity_magnitude", "source"=>"galaxy cluster")
 write_hdf5(a, "test.h5", dataset_name="cluster", info=myinfo)
 b = from_hdf5("test.h5", dataset_name="cluster")
 @test a == b
@@ -386,18 +386,6 @@ w = fill(x, 12)
 v = fill(x, (4,4,4))
 @test_approx_eq sum(v).value x.value*64.
 @test v.units == x.units
-
-xlin1 = linspace(x, 10*x, 100)
-xlin2 = linspace(x.value, 10*x.value, 100)
-
-@test xlin1.value == xlin2
-@test xlin1.units == x.units
-
-ylin1 = linspace(y, 5*y)
-ylin2 = linspace(y.value, 5*y.value)
-
-@test ylin1.value == ylin2
-@test ylin1.units == y.units
 
 # Unit equivalencies
 

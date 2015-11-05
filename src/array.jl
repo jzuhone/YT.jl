@@ -5,7 +5,7 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              expm1, log2, log1p, sinh, cosh, tanh, csc, sec, cot, csch,
              sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan, sum,
              cumsum, cummin, cummax, cumsum_kbn, diff, display, print,
-             showarray, showerror, ones, zeros, eye, summary, linspace,
+             showarray, showerror, ones, zeros, eye, summary,
              sum_kbn, gradient, dims2string, mean, std, stdm, var, varm,
              median, middle, midpoints, quantile, fill, start, next, done,
              +, -, *, /, \, ==, !=, >=, <=, >, <, ./, .\, .*, .==, .!=,
@@ -616,11 +616,6 @@ end
 ones(a::YTArray) = YTArray(ones(a.value), a.units)
 zeros(a::YTArray) = YTArray(zeros(a.value), a.units)
 eye(a::YTArray) = YTArray(eye(a.value), a.units)
-
-linspace(start::YTQuantity, stop::YTQuantity, n::Integer) =
-    YTArray(linspace(in_units(start, stop.units).value,stop.value,n), start.units)
-linspace(start::YTQuantity, stop::YTQuantity) =
-    YTArray(linspace(in_units(start, stop.units).value,stop.value), start.units)
 
 fill(a::YTQuantity, dims::Tuple{Vararg{Int64}}) = YTArray(fill(a.value,dims), a.units)
 fill(a::YTQuantity, dims::Integer...) = YTArray(fill(a.value,dims), a.units)

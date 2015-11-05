@@ -1,4 +1,5 @@
 import PyCall: @pyimport
+import Conda
 
 min_version = v"3.2-"
 
@@ -10,8 +11,6 @@ function check_for_yt()
     try
         @pyimport yt
     catch
-        Pkg.add("Conda")
-        import Conda
         Conda.add("yt")
         ENV["PYTHON"] = abspath(Conda.PYTHONDIR, "python" * (@windows? ".exe" : ""))
         Pkg.rebuild("PyCall")

@@ -11,22 +11,16 @@ before_install:
   - sudo add-apt-repository ppa:staticfloat/${JULIAVERSION} -y
   - sudo apt-get update -qq -y
   - sudo apt-get install libpcre3-dev julia -y
-  #- wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-  #- chmod +x miniconda.sh
-  #- ./miniconda.sh -b
-  #- export PATH=${HOME}/miniconda/bin:$PATH
-  #- conda update --yes conda
   # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
   - sudo rm -rf /dev/shm
   - sudo ln -s /run/shm /dev/shm
-  #- conda install --yes binstar
-  #- conda install --yes -c https://conda.binstar.org/jzuhone yt==dev
-  - julia -e 'Pkg.add("Conda"); using Conda; Conda.add("yt")'
   - wget http://yt-project.org/data/enzo_tiny_cosmology.tar.gz
   - wget http://yt-project.org/data/WindTunnel.tar.gz
   - tar -zxvf enzo_tiny_cosmology.tar.gz
   - tar -zxvf WindTunnel.tar.gz
-  - julia -e 'Pkg.add("Glob"); Pkg.add("PyCall")'
+  - julia -e 'Pkg.add("Conda"); using Conda; Conda.add("yt")'
+  - julia -e 'Pkg.add("Glob")'
+  - julia -e 'ENV["PYTHON"] = abspath(Conda.PYTHONDIR, "python"); Pkg.add("PyCall")'
 script:
   - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("YT"))`); Pkg.pin("YT"); Pkg.resolve()'
   - julia -e 'using YT; @assert isdefined(:YT); @assert typeof(YT) === Module'

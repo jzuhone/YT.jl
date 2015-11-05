@@ -389,7 +389,7 @@ for (op1, op2) in zip((:.*, :./),(:*,:/))
 end
 
 ==(a::YTArray, b::YTArray) = a.value == b.value && a.units == b.units
-!=(a::YTarray, b::YTarray) = !(==(a,b))
+!=(a::YTArray, b::YTArray) = !(==(a,b))
 isequal(a::YTArray, b::YTArray) = ==(a, b)
 
 # YTArrays and Reals

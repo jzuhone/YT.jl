@@ -141,8 +141,8 @@ c.\a
 @test a.units != x.units
 
 @test string(1.0/a.units) == "1/cm"
-@test string(a.units^2) == "cm**2"
-@test string(a.units^0.3) == "cm**(3/10)"
+@test string(a.units^2) == "cm^2"
+@test string(a.units^0.3) == "cm^(3/10)"
 
 # math function tests
 

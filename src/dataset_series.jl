@@ -1,7 +1,7 @@
 module dataset_series
 
 import ..data_objects: Dataset
-import Base: length, start, next, done
+import Base: length, start, next, done, getindex
 
 import PyCall: @pyimport, PyObject
 

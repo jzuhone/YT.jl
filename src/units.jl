@@ -11,10 +11,10 @@ prefixable_units = lut.prefixable_units
 
 for unit in base_units
     u = symbol(unit)
-    @eval $u = YTQuantity(1.0, $unit)
+    @eval $u = YTQuantity(1.0, ASCIIString($unit))
     if unit in lut.prefixable_units
         for prefix in prefixes
-            pu = string(prefix*unit)
+            pu = ASCIIString(prefix*unit)
             if pu != "as"
                 u = symbol(pu)
                 @eval $u = YTQuantity(1.0, $pu)

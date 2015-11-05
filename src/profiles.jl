@@ -1,7 +1,7 @@
 module profiles
 
 import PyCall: @pyimport, PyObject, pystring
-import Base.show
+import Base: show, getindex
 import ..data_objects: DataContainer
 import ..array: YTArray, convert_to_units
 @pyimport yt.data_objects.profiles as prof

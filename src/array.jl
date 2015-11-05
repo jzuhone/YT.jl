@@ -35,7 +35,7 @@ function *(u::YTUnit, v::YTUnit)
 end
 
 function /(u::YTUnit, v::YTUnit)
-    yt_unit = pycall(u.yt_unit["__div__"], PyObject, v.yt_unit)
+    yt_unit = pycall(u.yt_unit["__truediv__"], PyObject, v.yt_unit)
     YTUnit(yt_unit, yt_unit[:units], yt_unit["units"][:dimensions])
 end
 
@@ -43,7 +43,7 @@ end
 
 function /(u::Real, v::YTUnit)
 
-    yt_unit = pycall(v.yt_unit["__rdiv__"], PyObject, u)
+    yt_unit = pycall(v.yt_unit["__rtruediv__"], PyObject, u)
     YTUnit(yt_unit, yt_unit[:units], yt_unit["units"][:dimensions])
 end
 

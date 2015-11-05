@@ -20,8 +20,9 @@ before_install:
   - tar -zxvf WindTunnel.tar.gz
   - julia -e 'Pkg.add("Conda"); using Conda; Conda.add("yt")'
   - julia -e 'Pkg.add("Glob")'
-  - export CONDA_PYTHON=`julia -e 'import Conda; print(Conda.PYTHONDIR)'`
-  - export PATH=$CONDA_PYTHON:$PATH
+  - export CONDA_PYTHON=`julia -e 'import Conda; print(Conda.PREFIX)'`
+  - export PATH=$CONDA_PYTHON/bin:$PATH
+  - export LD_LIBRARY_PATH=$CONDA_PYTHON/lib
 script:
   - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("YT"))`); Pkg.pin("YT"); Pkg.resolve()'
   - julia -e 'using YT; @assert isdefined(:YT); @assert typeof(YT) === Module'

@@ -1,5 +1,12 @@
-include("yt_check.jl")
+import PyCall: @pyimport
+import Conda
 
-yt_version = check_for_yt()
-
-println(STDERR, "Found yt version $yt_version. OK!")
+try
+    @pyimport yt
+catch
+    info("Did not find a Python stack with yt installed, so I'm " *
+         "installing one using the Conda.jl package.")
+    Conda.add("yt")
+    ENV["PYTHON"] = abspath(Conda.PYTHONDIR, "python" * (@windows? ".exe" : ""))
+    Pkg.build("PyCall")
+end

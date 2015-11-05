@@ -51,11 +51,17 @@ export enable_plugins, ytcfg, quantities
 
 import PyCall: @pyimport, PyError, pycall, PyObject, set!
 
-include("../deps/yt_check.jl")
-
-check_for_yt()
-
 @pyimport yt
+
+min_version = v"3.2-"
+
+yt_version = convert(VersionNumber, yt.__version__)
+if yt_version < min_version
+    err_msg = "Your yt installation (v. $yt_version) is not up to " *
+              "date. Please install a version >= v. $min_version."
+    error(err_msg)
+end
+
 @pyimport yt.convenience as ytconv
 @pyimport yt.frontends.stream.api as ytstream
 @pyimport yt.config as ytconfig
@@ -140,7 +146,7 @@ load(fn::ASCIIString; args...) = Dataset(ytconv.load(fn; args...))
       * `time_unit` (optional): Unit to use for lengths. Defaults to 1 s.
       * `velocity_unit` (optional): Unit to use for lengths. Defaults to 1 cm/s.
       * `magnetic_unit` (optional): Unit to use for lengths. Defaults to 1 gauss.
-      * `periodicity::(Bool,Bool,Bool)` (optional): Determines whether the data
+      * `periodicity::Tuple{Bool,Bool,Bool}` (optional): Determines whether the data
         will be treated as periodic along each axis.
       * `geometry::ASCIIString` (optional): "cartesian", "cylindrical" or "polar"
 
@@ -157,7 +163,8 @@ function load_uniform_grid(data::Dict{Any,Any}, domain_dimensions::Array;
                            length_unit=nothing, bbox=nothing,
                            nprocs=1, sim_time=0.0, mass_unit=nothing,
                            time_unit=nothing, velocity_unit=nothing,
-                           magnetic_unit=nothing, periodicity=(true, true, true),
+                           magnetic_unit=nothing,
+                           periodicity=(true, true, true),
                            geometry="cartesian")
     ds = ytstream.load_uniform_grid(data, domain_dimensions; length_unit=length_unit,
                                     bbox=bbox, nprocs=nprocs, sim_time=sim_time,
@@ -194,7 +201,7 @@ end
       * `time_unit` (optional): Unit to use for lengths. Defaults to 1 s.
       * `velocity_unit` (optional): Unit to use for lengths. Defaults to 1 cm/s.
       * `magnetic_unit` (optional): Unit to use for lengths. Defaults to 1 gauss.
-      * `periodicity::(Bool,Bool,Bool)` (optional): Determines whether the data
+      * `periodicity::Tuple{Bool,Bool,Bool}` (optional): Determines whether the data
         will be treated as periodic along each axis.
       * `geometry::ASCIIString` (optional): "cartesian", "cylindrical" or "polar"
       * `refine_by::Integer` (optional): Specifies the refinement ratio between
@@ -255,7 +262,7 @@ end
       * `time_unit` (optional): Unit to use for lengths. Defaults to 1 s.
       * `velocity_unit` (optional): Unit to use for lengths. Defaults to 1 cm/s.
       * `magnetic_unit` (optional): Unit to use for lengths. Defaults to 1 gauss.
-      * `periodicity::(Bool,Bool,Bool)` (optional): Determines whether the data
+      * `periodicity::Tuple{Bool,Bool,Bool}` (optional): Determines whether the data
         will be treated as periodic along each axis.
       * `geometry::ASCIIString` (optional): "cartesian", "cylindrical" or "polar"
       * `n_ref::Integer` (optional): The number of particles that result in refining an

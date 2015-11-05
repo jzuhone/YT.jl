@@ -32,7 +32,7 @@ Field  = Union{ASCIIString,Union{ASCIIString,ASCIIString}}
         the bins are in logspace or linear space, e.g. Dict("radius"=>false). If not set, the `take_log`
         attribute for the field determines this.
       * `units`: A dictionary (with the field names as the keys) that determines the units
-        of the field, e.g. Dict("density"=>"Msun/kpc**3"). If not set then the default units for the
+        of the field, e.g. Dict("density"=>"Msun/kpc^3"). If not set then the default units for the
         field are used.
       * `weight_field`: The field to weight the binned fields by when binning. Can be a field name or
         `nothing`, to produce an unweighted profile. `"cell_mass"` is the default.

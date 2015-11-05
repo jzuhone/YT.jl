@@ -9,7 +9,7 @@ import PyCall: @pyimport, PyObject
 
 @doc doc"""
       Construct a time series sequence of datasets
-      from an array of filenames, `fns::Array{Union(ASCIIString,UTF8String),1}`.
+      from an array of filenames, `fns::Array{Union{ASCIIString,UTF8String},1}`.
 
       Examples:
 

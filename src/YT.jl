@@ -1,6 +1,6 @@
 module YT
 
-import Base: setindex!, getindex, show
+import Base: setindex!, getindex, show, set!
 
 # Datasets, Indices
 
@@ -66,8 +66,6 @@ end
 @pyimport yt.frontends.stream.api as ytstream
 @pyimport yt.config as ytconfig
 
-import Base: show
-
 include("array.jl")
 include("fixed_resolution.jl")
 include("data_objects.jl")
@@ -99,7 +97,8 @@ type YTConfig
     ytcfg::PyObject
 end
 
-function setindex!(ytcfg::YTConfig, value::ASCIIString, section::ASCIIString, param::ASCIIString)
+function setindex!(ytcfg::YTConfig, value::ASCIIString, section::ASCIIString,
+                   param::ASCIIString)
     set!(ytcfg.ytcfg, (section,param), value)
 end
 
@@ -169,7 +168,8 @@ function load_uniform_grid(data::Dict{Any,Any}, domain_dimensions::Array;
     ds = ytstream.load_uniform_grid(data, domain_dimensions; length_unit=length_unit,
                                     bbox=bbox, nprocs=nprocs, sim_time=sim_time,
                                     mass_unit=mass_unit, time_unit=time_unit,
-                                    velocity_unit=velocity_unit, magnetic_unit=magnetic_unit,
+                                    velocity_unit=velocity_unit,
+                                    magnetic_unit=magnetic_unit,
                                     periodicity=periodicity, geometry=geometry)
     return Dataset(ds)
 end
@@ -287,13 +287,17 @@ end
                                         mass_unit=(1e8, "Msun"),
                                         n_ref=256, bbox=bbox)
       """ ->
-function load_particles(data::Dict{Any,Any}; length_unit=nothing, bbox=nothing, sim_time=0.0,
-                        mass_unit=nothing, time_unit=nothing, velocity_unit=nothing, magnetic_unit=nothing,
-                        periodicity=(true, true, true), n_ref=64, over_refine_factor=1, geometry="cartesian")
-    ds = ytstream.load_particles(data; length_unit=length_unit, bbox=bbox, sim_time=sim_time,
-                                 mass_unit=mass_unit, time_unit=time_unit, velocity_unit=velocity_unit,
-                                 magnetic_unit=magnetic_unit, periodicity=periodicity, n_ref=n_ref,
-                                 over_refine_factor=over_refine_factor, geometry=geometry)
+function load_particles(data::Dict{Any,Any}; length_unit=nothing, bbox=nothing,
+                        sim_time=0.0, mass_unit=nothing, time_unit=nothing,
+                        velocity_unit=nothing, magnetic_unit=nothing,
+                        periodicity=(true, true, true), n_ref=64,
+                        over_refine_factor=1, geometry="cartesian")
+    ds = ytstream.load_particles(data; length_unit=length_unit, bbox=bbox,
+                                 sim_time=sim_time, mass_unit=mass_unit,
+                                 time_unit=time_unit, velocity_unit=velocity_unit,
+                                 magnetic_unit=magnetic_unit, periodicity=periodicity,
+                                 n_ref=n_ref, over_refine_factor=over_refine_factor,
+                                 geometry=geometry)
     return Dataset(ds)
 end
 

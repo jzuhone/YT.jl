@@ -364,7 +364,8 @@ type Ray <: DataContainer
             source = nothing
         end
         field_parameters = parse_fps(field_parameters)
-        ray = ds.ds[:ray](start_point, end_point; field_parameters=field_parameters,
+        ray = ds.ds[:ray](start_point, end_point;
+                          field_parameters=field_parameters,
                           data_source=source)
         new(ray, ds, YTArray(ray["start_point"]),
             YTArray(ray["end_point"]), Dict())

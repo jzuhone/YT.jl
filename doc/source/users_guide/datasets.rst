@@ -47,19 +47,26 @@ is stored in the ``parameters`` dictionary:
 
     julia> collect(keys(ds.parameters))
     293-element Array{Any,1}:
-     "min_particles_per_blk"
-     "zmax"
-     "maxcondentr"
-     "usemassdiffusivity"
-     "saturatedconduction"
+     "plot_var_4"
+     "lrefine_max_prev"
+     "gconst"
+     "wall_clock_time_limit"
+     "refine_cutoff_4"
+     "derefine_cutoff_1"
+     "smlrho"
      "zmin"
+     "c2"
+     "subcluster vz"
      ⋮
-     "flux_correct"
-     "nxb"
-     "plotfilenumber"
-     "log_file"
-     "e_modification"
-     "order"
+     "use_cma_steepening"
+     "t2"
+     "plot_var_15"
+     "bmag"
+     "plot_grid_var_9"
+     "unbiased_geometry"
+     "yr_boundary_type"
+     "gamma"
+     "fpar"
 
     julia> ds.parameters["nxb"]
     0-dimensional Array{Int32,0}:

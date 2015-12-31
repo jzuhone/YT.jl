@@ -1,7 +1,7 @@
 Installing ``YT``
 =================
 
-``YT`` version 0.2 requires Julia version 0.3 or later, and may be installed just like any other Julia package:
+``YT`` version 0.2.1 requires Julia version 0.4 or later, and may be installed just like any other Julia package:
 
 .. code-block:: jlcon
 
@@ -13,7 +13,7 @@ This will also install the following dependencies, if you don't have them instal
 * `PyPlot <http://github.com/stevengj/PyPlot.jl>`_
 * `SymPy <http://github.com/jverzani/SymPy.jl>`_
 
-However, for ``YT`` to work, ``yt`` itself must be installed. ``YT`` version 0.2 requires ``yt`` version 3.1
+However, for ``YT`` to work, ``yt`` itself must be installed. ``YT`` version 0.2.1 requires ``yt`` version 3.2.2
 or higher. The best ways to install ``yt`` are via the
 `install script <http://yt-project.org/#getyt>`_ or via the
 `Anaconda Python Distribution <https://store.continuum.io/cshop/anaconda/>`_.

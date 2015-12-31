@@ -19,17 +19,17 @@ methods below for creating different objects.
 A ``Length``-type argument is for length quantities such as ``radius`` or ``height`` and can be
 one of the following:
 
-  * A ``AbstractFloat`` number. If so, the assumed units are ``"code_length"``.
-  * A ``(AbstractFloat, ASCIIString)`` tuple, e.g., ``(1.5, "Mpc")``.
+  * A ``Float64`` number. If so, the assumed units are ``"code_length"``.
+  * A ``Tuple{Float64, ASCIIString}``, e.g., ``(1.5, "Mpc")``.
   * A ``YTQuantity``.
 
 A ``Center``-type argument is for the ``center`` of an object and can be one of the following:
 
   * An ``ASCIIString``, e.g., ``"max"`` (or ``"m"``), ``"center"`` (or ``"c"``),
     corresponding to the point with maximum density and the center of the domain, respectively.
-  * A ``(ASCIIString, ASCIIString)`` tuple, e.g. ``("min", "temperature")``,
+  * A ``Tuple{ASCIIString, ASCIIString}``, e.g. ``("min", "temperature")``,
     or ``("max","velocity_x")``, corresponding to maxima and minima of specific fields.
-  * An ``Array`` of ``AbstractFloat`` numbers. If so, the assumed units are ``"code_length"``.
+  * An ``Array`` of ``Float64`` numbers. If so, the assumed units are ``"code_length"``.
   * A ``YTArray``.
 
 .. |yt_cont_docs| replace:: ``yt`` Documentation on data container objects
@@ -218,7 +218,7 @@ string ("x","y","z") or an integer (0,1,2), centered at some coordinate
 .. code-block:: julia
 
   function Slice(ds::Dataset, axis::Union{Integer,ASCIIString},
-                 coord::AbstractFloat;
+                 coord::Float64;
                  field_parameters=nothing,
                  data_source=nothing)
 

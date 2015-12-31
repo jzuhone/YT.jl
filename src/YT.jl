@@ -1,6 +1,6 @@
 module YT
 
-import Base: setindex!, getindex, show, set!
+import Base: setindex!, getindex, show
 
 # Datasets, Indices
 
@@ -153,7 +153,7 @@ load(fn::ASCIIString; args...) = Dataset(ytconv.load(fn; args...))
 
           julia> arr = rand(64,64,64)
           julia> data = Dict()
-          julia> data["density"] = (arr, "g/cm**3")
+          julia> data["density"] = (arr, "g/cm^3")
           julia> bbox = [-1.5 1.5; -1.5 1.5; -1.5 1.5]
           julia> ds = YT.load_uniform_grid(data, [64,64,64]; length_unit="Mpc",
                                            bbox=bbox, nprocs=64)
@@ -211,19 +211,18 @@ end
 
           julia> import YT
           julia> grid_data = [
-                   ["left_edge"=>[0.0, 0.0, 0.0],
-                    "right_edge"=>[1.0, 1.0, 1.0],
-                    "level"=>0,
-                    "dimensions"=>[32, 32, 32]],
-                   ["left_edge"=>[0.25, 0.25, 0.25],
-                    "right_edge"=>[0.75, 0.75, 0.75],
-                    "level"=>1,
-                    "dimensions"=>[32, 32, 32]]
+                   Dict("left_edge"=>[0.0, 0.0, 0.0],
+                        "right_edge"=>[1.0, 1.0, 1.0],
+                        "level"=>0,
+                        "dimensions"=>[32, 32, 32]),
+                   Dict("left_edge"=>[0.25, 0.25, 0.25],
+                        "right_edge"=>[0.75, 0.75, 0.75],
+                        "level"=>1,
+                        "dimensions"=>[32, 32, 32])
                  ]
           julia> for g in grid_data
-                     g["density"] = rand(g["dimensions"]...) * 2^g["level"]
+                     g["density"] = (rand(g["dimensions"]...) * 2^g["level"], "g/cm^3")
                  end
-          julia> field_units = ["density"=>"code_mass/code_length**3"]
           julia> ds = YT.load_amr_grids(grid_data, [32, 32, 32];
                                         field_units=field_units)
       """ ->

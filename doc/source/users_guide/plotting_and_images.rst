@@ -1,7 +1,7 @@
 .. _plotting-and-images:
 
 .. |yt_plotting_docs| replace:: ``yt`` plotting documentation
-.. _yt_plotting_docs: http://yt-project.org/docs/3.0/visualizing/plots.html
+.. _yt_plotting_docs: http://yt-project.org/doc/visualizing/plots.html
 
 Plotting and Images
 ===================
@@ -104,12 +104,12 @@ one can create a ``FixedResolutionBuffer`` object using the ``to_frb`` method:
 
 .. code-block:: julia
 
-    function to_frb(cont::Union(Slice,Proj), width::Length,
-                    nx::Union(Integer,(Integer,Integer)); 
+    function to_frb(cont::Union{Slice,Proj}, width::Length,
+                    nx::Union{Integer,Tuple{Integer,Integer}}; 
                     center=nothing, height=nothing, periodic=false)
                     
     function to_frb(cont::Cutting, width::Length,
-                    nx::Union(Integer,(Integer,Integer)); 
+                    nx::Union{Integer,Tuple{Integer,Integer}}; 
                     height=nothing, periodic=false)
 
 where ``cont`` is the ``Slice``, ``Proj``, or ``Cutting`` object, ``width`` is the width of the plot,

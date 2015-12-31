@@ -6,7 +6,7 @@ import ..data_objects: DataContainer
 import ..array: YTArray, convert_to_units
 @pyimport yt.data_objects.profiles as prof
 
-Field  = Union{ASCIIString,Union{ASCIIString,ASCIIString}}
+Field  = Union{ASCIIString,Tuple{ASCIIString,ASCIIString}}
 
 @doc doc"""
 
@@ -114,7 +114,7 @@ end
       Arguments:
 
       * `profile::YTProfile`: The profile to use.
-      * `new_unit::String`: The new unit.
+      * `new_unit::ASCIIString`: The new unit.
       """ ->
 function set_x_unit(profile::YTProfile, new_unit::ASCIIString)
     profile.profile[:set_x_unit](new_unit)
@@ -129,7 +129,7 @@ end
       Arguments:
 
       * `profile::YTProfile`: The profile to use.
-      * `new_unit::String`: The new unit.
+      * `new_unit::ASCIIString`: The new unit.
       """ ->
 function set_y_unit(profile::YTProfile, new_unit::ASCIIString)
     profile.profile[:set_y_unit](new_unit)
@@ -144,7 +144,7 @@ end
       Arguments:
 
       * `profile::YTProfile`: The profile to use.
-      * `new_unit::String`: The new unit.
+      * `new_unit::ASCIIString`: The new unit.
       """ ->
 function set_z_unit(profile::YTProfile, new_unit::ASCIIString)
     profile.profile[:set_z_unit](new_unit)
@@ -159,8 +159,8 @@ end
       Arguments:
 
       * `profile::YTProfile`: The profile to use.
-      * `field::String`: The name of the field to change the unit for.
-      * `new_unit::String`: The new unit.
+      * `field::ASCIIString`: The name of the field to change the unit for.
+      * `new_unit::ASCIIString`: The new unit.
       """ ->
 function set_field_unit(profile::YTProfile, field::ASCIIString, new_unit::ASCIIString)
     profile.unit_dict[field] = new_unit

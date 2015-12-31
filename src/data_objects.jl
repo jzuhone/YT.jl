@@ -8,14 +8,14 @@ import ..fixed_resolution: FixedResolutionBuffer
 
 Center = Union{ASCIIString,Array{Float64,1},YTArray,
                Tuple{ASCIIString,ASCIIString}}
-Length = Union{AbstractFloat,Tuple{AbstractFloat,ASCIIString},YTQuantity}
+Length = Union{Float64,Tuple{Float64,ASCIIString},YTQuantity}
 Field  = Union{ASCIIString,Tuple{ASCIIString,ASCIIString}}
 
 # Dataset
 
 type Dataset
     ds::PyObject
-    parameters::PyDict
+    parameters::Dict
     domain_center::YTArray
     domain_left_edge::YTArray
     domain_right_edge::YTArray
@@ -23,11 +23,15 @@ type Dataset
     domain_dimensions::Array{Int,1}
     dimensionality::Integer
     current_time::YTQuantity
-    current_redshift::AbstractFloat
+    current_redshift::Float64
     max_level::Integer
     function Dataset(ds::PyObject)
+        parameters = Dict()
+        for (k,v) in PyDict(ds["parameters"])
+            parameters[k] = v
+        end
         new(ds,
-            PyDict(ds["parameters"]::PyObject),
+            parameters,
             YTArray(ds["domain_center"]),
             YTArray(ds["domain_left_edge"]),
             YTArray(ds["domain_right_edge"]),
@@ -196,9 +200,9 @@ end
 
       * `ds::Dataset`: The dataset to be used.
       * `center::Center`: The center of the region
-      * `left_edge::Union(Array{Float64,1},YTArray)`: The left edge of
+      * `left_edge::Union{Array{Float64,1},YTArray}`: The left edge of
         the region
-      * `right_edge::Union(Array{Float64,1},YTArray)`: The right edge of
+      * `right_edge::Union{Array{Float64,1},YTArray}`: The right edge of
         the region
       * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
         field parameters than can be accessed by derived fields.
@@ -561,7 +565,7 @@ end
       * `ds::Dataset`: The dataset to be used.
       * `axis::Union(Integer,ASCIIString)`: The axis along which to slice.
         Can be 0, 1, or 2, or "x", "y", or "z", for x, y, z.
-      * `coord::AbstractFloat`: The coordinate along the axis at which to
+      * `coord::Float64`: The coordinate along the axis at which to
         slice. This is in "domain" coordinates.
       * `center::Array{Float64,1}` (optional): The 'center' supplied to fields that
         use it. Note that this does not have to have `coord` as one value.
@@ -584,7 +588,7 @@ type Slice <: DataContainer
     coord::Float64
     field_dict::Dict
     function Slice(ds::Dataset, axis::Union{Integer,ASCIIString},
-                   coord::AbstractFloat; center=nothing,
+                   coord::Float64; center=nothing,
                    field_parameters=nothing,
                    data_source=nothing)
         if data_source != nothing
@@ -605,9 +609,9 @@ end
 
       Arguments:
 
-      * `cont::Union(Slice,Proj)` or `cont::Cutting`: A Slice, Proj, or Cutting DataContainer.
+      * `cont::Union{Slice,Proj}` or `cont::Cutting`: A Slice, Proj, or Cutting DataContainer.
       * `width::Length`: The width of the FRB.
-      * `nx::Union(Integer,(Integer,Integer))`: Either an integer or a 2-tuple of
+      * `nx::Union{Integer,Tuple{Integer,Integer}}`: Either an integer or a 2-tuple of
         integers, corresponding to the dimensions of the image.
       * `center::Center` (optional): The center of the FRB. If not specified,
         defaults to the center of the current object. Not available if `cont` is a
@@ -622,7 +626,7 @@ end
           julia> frb = to_frb(slc, (500.,"kpc"), 800)
       """ ->
 function to_frb(cont::Union{Slice,Proj}, width::Length,
-                nx::Union{Integer,Union{Integer,Integer}}; center=nothing,
+                nx::Union{Integer,Tuple{Integer,Integer}}; center=nothing,
                 height=nothing, periodic=false)
     if typeof(width) <: YTQuantity
         w = PyObject(width)
@@ -636,7 +640,7 @@ function to_frb(cont::Union{Slice,Proj}, width::Length,
 end
 
 function to_frb(cont::Cutting, width::Length,
-                nx::Union{Integer,Union{Integer,Integer}};
+                nx::Union{Integer,Tuple{Integer,Integer}};
                 height=nothing, periodic=false)
     if typeof(width) <: YTQuantity
         w = PyObject(width)

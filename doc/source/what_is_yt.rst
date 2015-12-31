@@ -2,7 +2,7 @@ What is ``YT``?
 ===============
 
 .. |yt-docs| replace:: ``yt`` Documentation
-.. _yt-docs: http://yt-project.org/docs/3.0
+.. _yt-docs: http://yt-project.org/doc
 
 ``YT`` is a Julia interface to ``yt``. ``yt`` is a Python package for the analysis and
 visualization of volumetric simulation data. For more information about ``yt``,

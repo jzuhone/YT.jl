@@ -15,7 +15,7 @@ import PyCall: @pyimport, PyObject, pywrap
 
       * `ds::Dataset`: The dataset to be used.
       * `axis`: The axis to slice perpendicular to. Can be a string ("x","y", or "z"),
-        integer (0,1,2), or a three-element `Array` (e.g., [0.1,0.3,-0.5]), for an
+        integer (0,1, or 2), or a three-element `Array` (e.g., [0.1,0.3,-0.5]), for an
         off-axis slice.
       * `fields`: A single field, e.g. "density" or ("flash","dens"), or `Array` of fields.
       * `center` (optional): The coordinate of the center of the image. A sequence of

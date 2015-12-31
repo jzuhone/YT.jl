@@ -23,7 +23,7 @@ by a field. These can be in 1D, 2D, or 3D. ``YT`` reproduces this functionality 
   * ``n_bins``: A single integer or tuple of 2 or 3 integers, to determine the number of bins
     along each dimension.
   * ``extrema``: A dictionary of tuples (with the field names as the keys) that determine the
-    maximum and minimum of the bin ranges, e.g. ["density"=>(1.0e-30, 1.0e-25)]. If a field's
+    maximum and minimum of the bin ranges, e.g. Dict("density"=>(1.0e-30, 1.0e-25)). If a field's
     extrema are not specified, the extrema of the field in the ``data_source`` are assumed. The
     extrema are assumed to be in the units of the field in the ``units`` argument unless it is not
     specified, otherwise they are in the field's default units.
@@ -46,9 +46,9 @@ and with the units of the radius in kpc:
 
    julia> sp = YT.Sphere(ds, "max", (1.0,"Mpc"))
 
-   julia> units = ["radius"=>"kpc"]
+   julia> units = Dict("radius"=>"kpc")
 
-   julia> logs = ["radius"=>false]
+   julia> logs = Dict("radius"=>false)
 
    julia> fields = ["density","temperature"]
    
@@ -214,10 +214,10 @@ Similarly, the units of the ``fields`` can be changed with ``set_field_unit``:
 
 .. code-block:: jlcon
 
-   julia> YT.set_field_unit(profile, "density", "Msun/kpc**3")
+   julia> YT.set_field_unit(profile, "density", "Msun/kpc^3")
 
    julia> profile["density"]
-   100-element YTArray (Msun/kpc**3):
+   100-element YTArray (Msun/kpc^3):
     1.16056e6
     1.00365e6
     754309.0

@@ -1,13 +1,13 @@
 .. _in_memory_datasets:
 
 .. |yt-docs| replace:: ``yt`` Documentation
-.. _yt-docs: http://yt-project.org/docs/3.0
+.. _yt-docs: http://yt-project.org/doc
 
 .. |generic_array_data| replace:: Loading Generic Array Data
-.. _generic_array_data: http://yt-project.org/docs/3.0/examining/generic_array_data.html
+.. _generic_array_data: http://yt-project.org/doc/examining/generic_array_data.html
 
 .. |generic_particle_data| replace:: Loading Generic Particle Data
-.. _generic_particle_data: http://yt-project.org/docs/3.0/examining/generic_particle_data.html
+.. _generic_particle_data: http://yt-project.org/doc/examining/generic_particle_data.html
 
 
 In-Memory Datasets
@@ -143,14 +143,14 @@ and a subgrid at ``level == 1``.
 .. code:: jlcon
 
     grid_data = [
-            ["left_edge"=>[0.0, 0.0, 0.0],
-             "right_edge"=>[1.0, 1.0, 1.0],
-             "level"=>0,
-             "dimensions"=>[32, 32, 32]],
-            ["left_edge"=>[0.25, 0.25, 0.25],
-             "right_edge"=>[0.75, 0.75, 0.75],
-             "level"=>1,
-             "dimensions"=>[32, 32, 32]]
+            Dict("left_edge"=>[0.0, 0.0, 0.0],
+                 "right_edge"=>[1.0, 1.0, 1.0],
+                 "level"=>0,
+                 "dimensions"=>[32, 32, 32]),
+            Dict("left_edge"=>[0.25, 0.25, 0.25],
+                 "right_edge"=>[0.75, 0.75, 0.75],
+                 "level"=>1,
+                 "dimensions"=>[32, 32, 32])
        ]
 
 We'll just fill each grid with random density data, with a scaling with
@@ -159,7 +159,7 @@ the grid refinement level.
 .. code:: jlcon
 
     for g in grid_data
-        g["density"] = rand(g["dimensions"]...) * 2^g["level"]
+        g["density"] = (rand(g["dimensions"]...) * 2^g["level"], "g/cm^3")
     end
 
 Particle fields are supported by adding 1-dimensional arrays to each
@@ -178,15 +178,6 @@ elsewhere; set them to empty ``Float64 Array``\ s:
     grid_data[2]["particle_position_x"] = 0.5*rand(1000)+0.25
     grid_data[2]["particle_position_y"] = 0.5*rand(1000)+0.25
     grid_data[2]["particle_position_z"] = 0.5*rand(1000)+0.25
-
-We need to specify the field units in a ``field_units`` ``Dict``:
-
-.. code:: jlcon
-
-    field_units = ["density"=>"code_mass/code_length**3",
-                   "particle_position_x"=>"code_length",
-                   "particle_position_y"=>"code_length",
-                   "particle_position_z"=>"code_length"]
 
 Then, call ``load_amr_grids``:
 

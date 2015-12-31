@@ -24,7 +24,7 @@ which will also install the following dependencies (if you don't already have th
 * [PyPlot](http://github.com/stevengj/PyPlot.jl)
 * [SymPy](http://github.com/jverzani/SymPy.jl)
 
-However, for `YT` to work, `yt` itself must be installed. `YT` version 0.2.1 requires `yt` version 3.2 or higher.
+However, for `YT` to work, `yt` itself must be installed. `YT` version 0.2.1 requires `yt` version 3.2.2 or higher.
 The best ways to install `yt` are via the [install script](http://yt-project.org/#getyt) or via the
 [Anaconda Python Distribution](https://store.continuum.io/cshop/anaconda).
 

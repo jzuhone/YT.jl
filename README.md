@@ -40,5 +40,5 @@ to use it as an application, loading its methods into the current session's name
 
 ## Documentation
 
-For more documentation, please visit [http://www.jzuhone.com/yt_julia](http://www.jzuhone.com/yt_julia).
+For more documentation, please visit [http://hea-www.cfa.harvard.edu/~jzuhone/yt_julia](http://hea-www.cfa.harvard.edu/~jzuhone/yt_julia).
 

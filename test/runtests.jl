@@ -1,4 +1,4 @@
-test_dir = Pkg.dir("YT") * "/test"
+test_dir = dirname(@__FILE__)
 
 if haskey(ENV,"PYTHONPATH")
     ENV["PYTHONPATH"] = "$(test_dir):" * ENV["PYTHONPATH"]

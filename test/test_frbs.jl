@@ -1,7 +1,7 @@
 using Base.Test
 using YT
 
-test_dir = Pkg.dir("YT") * "/test"
+test_dir = dirname(@__FILE__)
 
 file_to_read = "$(test_dir)/frbs.h5"
 

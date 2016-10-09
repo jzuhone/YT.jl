@@ -1,31 +1,21 @@
-language: cpp
-compiler:
-  - clang
+language: julia
+julia:
+  - 0.4
+  - 0.5
+  - nightly
 notifications:
   email: false
-env:
-  - JULIAVERSION="juliareleases"
-  - JULIAVERSION="julianightlies"
 before_install:
-  - sudo add-apt-repository ppa:staticfloat/julia-deps -y
-  - sudo add-apt-repository ppa:staticfloat/${JULIAVERSION} -y
-  - sudo apt-get update -qq -y
-  - sudo apt-get install libpcre3-dev julia -y
   # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
   - sudo rm -rf /dev/shm
   - sudo ln -s /run/shm /dev/shm
-  - wget http://yt-project.org/data/enzo_tiny_cosmology.tar.gz
-  - wget http://yt-project.org/data/WindTunnel.tar.gz
-  - tar -zxvf enzo_tiny_cosmology.tar.gz
-  - tar -zxvf WindTunnel.tar.gz
   - julia -e 'Pkg.add("Conda"); using Conda; Conda.add("yt")'
-  - julia -e 'Pkg.add("Glob")'
   - export CONDA_PYTHON=`julia -e 'import Conda; print(Conda.PREFIX)'`
   - export PATH=$CONDA_PYTHON/bin:$PATH
   - export LD_LIBRARY_PATH=$CONDA_PYTHON/lib
-script:
-  - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("YT"))`); Pkg.pin("YT"); Pkg.resolve()'
-  - julia -e 'using YT; @assert isdefined(:YT); @assert typeof(YT) === Module'
-  - julia --code-coverage test/runtests.jl
+#script: # use the default script setting
+#  - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("YT"))`); Pkg.pin("YT"); Pkg.resolve()'
+#  - julia -e 'using YT; @assert isdefined(:YT); @assert typeof(YT) === Module'
+#  - julia --code-coverage test/runtests.jl
 after_success:
   - julia -e 'cd(Pkg.dir("YT")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'

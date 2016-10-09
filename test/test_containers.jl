@@ -14,7 +14,7 @@ YT.get_field_list(ds)
 YT.get_derived_field_list(ds)
 show(STDOUT, ds)
 
-test_dir = Pkg.dir("YT") * "/test"
+test_dir = dirname(@__FILE__)
 
 file_to_read = "$(test_dir)/containers.h5"
 

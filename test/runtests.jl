@@ -1,4 +1,17 @@
-test_dir = Pkg.dir("YT") * "/test"
+test_dir = dirname(@__FILE__)
+
+if !isfile("enzo_tiny_cosmology.tar.gz")
+    run(`wget http://yt-project.org/data/enzo_tiny_cosmology.tar.gz`)
+end
+if !isfile("WindTunnel.tar.gz")
+    run(`wget http://yt-project.org/data/WindTunnel.tar.gz`)
+end
+if !isdir("enzo_tiny_cosmology")
+    run(`tar -zxvf enzo_tiny_cosmology.tar.gz`)
+end
+if !isdir("WindTunnel")
+    run(`tar -zxvf WindTunnel.tar.gz`)
+end
 
 if haskey(ENV,"PYTHONPATH")
     ENV["PYTHONPATH"] = "$(test_dir):" * ENV["PYTHONPATH"]

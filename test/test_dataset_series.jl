@@ -6,7 +6,7 @@ ytcfg["yt","loglevel"] = "30"
 @test ytcfg["yt","loglevel"] == "30"
 show(ytcfg)
 
-test_dir = Pkg.dir("YT") * "/test"
+test_dir = dirname(@__FILE__)
 
 file_to_read = "$(test_dir)/dataset_series.h5"
 

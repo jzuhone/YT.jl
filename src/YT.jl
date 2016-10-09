@@ -227,13 +227,12 @@ end
                                         field_units=field_units)
       """ ->
 function load_amr_grids(data::Array, domain_dimensions::Array;
-                        field_units=nothing, bbox=nothing, sim_time=0.0,
-                        length_unit=nothing, mass_unit=nothing, time_unit=nothing,
+                        bbox=nothing, sim_time=0.0, length_unit=nothing,
+                        mass_unit=nothing, time_unit=nothing,
                         velocity_unit=nothing, magnetic_unit=nothing,
                         periodicity=(true, true, true), geometry="cartesian", refine_by=2)
-    ds = ytstream.load_amr_grids(data, domain_dimensions; field_units=field_units,
-                                 bbox=bbox, sim_time=sim_time, length_unit=length_unit,
-                                 mass_unit=mass_unit, time_unit=time_unit,
+    ds = ytstream.load_amr_grids(data, domain_dimensions; bbox=bbox, sim_time=sim_time,
+                                 length_unit=length_unit, mass_unit=mass_unit, time_unit=time_unit,
                                  velocity_unit=velocity_unit, magnetic_unit=magnetic_unit,
                                  periodicity=periodicity, geometry=geometry, refine_by=refine_by)
     return Dataset(ds)

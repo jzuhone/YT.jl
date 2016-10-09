@@ -18,12 +18,10 @@ grid_data = [
   ]
 
 for g in grid_data
-    g["density"] = rand(g["dimensions"]...) * 2^g["level"]
+    g["density"] = (rand(g["dimensions"]...) * 2^g["level"], "code_mass/code_length**3")
 end
 
-field_units = Dict("density"=>"code_mass/code_length**3")
-
-ds = YT.load_amr_grids(grid_data, [32, 32, 32]; field_units=field_units)
+ds = YT.load_amr_grids(grid_data, [32, 32, 32])
 
 n_particles = 5000000
 data = Dict()

@@ -153,8 +153,10 @@ j = YTQuantity(2.0,"cm")
 k = YTQuantity(3.0,"cm")
 
 l = sqrt(i*i+j*j+k*k)
+m = hypot(i,j,k)
 
-@test hypot(i,j,k) == l
+@test_approx_eq m.value l.value
+@test m.units == l.units
 
 @test sum(a).value == sum(a.value)
 @test sum(a).units == a.units

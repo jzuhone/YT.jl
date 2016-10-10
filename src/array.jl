@@ -9,7 +9,7 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              sum_kbn, gradient, dims2string, mean, std, stdm, var, varm,
              median, middle, midpoints, quantile, fill, start, next, done,
              +, -, *, /, \, ==, !=, >=, <=, >, <, ./, .\, .*, .==, .!=,
-             .>=, .<=, .>, .<, .^, ^, getindex, setindex!, isequal
+             .>=, .<=, .>, .<, .^, ^, getindex, setindex!, isequal, length
 
 import SymPy: Sym
 import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin, PyAny
@@ -659,5 +659,7 @@ fill(a::YTQuantity, dims::Integer...) = YTArray(fill(a.value,dims), a.units)
 start(a::YTArray) = 1
 next(a::YTArray,i) = (a[i],i+1)
 done(a::YTArray,i) = (i > length(a))
+
+length(a::YTQuantity) = length(a.value)
 
 end

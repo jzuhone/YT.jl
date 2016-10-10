@@ -90,7 +90,11 @@ import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,
     set_field_unit, variance
 import .dataset_series: DatasetSeries
 
-@doc doc""" Enable the plugins defined in the plugin file.""" ->
+"""
+    enable_plugins()
+
+Enable the plugins defined in the plugin file.
+"""
 enable_plugins = yt.enable_plugins
 
 type YTConfig
@@ -108,56 +112,71 @@ end
 
 show(ytcfg::YTConfig) = typeof(ytcfg)
 
-@doc doc""" The yt configuration object.""" ->
 ytcfg = YTConfig(ytconfig.ytcfg)
 
-@doc doc""" `load` a `Dataset` object from the file `fn::String`.""" ->
+"""
+    load(fn::String; args...)
+
+Load a `Dataset` object from a file.
+"""
 load(fn::String; args...) = Dataset(ytconv.load(fn; args...))
 
 # Stream datasets
 
-@doc doc"""
+"""
+    load_uniform_grid(data::Dict{Any,Any}, domain_dimensions::Array;
+                      length_unit=nothing, bbox=nothing,
+                      nprocs=1, sim_time=0.0, mass_unit=nothing,
+                      time_unit=nothing, velocity_unit=nothing,
+                      magnetic_unit=nothing,
+                      periodicity=(true, true, true),
+                      geometry="cartesian")
 
-      Load a uniform grid of in-memory data into yt.
+Load a uniform grid of in-memory data into yt.
 
-      This should allow a uniform grid of data to be loaded directly into yt and
-      analyzed as would any others.  This comes with several caveats:
+This should allow a uniform grid of data to be loaded directly into yt and
+analyzed. This comes with several caveats:
 
-      * Units will be incorrect unless the unit system is explicitly
-        specified.
-      * Particles may be difficult to integrate.
+* Units will be incorrect unless the unit system is explicitly
+  specified.
+* Particles may be difficult to integrate.
 
-      Particle fields are detected as one-dimensional fields. The number of
-      particles is set by the `number_of_particles` key in data.
+Particle fields are detected as one-dimensional fields. The number of
+particles is set by the `number_of_particles` key in data.
 
-      Arguments:
+# Arguments
 
-      * `data::Dict`: A dict of Arrays or (Array, unit string) tuples.
-        The keys are the field names.
-      * `domain_dimensions::Array`: These are the domain dimensions of the grid
-      * `length_unit::String` (optional): Unit to use for lengths. Defaults to 1 cm.
-      * `bbox::Array` (optional): Size of computational domain in units specified by
-        `length_unit`. Defaults to a cubic unit-length domain.
-      * `nprocs::Integer` (optional): If greater than 1, will create this number of
-        subgrids out of data
-      * `sim_time::Real` (optional): The simulation time.
-      * `mass_unit` (optional): Unit to use for lengths. Defaults to 1 g.
-      * `time_unit` (optional): Unit to use for lengths. Defaults to 1 s.
-      * `velocity_unit` (optional): Unit to use for lengths. Defaults to 1 cm/s.
-      * `magnetic_unit` (optional): Unit to use for lengths. Defaults to 1 gauss.
-      * `periodicity::Tuple{Bool,Bool,Bool}` (optional): Determines whether the data
-        will be treated as periodic along each axis.
-      * `geometry::String` (optional): "cartesian", "cylindrical" or "polar"
+* `data::Dict`: A dict of Arrays or (Array, unit string) tuples. The keys are
+  the field names.
+* `domain_dimensions::Array`: These are the domain dimensions of the grid
+* `length_unit=nothing` (optional): Unit to use for lengths. Defaults to 1 cm.
+* `bbox=nothing` (optional): Size of computational domain in units specified by
+  `length_unit`. Defaults to a cubic unit-length domain.
+* `nprocs::Integer=1` (optional): If greater than 1, will create this number of
+  subgrids out of data
+* `sim_time::Real=0.0` (optional): The simulation time.
+* `mass_unit=nothing` (optional): Unit to use for lengths. Defaults to 1 g.
+* `time_unit=nothing` (optional): Unit to use for lengths. Defaults to 1 s.
+* `velocity_unit=nothing` (optional): Unit to use for lengths. Defaults to
+  1 cm/s.
+* `magnetic_unit=nothing` (optional): Unit to use for lengths. Defaults to 1
+  gauss.
+* `periodicity::Tuple{Bool,Bool,Bool}=(true, true, true)` (optional): Determines
+  whether the data will be treated as periodic along each axis.
+* `geometry::String="cartesian"` (optional): "cartesian", "cylindrical" or
+  "polar"
 
-      Examples:
-
-          julia> arr = rand(64,64,64)
-          julia> data = Dict()
-          julia> data["density"] = (arr, "g/cm^3")
-          julia> bbox = [-1.5 1.5; -1.5 1.5; -1.5 1.5]
-          julia> ds = YT.load_uniform_grid(data, [64,64,64]; length_unit="Mpc",
-                                           bbox=bbox, nprocs=64)
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> arr = rand(64,64,64)
+julia> data = Dict()
+julia> data["density"] = (arr, "g/cm^3")
+julia> bbox = [-1.5 1.5; -1.5 1.5; -1.5 1.5]
+julia> ds = YT.load_uniform_grid(data, [64,64,64]; length_unit="Mpc",
+                                 bbox=bbox, nprocs=64)
+```
+"""
 function load_uniform_grid(data::Dict{Any,Any}, domain_dimensions::Array;
                            length_unit=nothing, bbox=nothing,
                            nprocs=1, sim_time=0.0, mass_unit=nothing,

@@ -78,7 +78,7 @@ type YTQuantity{T<:Real}
     units::YTUnit
 end
 
-function YTQuantity{T<:Real}(value::T, units::ASCIIString; registry=nothing)
+function YTQuantity{T<:Real}(value::T, units::String; registry=nothing)
     units = replace(units, "^", "**")
     unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
     yt_units = YTUnit(unitary_quan,
@@ -87,7 +87,7 @@ function YTQuantity{T<:Real}(value::T, units::ASCIIString; registry=nothing)
     YTQuantity{T}(value, yt_units)
 end
 
-function YTQuantity{T<:Real}(ds, value::T, units::ASCIIString)
+function YTQuantity{T<:Real}(ds, value::T, units::String)
     YTQuantity(value, units, registry=ds.ds["unit_registry"])
 end
 
@@ -95,7 +95,7 @@ function YTQuantity{T<:Real}(value::T, units::Sym; registry=nothing)
     YTQuantity(value, string(units); registry=registry)
 end
 
-YTQuantity(value::Bool, units::ASCIIString) = value
+YTQuantity(value::Bool, units::String) = value
 YTQuantity(value::Bool, units::Sym) = value
 YTQuantity(value::Bool, units::YTUnit) = value
 YTQuantity(value::Bool) = value
@@ -119,7 +119,7 @@ end
 YTArray{T<:Real}(value::Array{T}, units::YTUnit) = YTArray{T}(value, units)
 YTArray{T<:Real}(value::PyArray{T}, units::YTUnit) = YTArray{T}(value, units)
 
-function YTArray{T<:Real}(value::Array{T}, units::ASCIIString; registry=nothing)
+function YTArray{T<:Real}(value::Array{T}, units::String; registry=nothing)
     units = replace(units, "^", "**")
     unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
     yt_units = YTUnit(unitary_quan,
@@ -128,7 +128,7 @@ function YTArray{T<:Real}(value::Array{T}, units::ASCIIString; registry=nothing)
     YTArray{T}(value, yt_units)
 end
 
-function YTArray{T<:Real}(value::PyArray{T}, units::ASCIIString;
+function YTArray{T<:Real}(value::PyArray{T}, units::String;
                           registry=nothing)
     units = replace(units, "^", "**")
     unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
@@ -146,7 +146,7 @@ function YTArray(yt_array::PyObject)
     YTArray{eltype(value)}(value, yt_units)
 end
 
-function YTArray{T<:Real}(ds, value::Array{T}, units::ASCIIString)
+function YTArray{T<:Real}(ds, value::Array{T}, units::String)
     YTArray(value, units, registry=ds.ds["unit_registry"])
 end
 function YTArray{T<:Real}(value::Array{T}, units::Sym; registry=nothing)
@@ -155,10 +155,10 @@ end
 function YTArray{T<:Real}(value::PyArray{T}, units::Sym; registry=nothing)
     YTArray(value, string(units); registry=registry)
 end
-function YTArray(value::Real, units::ASCIIString; registry=nothing)
+function YTArray(value::Real, units::String; registry=nothing)
     YTQuantity(value, units; registry=registry)
 end
-function YTArray(ds, value::Real, units::ASCIIString)
+function YTArray(ds, value::Real, units::String)
     YTQuantity(value, units, registry=ds.ds["unit_registry"])
 end
 function YTArray(value::Real, units::Sym; registry=nothing)
@@ -166,7 +166,7 @@ function YTArray(value::Real, units::Sym; registry=nothing)
 end
 YTArray(value::Real, units::YTUnit) = YTQuantity(value, units)
 
-YTArray(value::BitArray, units::ASCIIString) = value
+YTArray(value::BitArray, units::String) = value
 YTArray(value::BitArray, units::Sym) = value
 YTArray(value::BitArray, units::YTUnit) = value
 
@@ -308,7 +308,7 @@ end
 # Unit conversions
 
 
-function in_units(a::YTObject, units::ASCIIString)
+function in_units(a::YTObject, units::String)
     units = replace(units, "^", "**")
     a.value*pycall(a.units.yt_unit["in_units"], YTQuantity, units)
 end
@@ -321,7 +321,7 @@ function in_mks(a::YTObject)
     a.value*pycall(a.units.yt_unit["in_mks"], YTQuantity)
 end
 
-function convert_to_units(a::YTObject, units::ASCIIString)
+function convert_to_units(a::YTObject, units::String)
     units = replace(units, "^",	"**")
     new_unit = pycall(a.units.yt_unit["in_units"], YTQuantity, units)
     a.value *= new_unit.value
@@ -591,10 +591,10 @@ quantile(a::YTArray,q::Number) = YTArray(quantile(a.value, q), a.units)
       Parameters:
 
       * `a::YTArray`: The `YTArray` to write to the file.
-      * `filename::ASCIIString`: The file to write to.
-      * `dataset_name::ASCIIString`: The name of the HDF5 dataset to
+      * `filename::String`: The file to write to.
+      * `dataset_name::String`: The name of the HDF5 dataset to
         write the data into.
-      * `info::Dict{ASCIIString,Any}`: A dictionary of keys and values
+      * `info::Dict{String,Any}`: A dictionary of keys and values
         to write to the file, associated with this array, that will be
         stored in the dataset attributes.
 
@@ -604,7 +604,7 @@ quantile(a::YTArray,q::Number) = YTArray(quantile(a.value, q), a.units)
           julia> a = YTArray(rand(10), "cm/s")
           juila> write_hdf5(a, "my_file.h5", dataset_name="velocity")
       """ ->
-function write_hdf5(a::YTArray, filename::ASCIIString; dataset_name=nothing,
+function write_hdf5(a::YTArray, filename::String; dataset_name=nothing,
                     info=nothing)
     arr = PyObject(a)
     arr[:write_hdf5](filename; dataset_name=dataset_name, info=info)
@@ -615,8 +615,8 @@ end
 
       Parameters:
 
-      * `filename::ASCIIString`: The file to read from.
-      * `dataset_name::ASCIIString`: The name of the HDF5 dataset to
+      * `filename::String`: The file to read from.
+      * `dataset_name::String`: The name of the HDF5 dataset to
         read the data from.
 
       Examples:
@@ -624,13 +624,13 @@ end
           julia> using YT
           juila> v = from_hdf5("my_file.h5", dataset_name="velocity")
       """ ->
-function from_hdf5(filename::ASCIIString; dataset_name=nothing)
+function from_hdf5(filename::String; dataset_name=nothing)
     YTArray(pycall(bare_array["from_hdf5"], PyObject, filename; dataset_name=dataset_name))
 end
 
 # Unit equivalencies
 
-function to_equivalent(a::YTObject, unit::ASCIIString, equiv::ASCIIString; args...)
+function to_equivalent(a::YTObject, unit::String, equiv::String; args...)
     arr = PyObject(a)
     unit = replace(unit, "^", "**")
     equ = pycall(arr["to_equivalent"], PyObject, unit, equiv; args...)
@@ -642,7 +642,7 @@ function list_equivalencies(a::YTObject)
     arr[:list_equivalencies]()
 end
 
-function has_equivalent(a::YTObject, equiv::ASCIIString)
+function has_equivalent(a::YTObject, equiv::String)
     arr = PyObject(a)
     arr[:has_equivalent](equiv)
 end

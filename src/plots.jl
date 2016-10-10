@@ -45,7 +45,7 @@ import PyCall: @pyimport, PyObject, pywrap
         examples, code units are assumed, for example (0.2, 0.3) requests a plot that has an
         x width of 0.2 and a y width of 0.3 in code units.  If units are provided the resulting
         plot axis labels will use the supplied units.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
+      * `field_parameters::Dict{String,Any}` (optional): A dictionary of
         field parameters than can be accessed by derived fields.
 
       Other optional arguments are handled by `yt`, consult the `yt` documentation for details.
@@ -109,7 +109,7 @@ end
       * `data_source::DataContainer` (optional): An optional data source to use when
         making the projection. Only the elements which have coordinates within the
         `data_source` will be used in the projection.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
+      * `field_parameters::Dict{String,Any}` (optional): A dictionary of
         field parameters than can be accessed by derived fields.
 
       Other optional arguments are handled by `yt`, consult the `yt` documentation for details.

@@ -5,7 +5,7 @@ import PyCall: PyObject
 import ..array: YTArray, YTQuantity
 import Base: show, getindex
 
-Field  = Union{ASCIIString,Tuple{ASCIIString,ASCIIString}}
+Field  = Union{String,Tuple{String,String}}
 
 # FixedResolutionBuffer
 
@@ -25,8 +25,8 @@ function getindex(frb::FixedResolutionBuffer, field::Field)
     return frb.data[field]
 end
 
-getindex(frb::FixedResolutionBuffer, ftype::ASCIIString,
-         fname::ASCIIString) = getindex(frb, (ftype, fname))
+getindex(frb::FixedResolutionBuffer, ftype::String,
+         fname::String) = getindex(frb, (ftype, fname))
 
 function show(io::IO, frb::FixedResolutionBuffer)
     println(io,"FixedResolutionBuffer ($(frb.buff_size[1])x$(frb.buff_size[2]))")

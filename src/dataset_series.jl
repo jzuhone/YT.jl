@@ -9,7 +9,7 @@ import PyCall: @pyimport, PyObject
 
 @doc doc"""
       Construct a time series sequence of datasets
-      from an array of filenames, `fns::Array{Union{ASCIIString,UTF8String},1}`.
+      from an array of filenames, `fns::Array{Union{String,UTF8String},1}`.
 
       Examples:
 
@@ -31,7 +31,7 @@ import PyCall: @pyimport, PyObject
 type DatasetSeries
     ts::PyObject
     num_ds::Int
-    function DatasetSeries(fns::Array{Union{ASCIIString,UTF8String},1})
+    function DatasetSeries(fns::Array{Union{String,UTF8String},1})
         ts = time_series.DatasetSeries(fns)
         num_ds = length(fns)
         new(ts, num_ds)

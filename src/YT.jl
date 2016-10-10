@@ -97,13 +97,13 @@ type YTConfig
     ytcfg::PyObject
 end
 
-function setindex!(ytcfg::YTConfig, value::ASCIIString, section::ASCIIString,
-                   param::ASCIIString)
+function setindex!(ytcfg::YTConfig, value::String, section::String,
+                   param::String)
     set!(ytcfg.ytcfg, (section,param), value)
 end
 
-function getindex(ytcfg::YTConfig, section::ASCIIString, param::ASCIIString)
-    pycall(ytcfg.ytcfg["get"], ASCIIString, section, param)
+function getindex(ytcfg::YTConfig, section::String, param::String)
+    pycall(ytcfg.ytcfg["get"], String, section, param)
 end
 
 show(ytcfg::YTConfig) = typeof(ytcfg)
@@ -111,8 +111,8 @@ show(ytcfg::YTConfig) = typeof(ytcfg)
 @doc doc""" The yt configuration object.""" ->
 ytcfg = YTConfig(ytconfig.ytcfg)
 
-@doc doc""" `load` a `Dataset` object from the file `fn::ASCIIString`.""" ->
-load(fn::ASCIIString; args...) = Dataset(ytconv.load(fn; args...))
+@doc doc""" `load` a `Dataset` object from the file `fn::String`.""" ->
+load(fn::String; args...) = Dataset(ytconv.load(fn; args...))
 
 # Stream datasets
 
@@ -135,7 +135,7 @@ load(fn::ASCIIString; args...) = Dataset(ytconv.load(fn; args...))
       * `data::Dict`: A dict of Arrays or (Array, unit string) tuples.
         The keys are the field names.
       * `domain_dimensions::Array`: These are the domain dimensions of the grid
-      * `length_unit::ASCIIString` (optional): Unit to use for lengths. Defaults to 1 cm.
+      * `length_unit::String` (optional): Unit to use for lengths. Defaults to 1 cm.
       * `bbox::Array` (optional): Size of computational domain in units specified by
         `length_unit`. Defaults to a cubic unit-length domain.
       * `nprocs::Integer` (optional): If greater than 1, will create this number of
@@ -147,7 +147,7 @@ load(fn::ASCIIString; args...) = Dataset(ytconv.load(fn; args...))
       * `magnetic_unit` (optional): Unit to use for lengths. Defaults to 1 gauss.
       * `periodicity::Tuple{Bool,Bool,Bool}` (optional): Determines whether the data
         will be treated as periodic along each axis.
-      * `geometry::ASCIIString` (optional): "cartesian", "cylindrical" or "polar"
+      * `geometry::String` (optional): "cartesian", "cylindrical" or "polar"
 
       Examples:
 
@@ -193,7 +193,7 @@ end
       * `field_units::Dict` (optional): A dictionary mapping string field names
         to string unit specifications.  The field names must correspond to the
         fields in grid_data.
-      * `length_unit::ASCIIString` (optional): Unit to use for lengths. Defaults to 1 cm.
+      * `length_unit::String` (optional): Unit to use for lengths. Defaults to 1 cm.
       * `bbox::Array` (optional): Size of computational domain in units specified by
         `length_unit`. Defaults to a cubic unit-length domain.
       * `sim_time::Real` (optional): The simulation time.
@@ -203,7 +203,7 @@ end
       * `magnetic_unit` (optional): Unit to use for lengths. Defaults to 1 gauss.
       * `periodicity::Tuple{Bool,Bool,Bool}` (optional): Determines whether the data
         will be treated as periodic along each axis.
-      * `geometry::ASCIIString` (optional): "cartesian", "cylindrical" or "polar"
+      * `geometry::String` (optional): "cartesian", "cylindrical" or "polar"
       * `refine_by::Integer` (optional): Specifies the refinement ratio between
         levels.  Defaults to 2.
 
@@ -252,7 +252,7 @@ end
       * `data::Dict`: This is a dict of Arrays, where the keys are the field names.
         Particle positions must be named "particle_position_x",
         "particle_position_y", "particle_position_z".
-      * `length_unit::ASCIIString` (optional): Unit to use for lengths. Defaults to 1 cm.
+      * `length_unit::String` (optional): Unit to use for lengths. Defaults to 1 cm.
       * `bbox::Array` (optional): Size of computational domain in units specified by
         `length_unit`. Defaults to a cubic unit-length domain.
       * `sim_time::Real` (optional): The simulation time.
@@ -262,7 +262,7 @@ end
       * `magnetic_unit` (optional): Unit to use for lengths. Defaults to 1 gauss.
       * `periodicity::Tuple{Bool,Bool,Bool}` (optional): Determines whether the data
         will be treated as periodic along each axis.
-      * `geometry::ASCIIString` (optional): "cartesian", "cylindrical" or "polar"
+      * `geometry::String` (optional): "cartesian", "cylindrical" or "polar"
       * `n_ref::Integer` (optional): The number of particles that result in refining an
         oct used for indexing the particles.
 

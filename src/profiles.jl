@@ -6,7 +6,7 @@ import ..data_objects: DataContainer
 import ..array: YTArray, convert_to_units
 @pyimport yt.data_objects.profiles as prof
 
-Field  = Union{ASCIIString,Tuple{ASCIIString,ASCIIString}}
+Field  = Union{String,Tuple{String,String}}
 
 @doc doc"""
 
@@ -23,12 +23,12 @@ Field  = Union{ASCIIString,Tuple{ASCIIString,ASCIIString}}
       * `fields`: A single field or `Array` of fields to be binned.
       * `n_bins`: A single integer or tuple of 2 or 3 integers, to determine the number of bins along
         each dimension.
-      * `extrema::Dict{ASCIIString,Any}`: A dictionary of tuples (with the field names as the keys) that
+      * `extrema::Dict{String,Any}`: A dictionary of tuples (with the field names as the keys) that
         determine the maximum and minimum of the bin ranges, e.g. Dict("density"=>(1.0e-30, 1.0e-25)). If a
         field's extrema are not specified, the extrema of the field in the `data_source` are assumed. The
         extrema are assumed to be in the units of the field in the `units` argument unless it is not
         specified, otherwise they are in the field's default units.
-      * `logs::Dict{ASCIIString,Bool}`: A dictionary (with the field names as the keys) that determines whether
+      * `logs::Dict{String,Bool}`: A dictionary (with the field names as the keys) that determines whether
         the bins are in logspace or linear space, e.g. Dict("radius"=>false). If not set, the `take_log`
         attribute for the field determines this.
       * `units`: A dictionary (with the field names as the keys) that determines the units
@@ -114,9 +114,9 @@ end
       Arguments:
 
       * `profile::YTProfile`: The profile to use.
-      * `new_unit::ASCIIString`: The new unit.
+      * `new_unit::String`: The new unit.
       """ ->
-function set_x_unit(profile::YTProfile, new_unit::ASCIIString)
+function set_x_unit(profile::YTProfile, new_unit::String)
     profile.profile[:set_x_unit](new_unit)
     profile.x = YTArray(profile.profile["x"])
     profile.x_bins = YTArray(profile.profile["x_bins"])
@@ -129,9 +129,9 @@ end
       Arguments:
 
       * `profile::YTProfile`: The profile to use.
-      * `new_unit::ASCIIString`: The new unit.
+      * `new_unit::String`: The new unit.
       """ ->
-function set_y_unit(profile::YTProfile, new_unit::ASCIIString)
+function set_y_unit(profile::YTProfile, new_unit::String)
     profile.profile[:set_y_unit](new_unit)
     profile.y = YTArray(profile.profile["y"])
     profile.y_bins = YTArray(profile.profile["y_bins"])
@@ -144,9 +144,9 @@ end
       Arguments:
 
       * `profile::YTProfile`: The profile to use.
-      * `new_unit::ASCIIString`: The new unit.
+      * `new_unit::String`: The new unit.
       """ ->
-function set_z_unit(profile::YTProfile, new_unit::ASCIIString)
+function set_z_unit(profile::YTProfile, new_unit::String)
     profile.profile[:set_z_unit](new_unit)
     profile.z = YTArray(profile.profile["z"])
     profile.z_bins = YTArray(profile.profile["z_bins"])
@@ -159,15 +159,15 @@ end
       Arguments:
 
       * `profile::YTProfile`: The profile to use.
-      * `field::ASCIIString`: The name of the field to change the unit for.
-      * `new_unit::ASCIIString`: The new unit.
+      * `field::String`: The name of the field to change the unit for.
+      * `new_unit::String`: The new unit.
       """ ->
-function set_field_unit(profile::YTProfile, field::ASCIIString, new_unit::ASCIIString)
+function set_field_unit(profile::YTProfile, field::String, new_unit::String)
     profile.unit_dict[field] = new_unit
     return
 end
 
-function getindex(profile::YTProfile, field::ASCIIString)
+function getindex(profile::YTProfile, field::String)
     if !haskey(profile.field_dict, field)
         profile.field_dict[field] = YTArray(get(profile.profile, PyObject, field))
     end
@@ -181,7 +181,7 @@ end
 @doc doc"""
       Get the variance of a field from the `YTProfile`.
       """ ->
-function variance(profile::YTProfile, field::ASCIIString)
+function variance(profile::YTProfile, field::String)
     if !haskey(profile.var_dict, field)
         fd = profile.source.cont[:_determine_fields](field)[1]
         profile.var_dict[field] = YTArray(get(profile.profile["variance"],

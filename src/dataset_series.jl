@@ -31,7 +31,7 @@ import PyCall: @pyimport, PyObject
 type DatasetSeries
     ts::PyObject
     num_ds::Int
-    function DatasetSeries(fns::Array{String},1})
+    function DatasetSeries(fns::Array{String,1})
         ts = time_series.DatasetSeries(fns)
         num_ds = length(fns)
         new(ts, num_ds)

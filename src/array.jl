@@ -499,12 +499,20 @@ end
 
 # Show
 
-summary(a::YTArray) = string(dims2string(size(a)), " YTArray ($(a.units)):")
+summary(a::YTArray) = string(dims2string(size(a)), " YTArray ($(a.units))")
 
-function showarray(io::IO, a::YTArray; kw...)
-    println(io, summary(a))
-    showarray(io, a.value; header=false, limit=true)
+function showarray(io::IO, a::YTArray, repr::Bool = true)
+    if !repr
+        println(io, "$(summary(a)):")
+    end
+    showarray(io, a.value, repr; header=false)
+    if repr
+        println(io, " $(a.units)")
+    end
 end
+
+show(io::IO, ::MIME"text/plain", X::YTArray) = showarray(io, X, false)
+show(io::IO, X::YTArray) = showarray(io, X)
 
 function print(io::IO, a::YTArray)
     print(io, "$(a.value) $(a.units)")
@@ -522,7 +530,6 @@ function print(q::YTQuantity)
     print(STDOUT,q)
 end
 
-display(a::YTArray) = show(STDOUT, a)
 show(io::IO, q::YTQuantity) = print(io, "$(q.value) $(q.units)")
 
 # Array methods

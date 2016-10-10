@@ -126,7 +126,6 @@ c.\a
 @test_approx_eq x.value sqrt(x^2).value
 @test_approx_eq sqrt(x).value (x^0.5).value
 
-
 # Various unit tests
 
 @test a.units == sqrt(a.*a).units

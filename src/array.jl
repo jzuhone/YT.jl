@@ -16,7 +16,8 @@ import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin, PyAny
 @pyimport yt.units as ytunits
 @pyimport yt.units.dimensions as ytdims
 
-IntOrRange = Union{Integer,Range}
+IntOrRange = Union{Integer,Range,Colon}
+Indexes = Union{IntOrRange,Array{Int,1}}
 
 # Grab the classes for creating YTArrays and YTQuantities
 
@@ -258,55 +259,48 @@ PyObject(a::YTObject) = convert(PyObject, a)
 
 # Indexing, ranges (slicing)
 
-getindex(a::YTArray, i::Integer) = YTQuantity(a.value[i], a.units)
-getindex(a::YTArray, idxs::Array{Int,1}) = YTArray(getindex(a.value, idxs),
-                                                   a.units)
-getindex(a::YTArray, idxs::Range) = YTArray(getindex(a.value, idxs), a.units)
+pyslice(i::Integer) = i-1
+pyslice(i::Colon) = pycall(pybuiltin("slice"), PyObject, nothing)
+pyslice(i::UnitRange) = pycall(pybuiltin("slice"), PyObject, i.start-1, i.stop)
+pyslice(i::StepRange) = pycall(pybuiltin("slice"), PyObject, i.start-1, i.stop,
+                               i.step)
+pyslice(i::Array{Int,1}) = i-1
+
+getindex(a::YTArray, idxs::Indexes) = YTArray(getindex(a.value, idxs), a.units)
+getindex(a::PyArray, idxs::Indexes) = get(a.o, PyArray, pyslice(idxs))
 
 function setindex!(a::YTArray, x::Real, i::Integer)
     a.value[i] = convert(eltype(a), x)
 end
-function setindex!(a::YTArray, x::Array, idxs::Range)
+
+function setindex!(a::YTArray, x::Array, idxs::Indexes)
     YTArray(setindex!(a.value, convert(typeof(a.value), x), idxs), a.units)
 end
-function setindex!(a::YTArray, x::Array, idxs::Array{Int,1})
-    YTArray(setindex!(a.value, convert(typeof(a.value), x), idxs), a.units)
-end
-function setindex!(a::YTArray, x::Real, idxs::Range)
-    YTArray(setindex!(a.value, convert(eltype(a), x), idxs), a.units)
-end
-function setindex!(a::YTArray, x::Real, idxs::Array{Int,1})
+
+function setindex!(a::YTArray, x::Real, idxs::Indexes)
     YTArray(setindex!(a.value, convert(eltype(a), x), idxs), a.units)
 end
 
-pyslice(i::Integer) = i
-pyslice(i::UnitRange) = pycall(pybuiltin("slice"), PyObject, i.start-1, i.stop)
-pyslice(i::StepRange) = pycall(pybuiltin("slice"), PyObject, i.start-1, i.stop,
-                               i.step)
+function getindex(a::YTArray, i::Indexes, j::Indexes)
+    YTArray(getindex(a.value, i, j), a.units)
+end
+function getindex(a::PyArray, i::Indexes, j::Indexes)
+    ii = pyslice(i)
+    jj = pyslice(j)
+    get(a.o, PyArray, (ii,jj))
+end
 
-# For grids
-function getindex(a::YTArray, i::IntOrRange, j::IntOrRange, k::IntOrRange)
+function getindex(a::YTArray, i::Indexes, j::Indexes, k::Indexes)
     YTArray(getindex(a.value, i, j, k), a.units)
 end
-function getindex(a::PyArray, i::IntOrRange, j::IntOrRange, k::IntOrRange)
+function getindex(a::PyArray, i::Indexes, j::Indexes, k::Indexes)
     ii = pyslice(i)
     jj = pyslice(j)
     kk = pyslice(k)
     get(a.o, PyArray, (ii,jj,kk))
 end
 
-# For images
-function getindex(a::YTArray, i::IntOrRange, j::IntOrRange)
-    YTArray(getindex(a.value, i, j), a.units)
-end
-function getindex(a::PyArray, i::IntOrRange, j::IntOrRange)
-    ii = pyslice(i)
-    jj = pyslice(j)
-    get(a.o, PyArray, (ii,jj))
-end
-
 # Unit conversions
-
 
 function in_units(a::YTObject, units::String)
     units = replace(units, "^", "**")

@@ -53,7 +53,7 @@ import PyCall: @pyimport, PyError, pycall, PyObject, set!
 
 @pyimport yt
 
-min_version = v"3.2.2"
+min_version = v"3.3.1"
 
 yt_version = convert(VersionNumber, yt.__version__)
 if yt_version < min_version

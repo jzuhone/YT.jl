@@ -269,16 +269,11 @@ pyslice(i::Array{Int,1}) = i-1
 getindex(a::YTArray, idxs::Indexes) = YTArray(getindex(a.value, idxs), a.units)
 getindex(a::PyArray, idxs::Indexes) = get(a.o, PyArray, pyslice(idxs))
 
-function setindex!(a::YTArray, x::Real, i::Integer)
-    a.value[i] = convert(eltype(a), x)
-end
-
 function setindex!(a::YTArray, x::Array, idxs::Indexes)
-    YTArray(setindex!(a.value, convert(typeof(a.value), x), idxs), a.units)
+    setindex!(a.value, convert(typeof(a.value), x), idxs)
 end
-
 function setindex!(a::YTArray, x::Real, idxs::Indexes)
-    YTArray(setindex!(a.value, convert(eltype(a), x), idxs), a.units)
+    setindex!(a.value, convert(eltype(a), x), idxs)
 end
 
 function getindex(a::YTArray, i::Indexes, j::Indexes)
@@ -290,6 +285,13 @@ function getindex(a::PyArray, i::Indexes, j::Indexes)
     get(a.o, PyArray, (ii,jj))
 end
 
+function setindex!(a::YTArray, x::Array, i::Indexes, j::Indexes)
+    setindex!(a.value, convert(typeof(a.value), x), i, j)
+end
+function setindex!(a::YTArray, x::Real, i::Indexes, j::Indexes)
+    setindex!(a.value, convert(eltype(a), x), i, j)
+end
+
 function getindex(a::YTArray, i::Indexes, j::Indexes, k::Indexes)
     YTArray(getindex(a.value, i, j, k), a.units)
 end
@@ -298,6 +300,13 @@ function getindex(a::PyArray, i::Indexes, j::Indexes, k::Indexes)
     jj = pyslice(j)
     kk = pyslice(k)
     get(a.o, PyArray, (ii,jj,kk))
+end
+
+function setindex!(a::YTArray, x::Array, i::Indexes, j::Indexes, k::Indexes)
+    setindex!(a.value, convert(typeof(a.value), x), i, j, k)
+end
+function setindex!(a::YTArray, x::Real, i::Indexes, j::Indexes, k::Indexes)
+    setindex!(a.value, convert(eltype(a), x), i, j, k)
 end
 
 # Unit conversions

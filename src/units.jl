@@ -10,13 +10,13 @@ prefixes = collect(keys(lut.unit_prefixes))
 prefixable_units = lut.prefixable_units
 
 for unit in base_units
-    u = symbol(unit)
+    u = Symbol(unit)
     @eval $u = YTQuantity(1.0, String($unit))
     if unit in lut.prefixable_units
         for prefix in prefixes
             pu = String(prefix*unit)
             if pu != "as"
-                u = symbol(pu)
+                u = Symbol(pu)
                 @eval $u = YTQuantity(1.0, $pu)
             end
         end

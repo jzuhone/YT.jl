@@ -595,51 +595,79 @@ quantile(a::YTArray,q::Number) = YTArray(quantile(a.value, q), a.units)
 
 # To/from HDF5
 
-@doc doc"""
-      Write a `YTArray` to an HDF5 file.
+"""
+    write_hdf5(a::YTArray, filename::String; dataset_name=nothing,
+               info=nothing)
 
-      Parameters:
+Write a `YTArray` to an HDF5 file.
 
-      * `a::YTArray`: The `YTArray` to write to the file.
-      * `filename::String`: The file to write to.
-      * `dataset_name::String`: The name of the HDF5 dataset to
-        write the data into.
-      * `info::Dict{String,Any}`: A dictionary of keys and values
-        to write to the file, associated with this array, that will be
-        stored in the dataset attributes.
+# Parameters
 
-      Examples:
+* `a::YTArray`: The `YTArray` to write to the file.
+* `filename::String`: The file to write to.
+* `dataset_name::String`: The name of the HDF5 dataset to write the data into.
+* `dataset_name::String`: The name of the HDF5 group to write the data into.
+* `info::Dict{String,Any}`: A dictionary of keys and values
+  to write to the file, associated with this array, that will be
+  stored in the dataset attributes.
 
-          julia> using YT
-          julia> a = YTArray(rand(10), "cm/s")
-          juila> write_hdf5(a, "my_file.h5", dataset_name="velocity")
-      """ ->
+# Examples
+```julia
+julia> using YT
+julia> a = YTArray(rand(10), "cm/s")
+juila> write_hdf5(a, "my_file.h5", dataset_name="velocity")
+```
+"""
 function write_hdf5(a::YTArray, filename::String; dataset_name=nothing,
                     info=nothing)
     arr = PyObject(a)
     arr[:write_hdf5](filename; dataset_name=dataset_name, info=info)
 end
 
-@doc doc"""
-      Read a `YTArray` from an HDF5 file.
+"""
+    from_hdf5(filename::String; dataset_name=nothing, group_name=nothing)
 
-      Parameters:
+Read a `YTArray` from an HDF5 file.
 
-      * `filename::String`: The file to read from.
-      * `dataset_name::String`: The name of the HDF5 dataset to
-        read the data from.
+# Parameters
 
-      Examples:
+* `filename::String`: The file to read from.
+* `dataset_name::String`: The name of the HDF5 dataset to read the data from.
+* `group_name::String`: The name of the HDF5 group to read the data from.
 
-          julia> using YT
-          juila> v = from_hdf5("my_file.h5", dataset_name="velocity")
-      """ ->
-function from_hdf5(filename::String; dataset_name=nothing)
-    YTArray(pycall(bare_array["from_hdf5"], PyObject, filename; dataset_name=dataset_name))
+# Examples
+```julia
+julia> using YT
+juila> v = from_hdf5("my_file.h5", dataset_name="velocity", group_name="fields")
+```
+"""
+function from_hdf5(filename::String; dataset_name=nothing, group_name=nothing)
+    YTArray(pycall(bare_array["from_hdf5"], PyObject, filename;
+                   dataset_name=dataset_name, group_name=group_name))
 end
 
 # Unit equivalencies
 
+"""
+    to_equivalent(a::YTObject, unit::String, equiv::String; args...)
+
+Convert a `YTArray` or a `YTQuantity` to an equivalent quantity. For example,
+one may wish to convert a temperature to an equivalent energy kT, or a
+wavelength to a frequency, etc. For more information see the YT documentation.
+
+# Arguments
+
+* `a::YTObject`: A `YTArray` or `YTQuantity` to convert.
+* `unit::String`: The unit to convert to.
+* `equiv::String`: The equivalence to use.
+
+# Examples
+```julia
+julia> using YT
+julia> a = YTArray(rand(10), "keV")
+julia> to_equivalent(a, "K", "thermal")
+```
+"""
 function to_equivalent(a::YTObject, unit::String, equiv::String; args...)
     arr = PyObject(a)
     unit = replace(unit, "^", "**")
@@ -647,10 +675,21 @@ function to_equivalent(a::YTObject, unit::String, equiv::String; args...)
     array_or_quan(equ)
 end
 
+"""
+    list_equivalencies(a::YTObject)
+
+List the possible equivalencies for a given YTObject.
+"""
 function list_equivalencies(a::YTObject)
     arr = PyObject(a)
     arr[:list_equivalencies]()
 end
+
+"""
+    has_equivalent(a::YTObject, equiv::String)
+
+Check if a given `YTObject` has a given equivalence.
+"""
 
 function has_equivalent(a::YTObject, equiv::String)
     arr = PyObject(a)

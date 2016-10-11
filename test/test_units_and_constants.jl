@@ -5,13 +5,13 @@ import PyCall: @pyimport
 @pyimport yt.units.unit_lookup_table as lut
 
 pc = YT.physical_constants
-u = YT.units
+u = YT.unit_symbols
 
 pc.G
 pc.kboltz
 pc.clight
 pc.qp
-pc.hcgs 
+pc.hcgs
 pc.hbar
 pc.me
 pc.mp
@@ -57,5 +57,3 @@ for unit in base_units
         end
     end
 end
-
-

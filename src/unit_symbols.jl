@@ -1,4 +1,4 @@
-module units
+module unit_symbols
 
 import PyCall: @pyimport
 import YT.array: YTQuantity

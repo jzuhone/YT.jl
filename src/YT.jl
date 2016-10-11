@@ -73,7 +73,7 @@ include("physical_constants.jl")
 include("dataset_series.jl")
 include("plots.jl")
 include("profiles.jl")
-include("units.jl")
+include("unit_symbols.jl")
 
 import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks, YTUnit,
     from_hdf5, write_hdf5, to_equivalent, list_equivalencies,

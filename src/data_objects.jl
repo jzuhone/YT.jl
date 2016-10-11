@@ -6,10 +6,10 @@ import Base: size, show, showarray, display, showerror, start, next, done,
 import ..array: YTArray, YTQuantity, in_units, array_or_quan
 import ..fixed_resolution: FixedResolutionBuffer
 
-Center = Union{ASCIIString,Array{Float64,1},YTArray,
-               Tuple{ASCIIString,ASCIIString}}
-Length = Union{Float64,Tuple{Float64,ASCIIString},YTQuantity}
-Field  = Union{ASCIIString,Tuple{ASCIIString,ASCIIString}}
+Center = Union{String,Array{Float64,1},YTArray,
+               Tuple{String,String}}
+Length = Union{Float64,Tuple{Float64,String},YTQuantity}
+Field  = Union{String,Tuple{String,String}}
 
 # Dataset
 
@@ -44,51 +44,61 @@ type Dataset
     end
 end
 
-@doc doc"""
-      Get the smallest cell size or SPH smoothing length of
-      a `ds::Dataset`.
-      """ ->
+"""
+    get_smallest_dx(ds::Dataset)
+
+Get the smallest cell size or SPH smoothing length of
+a `Dataset`.
+"""
 function get_smallest_dx(ds::Dataset)
     pycall(ds.ds[:index]["get_smallest_dx"], YTArray)[1]
 end
 
-@doc doc"""
-      Print important stats on a `ds::Dataset`.
-      """ ->
+"""
+    print_stats(ds::Dataset)
+
+Print important stats on a `Dataset`.
+"""
 function print_stats(ds::Dataset)
     ds.ds[:print_stats]()
 end
 
-@doc doc"""
-      For a `ds::Dataset`, find the value and the location of the
-      minimum of a `field::Field`.
-      """ ->
+"""
+     find_min(ds::Dataset, field::Field)
+
+For a `Dataset`, find the value and the location of the minimum of a field.
+"""
 function find_min(ds::Dataset, field::Field)
     a = pycall(ds.ds["find_min"], PyObject, field)
     v, c = PyVector{PyObject}(a)
     YTQuantity(v), YTArray(c)
 end
 
-@doc doc"""
-      For a `ds::Dataset`, find the value and the location of the
-      maximum of a `field::Field`.
-      """ ->
+"""
+     find_max(ds::Dataset, field::Field)
+
+For a `Dataset`, find the value and the location of the maximum of a field.
+"""
 function find_max(ds::Dataset, field::Field)
     a = pycall(ds.ds["find_max"], PyObject, field)
     v, c = PyVector{PyObject}(a)
     YTQuantity(v), YTArray(c)
 end
 
-@doc doc"""
-      Get the field list of a `ds::Dataset`.
-      """ ->
+"""
+    get_field_list(ds::Dataset)
+
+Get the field list of a `Dataset`.
+"""
 function get_field_list(ds::Dataset)
     ds.ds[:field_list]
 end
 
-@doc doc"""
-      Get all of the derived fields of a `ds::Dataset`.
-      """ ->
+"""
+    get_derived_field_list(ds::Dataset)
+
+Get all of the derived fields of a `Dataset`.
+"""
 function get_derived_field_list(ds::Dataset)
     ds.ds[:derived_field_list]
 end
@@ -110,23 +120,27 @@ end
 
 # AllData
 
-@doc doc"""
-      An object representing all of the data in the domain.
+"""
+    AllData(ds::Dataset; field_parameters=nothing,
+            data_source=nothing)
 
-      Arguments:
+An object representing all of the data in the domain.
 
-      * `ds::Dataset`: The dataset to be used.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
-        field parameters than can be accessed by derived fields.
-      * `data_source::DataContainer` (optional): Draw the selection from the
-        provided data source rather than all data associated with the dataset
+# Arguments
 
-      Examples:
+* `ds::Dataset`: The dataset to be used.
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of field parameters
+  that can be accessed by derived fields.
+* `data_source::DataContainer=nothing`: Draw the selection from the provided
+  data source rather than all data associated with the dataset
 
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          julia> dd = YT.AllData(ds)
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+julia> dd = YT.AllData(ds)
+```
+"""
 type AllData <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -146,27 +160,31 @@ end
 
 # Point
 
-@doc doc"""
-      A 0-dimensional object defined by a single point
+"""
+    Point(ds::Dataset, coord::Array{Float64,1}; field_parameters=nothing,
+          data_source=nothing)
 
-      Arguments:
+A 0-dimensional object defined by a single point
 
-      * `ds::Dataset`: The dataset to be used.
-      * `p::Array{Float64,1}`: A point defined within the domain. If the domain is periodic
-        its position will be corrected to lie inside the range [DLE,DRE) to ensure
-        one and only one cell may match that point.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
-        field parameters than can be accessed by derived fields.
-      * `data_source::DataContainer` (optional): Draw the selection from the
-        provided data source rather than all data associated with the dataset
+# Arguments
 
-      Examples:
+* `ds::Dataset`: The dataset to be used.
+* `p::Array{Float64,1}`: A point defined within the domain. If the domain is
+  periodic its position will be corrected to lie inside the range [DLE, DRE)
+  to ensure one and only one cell may match that point.
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of field parameters
+  that can be accessed by derived fields.
+* `data_source::DataContainer=nothing`: Draw the selection from the provided
+  data source rather than all data associated with the dataset
 
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          julia> c = [0.5,0.5,0.5]
-          julia> point = YT.Point(ds,c)
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+julia> c = [0.5,0.5,0.5]
+julia> point = YT.Point(ds,c)
+```
+"""
 type Point <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -187,37 +205,41 @@ type Point <: DataContainer
 end
 
 # Region
-@doc doc"""
-      A 3D region of data with an arbitrary center.
 
-      Takes an array of three *left_edge* coordinates, three
-      *right_edge* coordinates, and a *center* that can be
-      anywhere in the domain. If the selected region extends
-      past the edges of the domain, no data will be found there,
-      though the object's `left_edge` or `right_edge` are not modified.
+"""
+    Region(ds::Dataset, center::Center,
+           left_edge::Union{Array{Float64,1},YTArray},
+           right_edge::Union{Array{Float64,1},YTArray};
+           field_parameters=nothing, data_source=nothing)
 
-      Arguments:
+A 3D region of data with an arbitrary center.
 
-      * `ds::Dataset`: The dataset to be used.
-      * `center::Center`: The center of the region
-      * `left_edge::Union{Array{Float64,1},YTArray}`: The left edge of
-        the region
-      * `right_edge::Union{Array{Float64,1},YTArray}`: The right edge of
-        the region
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
-        field parameters than can be accessed by derived fields.
-      * `data_source::DataContainer` (optional): Draw the selection from the
-        provided data source rather than all data associated with the dataset
+Takes an array of three `left_edge` coordinates, three `right_edge` coordinates,
+and a `center` that can be anywhere in the domain. If the selected region
+extends past the edges of the domain, no data will be found there, though the
+object's `left_edge` or `right_edge` are not modified.
 
-      Examples:
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          julia> left_edge = [0.1,0.1,0.1]
-          julia> right_edge = [0.6,0.6,0.6]
-          julia> center = "max"
-          julia> region = YT.Region(ds,center,left_edge,right_edge)
+# Arguments
 
-      """ ->
+* `ds::Dataset`: The dataset to be used.
+* `center::Center`: The center of the region
+* `left_edge::Union{Array{Float64,1},YTArray}`: The left edge of the region
+* `right_edge::Union{Array{Float64,1},YTArray}`: The right edge of the region
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of field parameters
+  that can be accessed by derived fields.
+* `data_source::DataContainer=nothing`: Draw the selection from the provided
+  data source rather than all data associated with the dataset.
+
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+julia> left_edge = [0.1,0.1,0.1]
+julia> right_edge = [0.6,0.6,0.6]
+julia> center = "max"
+julia> region = YT.Region(ds,center,left_edge,right_edge)
+```
+"""
 type Region <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -263,33 +285,38 @@ end
 
 # Disk
 
-@doc doc"""
-      By providing a `center`, a `normal`, a `radius` and a `height` we
-      can define a cylinder of any proportion. Only cells whose centers
-      are within the cylinder will be selected.
+"""
+    Disk(ds::Dataset, center::Center, normal::Array{Float64,1},
+         radius::Length, height::Length; field_parameters=nothing,
+         data_source=nothing)
 
-      Arguments:
+By providing a `center`, a `normal`, a `radius` and a `height` we
+can define a cylinder of any proportion. Only cells whose centers
+are within the cylinder will be selected.
 
-      * `ds::Dataset`: The dataset to be used.
-      * `center::Center`: Coordinate to which the normal, radius, and
-        height all reference
-      * `normal::Array{Float64,1}`: The normal vector defining the
-        direction of lengthwise part of the cylinder
-      * `radius::Length`: The radius of the cylinder
-      * `height::Length`: The distance from the midplane of the
-        cylinder to the top and bottom planes
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
-        field parameters than can be accessed by derived fields.
-      * `data_source::DataContainer` (optional): Draw the selection from the
-        provided data source rather than all data associated with the dataset
+# Arguments
 
-      Examples:
+* `ds::Dataset`: The dataset to be used.
+* `center::Center`: Coordinate to which the normal, radius, and height all
+  reference
+* `normal::Array{Float64,1}`: The normal vector defining the direction of
+  lengthwise part of the cylinder
+* `radius::Length`: The radius of the cylinder
+* `height::Length`: The distance from the midplane of the cylinder to the top
+  and bottom planes
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of field parameters
+  that can be accessed by derived fields.
+* `data_source::DataContainer=nothing`: Draw the selection from the provided
+  data source rather than all data associated with the dataset
 
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          julia> c = [0.5,0.5,0.5]
-          julia> disk = Disk(ds, c, [1,0,0], (1, 'kpc'), (10, 'kpc'))
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+julia> c = [0.5,0.5,0.5]
+julia> disk = Disk(ds, c, [1,0,0], (1, "kpc"), (10, "kpc"))
+```
+"""
 type Disk <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -328,31 +355,33 @@ end
 
 # Ray
 
-@doc doc"""
-      This is an arbitrarily-aligned ray cast through the entire domain, at a
-      specific coordinate.
+"""
+    Ray(ds::Dataset, start_point::Array{Float64,1}, end_point::Array{Float64,1};
+        field_parameters=nothing, data_source=nothing)
 
-      The resulting arrays have their dimensionality reduced to one, and
-      an ordered list of points at an (x,y) tuple are available, as is the
-      `"t"` field, which corresponds to a unitless measurement along
-      the ray from start to end.
+This is an arbitrarily-aligned ray cast through the entire domain, at a specific
+coordinate. The resulting arrays have their dimensionality reduced to one, and
+an ordered list of points at an (x,y) tuple are available, as is the `"t"`
+field, which corresponds to a unitless measurement along the ray from start to
+end.
 
-      Arguments:
+# Arguments
 
-      * `ds::Dataset`: The dataset to be used.
-      * `start_point::Array{Float64,1}`: The place where the ray starts.
-      * `end_point::Array{Float64,1}`: The place where the ray ends.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
-        field parameters than can be accessed by derived fields.
-      * `data_source::DataContainer` (optional): Draw the selection from the
-        provided data source rather than all data associated with the dataset
+* `ds::Dataset`: The dataset to be used.
+* `start_point::Array{Float64,1}`: The place where the ray starts.
+* `end_point::Array{Float64,1}`: The place where the ray ends.
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of field parameters
+  that can be accessed by derived fields.
+* `data_source::DataContainer=nothing`: Draw the selection from the provided
+  data source rather than all data associated with the dataset.
 
-      Examples:
-
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          julia> ray = YT.Ray(ds, [0.2, 0.74, 0.11], [0.4, 0.91, 0.31])
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+julia> ray = YT.Ray(ds, [0.2, 0.74, 0.11], [0.4, 0.91, 0.31])
+```
+"""
 type Ray <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -377,33 +406,36 @@ type Ray <: DataContainer
 end
 
 # OrthoRay
-@doc doc"""
-      This is an orthogonal ray cast through the entire domain, at a specific
-      coordinate.
 
-      The resulting arrays have their dimensionality reduced to one, and an
-      ordered list of points at an (x,y) tuple along `axis` are available.
+"""
+    OrthoRay(ds::Dataset, axis::Integer, coords::Tuple{Float64,Float64},
+             field_parameters=nothing, data_source=nothing)
 
-      Arguments:
+This is an orthogonal ray cast through the entire domain, at a specific
+coordinate. The resulting arrays have their dimensionality reduced to one, and
+an ordered list of points at an (x,y) tuple along `axis` are available.
 
-      * `ds::Dataset`: The dataset to be used.
-      * `axis::Integer`: The axis along which to cast the ray. Can be 0, 1,
-        or 2 for x, y, z.
-      * `coords::(Float64,Float64)`: The (plane_x, plane_y) coordinates at
-        which to cast the ray. Note that this is in the plane coordinates:
-        so if you are casting along x, this will be (y,z). If you are casting
-        along y, this will be (x,z). If you are casting along z, this will be (x,y).
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
-        field parameters than can be accessed by derived fields.
-      * `data_source::DataContainer` (optional): Draw the selection from the
-        provided data source rather than all data associated with the dataset
+# Arguments
 
-      Examples:
+* `ds::Dataset`: The dataset to be used.
+* `axis::Integer`: The axis along which to cast the ray. Can be 0, 1, or 2 for
+  x, y, z.
+* `coords::(Float64,Float64)`: The (plane_x, plane_y) coordinates at which to
+  cast the ray. Note that this is in the plane coordinates: so if you are
+  casting along x, this will be (y,z). If you are casting along y, this will be
+  (x,z). If you are casting along z, this will be (x,y).
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of field parameters
+  that can be accessed by derived fields.
+* `data_source::DataContainer=nothing`: Draw the selection from the provided
+  data source rather than all data associated with the dataset.
 
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          julia> oray = YT.OrthoRay(ds, 0, (0.2, 0.74))
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+julia> oray = YT.OrthoRay(ds, 0, (0.2, 0.74))
+```
+"""
 type OrthoRay <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -427,35 +459,39 @@ end
 
 # Cutting
 
-@doc doc"""
-      This is a data object corresponding to an oblique slice through the
-      simulation domain.
+"""
+    Cutting(ds::Dataset, normal::Array{Float64,1}, center::Center;
+            north_vector=nothing, field_parameters=nothing, data_source=nothing)
 
-      A cutting plane is an oblique plane through the data, defined by a
-      normal vector and a coordinate. It attempts to guess a "north" vector,
-      which can be overridden, and then it pixelizes the appropriate data
-      onto the plane without interpolation.
+This is a data object corresponding to an oblique slice through the
+simulation domain.
 
-      Arguments:
+A cutting plane is an oblique plane through the data, defined by a
+normal vector and a coordinate. It attempts to guess a "north" vector,
+which can be overridden, and then it pixelizes the appropriate data
+onto the plane without interpolation.
 
-      * `ds::Dataset`: The dataset to be used.
-      * `normal::Array{Float64,1}`: The vector that defines the desired plane.
-        For instance, the angular momentum of a sphere.
-      * `center::Union(ASCIIString,Array{Float64,1},YTArray)` : array_like
-        The center of the cutting plane, where the normal vector is anchored.
-      * `north_vector::Array{Float64,1}` (optional): An optional vector to describe the
-        north-facing direction in the resulting plane.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
-        field parameters than can be accessed by derived fields.
-      * `data_source::DataContainer` (optional): Draw the selection from the
-        provided data source rather than all data associated with the dataset
+# Arguments
 
-      Examples:
+* `ds::Dataset`: The dataset to be used.
+* `normal::Array{Float64,1}`: The vector that defines the desired plane. For
+  instance, the angular momentum of a sphere.
+* `center::Union(String,Array{Float64,1},YTArray)`: The center of the cutting
+  plane, where the normal vector is anchored.
+* `north_vector::Array{Float64,1}=nothing`: An optional vector to describe the
+  north-facing direction in the resulting plane.
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of field parameters
+  that can be accessed by derived fields.
+* `data_source::DataContainer=nothing`: Draw the selection from the provided
+  data source rather than all data associated with the dataset
 
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          juila> cp = YT.Cutting(ds, [0.1, 0.2, -0.9], [0.5, 0.42, 0.6])
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+juila> cp = YT.Cutting(ds, [0.1, 0.2, -0.9], [0.5, 0.42, 0.6])
+```
+"""
 type Cutting <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -485,48 +521,51 @@ end
 
 # Proj
 
-@doc doc"""
-      This is a data object corresponding to a line integral through the
-      simulation domain.
+"""
+    Proj(ds::Dataset, field, axis::Union{Integer,String}; weight_field=nothing,
+         center=nothing, field_parameters=nothing, data_source=nothing,
+         method="integrate")
 
-      `Proj` is a projection of a `field` along an `axis`. The field can
-      have an associated `weight_field`, in which case the values are
-      multiplied by a weight before being summed, and then divided by the
-      sum of that weight; the two fundamental modes of operating are direct
-      line integral (no weighting) and average along a line of sight
-      (weighting). Note that lines of sight are integrated at every projected
-      finest-level cell.
+This is a data object corresponding to a line integral through the
+simulation domain.
 
-      Arguments:
+`Proj` is a projection of a `field` along an `axis`. The field can
+have an associated `weight_field`, in which case the values are
+multiplied by a weight before being summed, and then divided by the
+sum of that weight; the two fundamental modes of operating are direct
+line integral (no weighting) and average along a line of sight
+(weighting). Note that lines of sight are integrated at every projected
+finest-level cell.
 
-      * `ds::Dataset`: The dataset to be used.
-      * `field::Field`: This is the field which will be "projected" along
-        the axis.
-      * `axis::Union(Integer,ASCIIString)`: The axis along which to project.
-        Can be 0, 1, or 2, or "x", "y", or "z", for x, y, z.
-        The axis along which to slice.  Can be 0, 1, or 2 for x, y, z.
-      * `weight_field::Field`: If supplied, the field being projected will be
-        multiplied by this weight value before being integrated, and at the
-        conclusion of the projection the resultant values will be divided by
-        the projected `weight_field`.
-      * `center::Center` (optional): The `center` supplied to fields that use it.
-      * `data_source::DataContainer` (optional): If specified, this will be the data
-        source used for selecting regions to project.
-      * `method::ASCIIString` (optional): The method of projection to be performed.
-        "integrate" : integration along the axis
-        "mip" : maximum intensity projection
-        "sum" : same as "integrate", except that we don't multiply by the path length
-        WARNING: The "sum" option should only be used for uniform resolution grid
-        datasets, as other datasets may result in unphysical images.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of field
-        parameters than can be accessed by derived fields.
+# Arguments
 
-      Examples:
+* `ds::Dataset`: The dataset to be used.
+* `field::Field`: This is the field which will be "projected" along the axis.
+* `axis::Union(Integer,String)`: The axis along which to project. Can be 0, 1,
+  or 2, or "x", "y", or "z", for x, y, z.
+* `weight_field::Field=nothing`: If supplied, the field being projected will be
+  multiplied by this weight value before being integrated, and at the conclusion
+  of the projection the resultant values will be divided by the projected
+  `weight_field`.
+* `center::Center=nothing`: The `center` supplied to fields that use it.
+* `data_source::DataContainer=nothing`: If specified, this will be the data
+  source used for selecting regions to project.
+* `method::String="integrate"`: The method of projection to be performed.
+  "integrate": integration along the axis
+  "mip": maximum intensity projection
+  "sum": same as "integrate", except that we don't multiply by the path length
+  WARNING: The "sum" option should only be used for uniform resolution grid
+  datasets, as other datasets may result in unphysical images.
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of field parameters
+  that can be accessed by derived fields.
 
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          julia> prj = YT.Proj(ds, "density", 0)
-    """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+julia> prj = YT.Proj(ds, "density", 0)
+```
+"""
 type Proj <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -534,7 +573,7 @@ type Proj <: DataContainer
     axis::Integer
     weight_field
     field_dict::Dict
-    function Proj(ds::Dataset, field, axis::Union{Integer,ASCIIString};
+    function Proj(ds::Dataset, field, axis::Union{Integer,String};
                   weight_field=nothing, center=nothing,
                   field_parameters=nothing, data_source=nothing,
                   method="integrate")
@@ -553,41 +592,43 @@ end
 
 # Slice
 
-@doc doc"""
-      This is a data object corresponding to a slice through the simulation
-      domain.
+"""
+    Slice(ds::Dataset, axis::Union{Integer,String},
+          coord::Float64; center=nothing, field_parameters=nothing,
+          data_source=nothing)
 
-      The slice is an orthogonal slice through the data, taking all the
-      points at the finest resolution available and then indexing them.
+This is a data object corresponding to a slice through the simulation
+domain. The slice is an orthogonal slice through the data, taking all the
+points at the finest resolution available and then indexing them.
 
-      Arguments:
+# Arguments
 
-      * `ds::Dataset`: The dataset to be used.
-      * `axis::Union(Integer,ASCIIString)`: The axis along which to slice.
-        Can be 0, 1, or 2, or "x", "y", or "z", for x, y, z.
-      * `coord::Float64`: The coordinate along the axis at which to
-        slice. This is in "domain" coordinates.
-      * `center::Array{Float64,1}` (optional): The 'center' supplied to fields that
-        use it. Note that this does not have to have `coord` as one value.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
-        field parameters than can be accessed by derived fields.
-      * `data_source::DataContainer` (optional): Draw the selection from the
-        provided data source rather than all data associated with the dataset
+* `ds::Dataset`: The dataset to be used.
+* `axis::Union(Integer,String)`: The axis along which to slice. Can be 0, 1, or
+  2, or "x", "y", or "z", for x, y, z.
+* `coord::Float64`: The coordinate along the axis at which to slice. This is in
+  "domain" coordinates.
+* `center::Array{Float64,1}=nothing`: The center supplied to fields that use it.
+  Note that this does not have to have `coord` as one value.
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of field parameters
+  that can be accessed by derived fields.
+* `data_source::DataContainer=nothing`: Draw the selection from the provided
+  data source rather than all data associated with the dataset.
 
-
-      Examples:
-
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          julia> slc = YT.Slice(ds, 0, 0.25)
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+julia> slc = YT.Slice(ds, 0, 0.25)
+```
+"""
 type Slice <: DataContainer
     cont::PyObject
     ds::Dataset
     axis::Integer
     coord::Float64
     field_dict::Dict
-    function Slice(ds::Dataset, axis::Union{Integer,ASCIIString},
+    function Slice(ds::Dataset, axis::Union{Integer,String},
                    coord::Float64; center=nothing,
                    field_parameters=nothing,
                    data_source=nothing)
@@ -604,27 +645,31 @@ type Slice <: DataContainer
     end
 end
 
-@doc doc"""
-      Create a FixedResolutionBuffer from a slice or projection.
+"""
+    to_frb(cont::Union{Slice,Proj}, width::Length,
+           nx::Union{Integer,Tuple{Integer,Integer}}; center=nothing,
+           height=nothing, periodic=false)
 
-      Arguments:
+Create a `FixedResolutionBuffer` from a slice or projection.
 
-      * `cont::Union{Slice,Proj}` or `cont::Cutting`: A Slice, Proj, or Cutting DataContainer.
-      * `width::Length`: The width of the FRB.
-      * `nx::Union{Integer,Tuple{Integer,Integer}}`: Either an integer or a 2-tuple of
-        integers, corresponding to the dimensions of the image.
-      * `center::Center` (optional): The center of the FRB. If not specified,
-        defaults to the center of the current object. Not available if `cont` is a
-        `Cutting.`
-      * `height::Length` (optional): The height of the FRB. If not specified,
-        defaults to the `width`.
-      * `periodic::Bool` (optional): Is the FRB periodic? Default `false`.
+# Arguments
 
-      Examples:
+* `cont::Union{Slice,Proj}`: A Slice or Proj DataContainer.
+* `width::Length`: The width of the FRB.
+* `nx::Union{Integer,Tuple{Integer,Integer}}`: Either an integer or a 2-tuple of
+  integers, corresponding to the dimensions of the image.
+* `center::Center=nothing`: The center of the FRB. If not specified, defaults to
+  the center of the current object.
+* `height::Length=nothing`: The height of the FRB. If not specified, defaults to
+  the `width`.
+* `periodic::Bool=false`: Is the FRB periodic?
 
-          julia> slc = Slice(ds, "z", 0.0)
-          julia> frb = to_frb(slc, (500.,"kpc"), 800)
-      """ ->
+# Examples
+```julia
+julia> slc = Slice(ds, "z", 0.0)
+julia> frb = to_frb(slc, (500.,"kpc"), 800)
+```
+"""
 function to_frb(cont::Union{Slice,Proj}, width::Length,
                 nx::Union{Integer,Tuple{Integer,Integer}}; center=nothing,
                 height=nothing, periodic=false)
@@ -639,6 +684,29 @@ function to_frb(cont::Union{Slice,Proj}, width::Length,
                                                       periodic=periodic))
 end
 
+"""
+    to_frb(cont::Cutting, width::Length,
+           nx::Union{Integer,Tuple{Integer,Integer}};
+           height=nothing, periodic=false)
+
+Create a `FixedResolutionBuffer` from a cutting plane.
+
+# Arguments
+
+* `cont::Union{Slice,Proj}`: A Cutting DataContainer.
+* `width::Length`: The width of the FRB.
+* `nx::Union{Integer,Tuple{Integer,Integer}}`: Either an integer or a 2-tuple of
+  integers, corresponding to the dimensions of the image.
+* `height::Length=nothing`: The height of the FRB. If not specified, defaults to
+  the `width`.
+* `periodic::Bool=false`: Is the FRB periodic?
+
+# Examples
+```julia
+julia> cp = YT.Cutting(ds, [0.1, 0.2, -0.9], [0.5, 0.42, 0.6])
+julia> frb = to_frb(cp, (500.,"kpc"), 800)
+```
+"""
 function to_frb(cont::Cutting, width::Length,
                 nx::Union{Integer,Tuple{Integer,Integer}};
                 height=nothing, periodic=false)
@@ -654,26 +722,30 @@ end
 
 # Sphere
 
-@doc doc"""
-      A sphere of points defined by a `center` and a `radius`.
+"""
+    Sphere(ds::Dataset, center::Center, radius::Length;
+           field_parameters=nothing, data_source=nothing)
 
-      Arguments:
+A sphere of points defined by a `center` and a `radius`.
 
-      * `ds::Dataset`: The dataset to be used.
-      * `center::Center`: The center of the sphere.
-      * `radius::Length`: The radius of the sphere.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
-        field parameters than can be accessed by derived fields.
-      * `data_source::DataContainer` (optional): Draw the selection from the
-        provided data source rather than all data associated with the dataset
+# Arguments
 
-      Examples:
+* `ds::Dataset`: The dataset to be used.
+* `center::Center`: The center of the sphere.
+* `radius::Length`: The radius of the sphere.
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of field parameters
+  that can be accessed by derived fields.
+* `data_source::DataContainer=nothing`: Draw the selection from the provided
+  data source rather than all data associated with the dataset.
 
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          julia> c = [0.5,0.5,0.5]
-          julia> sp = YT.Sphere(ds, c, (1., "kpc"))
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+julia> c = [0.5,0.5,0.5]
+julia> sp = YT.Sphere(ds, c, (1., "kpc"))
+```
+"""
 type Sphere <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -707,33 +779,37 @@ end
 
 # CutRegion
 
-@doc doc"""
-      This is a data object designed to allow individuals to apply logical
-      operations to fields and filter as a result of those cuts.
+"""
+    CutRegion(dc::DataContainer, conditionals::Array{String,1},
+              field_parameters=nothing)
 
-      Arguments:
+This is a data object designed to allow individuals to apply logical operations
+to fields and filter as a result of those cuts.
 
-      * `dc::DataContainer`: The object to which cuts will be applied.
-      * `conditionals::Array{ASCIIString,1}`: A list of conditionals that will
-        be evaluated. In the namespace available, these conditionals will have
-        access to `'obj'` which is a data object of unknown shape, and they must
-        generate a boolean array. For instance, `conditionals = ["obj['temperature'] < 1e3"]`
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of field
-        parameters than can be accessed by derived fields.
+Arguments:
 
-      Examples:
+* `dc::DataContainer`: The object to which cuts will be applied.
+* `conditionals::Array{String,1}`: A list of conditionals that will
+  be evaluated. In the namespace available, these conditionals will have
+  access to `"obj"` which is a data object of unknown shape, and they must
+  generate a boolean array. For instance, `conditionals = ["obj['temperature'] < 1e3"]`
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of field parameters
+  that can be accessed by derived fields.
 
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          julia> sp = YT.Sphere(ds, "max", (1.0, 'mpc'))
-          julia> cr = YT.CutRegion(sp, ["obj['temperature'] < 1e3"])
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+julia> sp = YT.Sphere(ds, "max", (1.0, "Mpc"))
+julia> cr = YT.CutRegion(sp, ["obj['temperature'] < 1e3"])
+```
+"""
 type CutRegion <: DataContainer
     cont::PyObject
     ds::Dataset
-    conditionals::Array{ASCIIString,1}
+    conditionals::Array{String,1}
     field_dict::Dict
-    function CutRegion(dc::DataContainer, conditionals::Array{ASCIIString,1},
+    function CutRegion(dc::DataContainer, conditionals::Array{String,1},
                        field_parameters=nothing)
         field_parameters = parse_fps(field_parameters)
         cut_reg = dc.cont[:cut_region](conditionals,
@@ -744,9 +820,6 @@ end
 
 # Grids
 
-@doc doc"""
-      Return an `Array` of grids associated with `ds::Dataset`.
-      """ ->
 type Grids <: AbstractArray
     grids::Array
     grid_dict::Dict
@@ -783,29 +856,29 @@ end
 
 # CoveringGrid
 
-@doc doc"""
-      A 3D region with all data extracted to a single, specified
-      resolution.  Left edge should align with a cell boundary, but
-      defaults to the closest cell boundary.
+"""
+    CoveringGrid(ds::Dataset, level::Integer, left_edge::Array{Float64,1},
+                 dims::Array{Int,1}; field_parameters=nothing)
 
-      Arguments:
+A 3D region with all data extracted to a single, specified resolution. Left edge
+should align with a cell boundary, but defaults to the closest cell boundary.
 
-      * `ds::Dataset`: The dataset to be used.
-      * `level::Integer`: The resolution level data to which data
-        will be gridded.
-      * `left_edge::Array{Float64,1}`: The left edge of the region
-        to be extracted
-      * `dims::Array{Int,1}`: Number of cells along each axis of
-        the resulting `CoveringGrid`
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of field
-        parameters than can be accessed by derived fields.
+# Arguments
 
-      Examples:
+* `ds::Dataset`: The dataset to be used.
+* `level::Integer`: The resolution level data to which data will be gridded.
+* `left_edge::Array{Float64,1}`: The left edge of the region to be extracted.
+* `dims::Array{Int,1}`: Number of cells along each axis of the resulting grid.
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of field parameters
+  that can be accessed by derived fields.
 
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          julia> cube = CoveringGrid(ds, 2, [0.0, 0.0, 0.0], [128, 128, 128])
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+julia> cube = CoveringGrid(ds, 2, [0.0, 0.0, 0.0], [128, 128, 128])
+```
+"""
 type CoveringGrid <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -828,67 +901,71 @@ end
 
 # Field parameters
 
-@doc doc"""
-      Set the value of a field parameter in a data container.
+"""
+    set_field_parameter(dc::DataContainer, key::String, value)
 
-      Arguments:
+Set the value of a field parameter in a data container.
 
-      * `dc::DataContainer`: The data container object to set the
-        parameter for.
-      * `key::ASCIIString`: The name of the parameter to set.
-      * `value::Any`: The value of the parameter.
+# Arguments
 
-      Examples:
+* `dc::DataContainer`: The data container object to set the parameter for.
+* `key::String`: The name of the parameter to set.
+* `value::Any`: The value of the parameter.
 
-          julia> import YT
-          julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
-          julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
-          julia> set_field_parameter(sp, "mu", 0.592)
-
-      """ ->
-function set_field_parameter(dc::DataContainer, key::ASCIIString, value)
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
+julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
+julia> set_field_parameter(sp, "mu", 0.592)
+```
+"""
+function set_field_parameter(dc::DataContainer, key::String, value)
     v = PyObject(value)
     dc.cont[:set_field_parameter](key, v)
 end
 
-@doc doc"""
-      Check if a field parameter is set in a data container object.
+"""
+    has_field_parameter(dc::DataContainer, key::String)
 
-      Arguments:
+Check if a field parameter is set in a data container object.
 
-      * `dc::DataContainer`: The data container object to check for
-        a parameter.
-      * `key::ASCIIString`: The name of the parameter to check.
+# Arguments
 
-      Examples:
+* `dc::DataContainer`: The data container object to check for a parameter.
+* `key::String`: The name of the parameter to check.
 
-          julia> import YT
-          julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
-          julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
-          julia> has_field_parameter(sp, "center")
-      """ ->
-function has_field_parameter(dc::DataContainer, key::ASCIIString)
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
+julia> sp = YT.Sphere(ds, "c", (200., "kpc"))
+julia> has_field_parameter(sp, "center")
+```
+"""
+function has_field_parameter(dc::DataContainer, key::String)
     dc.cont[:has_field_parameter](key)
 end
 
-@doc doc"""
-      Get the value of a field parameter.
+"""
+    get_field_parameter(dc::DataContainer, key::String)
 
-      Arguments:
+Get the value of a field parameter.
 
-      * `dc::DataContainer`: The data container object to get the
-        parameter from.
-      * `key::ASCIIString`: The name of the parameter to get.
+# Arguments
 
-      Examples:
+* `dc::DataContainer`: The data container object to get the parameter from.
+* `key::String`: The name of the parameter to get.
 
-          julia> import YT
-          julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
-          julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
-          julia> ctr = get_field_parameter(sp, "center")
-
-      """ ->
-function get_field_parameter(dc::DataContainer, key::ASCIIString)
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
+julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
+julia> ctr = get_field_parameter(sp, "center")
+```
+"""
+function get_field_parameter(dc::DataContainer, key::String)
     v = pycall(dc.cont["get_field_parameter"], PyObject, key)
     if contains(pystring(v), "YTArray") || contains(pystring(v), "YTQuantity")
         v = YTArray(v)
@@ -898,22 +975,24 @@ function get_field_parameter(dc::DataContainer, key::ASCIIString)
     return v
 end
 
-@doc doc"""
-      Get all of the field parameters from a data container. Returns
-      a dictionary of field parameters.
+"""
+    get_field_parameters(dc::DataContainer)
 
-      Arguments:
+Get all of the field parameters from a data container. Returns
+a dictionary of field parameters.
 
-      * `dc::DataContainer`: The data container object to get the
-        parameters from.
+# Arguments
 
-      Examples:
+* `dc::DataContainer`: The data container object to get the parameters from.
 
-          julia> import YT
-          julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
-          julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
-          julia> field_parameters = get_field_parameters(sp)
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
+julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
+julia> field_parameters = get_field_parameters(sp)
+```
+"""
 function get_field_parameters(dc::DataContainer)
     fp = Dict()
     for k in collect(keys(dc.cont[:field_parameters]))
@@ -931,8 +1010,8 @@ function getindex(dc::DataContainer, field::Field)
     return dc.field_dict[field]
 end
 
-getindex(dc::DataContainer, ftype::ASCIIString,
-         fname::ASCIIString) = getindex(dc, (ftype, fname))
+getindex(dc::DataContainer, ftype::String,
+         fname::String) = getindex(dc, (ftype, fname))
 
 function getindex(grids::Grids, i::Integer)
     if !haskey(grids.grid_dict, i)

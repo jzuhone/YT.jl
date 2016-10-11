@@ -1,6 +1,5 @@
 language: julia
 julia:
-  - 0.4
   - 0.5
   - nightly
 notifications:
@@ -13,9 +12,5 @@ before_install:
   - export CONDA_PYTHON=`julia -e 'import Conda; print(Conda.PREFIX)'`
   - export PATH=$CONDA_PYTHON/bin:$PATH
   - export LD_LIBRARY_PATH=$CONDA_PYTHON/lib
-#script: # use the default script setting
-#  - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("YT"))`); Pkg.pin("YT"); Pkg.resolve()'
-#  - julia -e 'using YT; @assert isdefined(:YT); @assert typeof(YT) === Module'
-#  - julia --code-coverage test/runtests.jl
 after_success:
   - julia -e 'cd(Pkg.dir("YT")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'

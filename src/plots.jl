@@ -8,54 +8,61 @@ import PyCall: @pyimport, PyObject, pywrap
 @pyimport yt.visualization.plot_window as pw
 @pyimport yt.visualization.profile_plotter as pp
 
-@doc doc"""
-      A plot of a slice through the simulation domain.
+"""
+    SlicePlot(ds::Dataset, axis, fields; center="c", width=nothing,
+              field_parameters=nothing, args...)
 
-      Arguments:
+A plot of a slice through the simulation domain.
 
-      * `ds::Dataset`: The dataset to be used.
-      * `axis`: The axis to slice perpendicular to. Can be a string ("x","y", or "z"),
-        integer (0,1, or 2), or a three-element `Array` (e.g., [0.1,0.3,-0.5]), for an
-        off-axis slice.
-      * `fields`: A single field, e.g. "density" or ("flash","dens"), or `Array` of fields.
-      * `center` (optional): The coordinate of the center of the image. A sequence of
-        floats, a string, or a tuple. If set to 'c', 'center' or left blank, the plot
-        is centered on the middle of the domain. If set to 'max' or 'm', the center
-        will be located at the maximum of the ('gas', 'density') field. Centering on
-        the max or min of a specific field is supported by providing a tuple such as
-        ("min","temperature") or ("max","dark_matter_density"). Units can be specified
-        by passing in `center` as a tuple containing a coordinate and string unit name
-        or by passing in a YTArray. If a list or unitless array is supplied, code units
-        are assumed.
-      * `width` (optional): The width of the slice. Width can have four different formats
-        to support windows with variable x and y widths. They are:
+# Arguments
 
-        ==================================     =======================
-        format                                 example
-        ==================================     =======================
-        (float, string)                        (10,'kpc')
-        ((float, string), (float, string))     ((10,'kpc'),(15,'kpc'))
-        float                                  0.2
-        (float, float)                         (0.2, 0.3)
-        ==================================     =======================
+* `ds::Dataset`: The dataset to be used.
+* `axis`: The axis to slice perpendicular to. Can be a string ("x", "y",
+  or "z"), integer (0, 1, or 2), or a three-element `Array` (e.g.,
+  [0.1, 0.3, -0.5]), for an off-axis slice.
+* `fields`: A single field, e.g. "density" or ("flash", "dens"), or `Array`
+  of fields.
+* `center="c"`: The coordinate of the center of the image. A sequence
+  of floats, a string, or a tuple. If set to "c" or "center", the plot is
+  centered on the middle of the domain. If set to "max" or "m", the center
+  will be located at the maximum of the ("gas", "density") field. Centering
+  on the max or min of a specific field is supported by providing a tuple
+  such as ("min", "temperature") or ("max", "dark_matter_density"). Units
+  can be specified by passing in `center` as a tuple containing a coordinate
+  and string unit name or by passing in a `YTArray`. If a list or unitless
+  array is supplied, code units are assumed.
+* `width=nothing`: The width of the slice. Width can have four different
+  formats to support windows with variable x and y widths. They are:
 
-        For example, (10, 'kpc') requests a plot window that is 10 kiloparsecs wide in the
-        x and y directions, ((10,'kpc'),(15,'kpc')) requests a window that is 10 kiloparsecs
-        wide along the x axis and 15 kiloparsecs wide along the y axis. In the other two
-        examples, code units are assumed, for example (0.2, 0.3) requests a plot that has an
-        x width of 0.2 and a y width of 0.3 in code units.  If units are provided the resulting
-        plot axis labels will use the supplied units.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
-        field parameters than can be accessed by derived fields.
+  ==================================     =======================
+  format                                 example
+  ==================================     =======================
+  (float, string)                        (10, "kpc")
+  ((float, string), (float, string))     ((10, "kpc"), (15, "kpc"))
+  float                                  0.2
+  (float, float)                         (0.2, 0.3)
+  ==================================     =======================
 
-      Other optional arguments are handled by `yt`, consult the `yt` documentation for details.
+  For example, (10, "kpc") requests a plot window that is 10 kiloparsecs
+  wide in the x and y directions, ((10, "kpc"), (15, "kpc")) requests a window
+  that is 10 kiloparsecs wide along the x axis and 15 kiloparsecs wide along
+  the y axis. In the other two examples, code units are assumed, for example
+  (0.2, 0.3) requests a plot that has an x width of 0.2 and a y width of 0.3
+  in code units.  If units are provided the resulting plot axis labels will
+  use the supplied units.
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of field
+  parameters that can be accessed by derived fields.
 
-      Examples:
+Other optional arguments are handled by `yt`, consult the `yt` documentation
+for details.
 
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          julia> slc = YT.SlicePlot(ds, "z", ["density","temperature"])
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+julia> slc = YT.SlicePlot(ds, "z", ["density","temperature"])
+```
+"""
 function SlicePlot(ds::Dataset, axis, fields; center="c",
                    width=nothing, field_parameters=nothing, args...)
     if typeof(center) <: YTArray
@@ -68,60 +75,68 @@ function SlicePlot(ds::Dataset, axis, fields; center="c",
                         width=width, field_parameters=fps, args...))
 end
 
-@doc doc"""
-      A plot of an on-axis projection through the simulation domain.
+"""
+    ProjectionPlot(ds::Dataset, axis, fields; weight_field=nothing,
+                   center="c", width=nothing, data_source=nothing,
+                   field_parameters=nothing, args...)
 
-      Arguments:
+A plot of an on-axis projection through the simulation domain.
 
-      * `ds::Dataset`: The dataset to be used.
-      * `axis`: The axis to slice perpendicular to. Can be a string ("x","y", or "z"),
-        or an integer (0,1,2).
-      * `fields`: A single field, e.g. "density" or ("flash","dens"), or `Array` of fields.
-      * `weight_field` (optional): The field to weight the projection by. Default is
-        `nothing`, an unweighted projection.
-      * `center` (optional): The coordinate of the center of the image. A sequence of
-        floats, a string, or a tuple. If set to 'c', 'center' or left blank, the plot
-        is centered on the middle of the domain. If set to 'max' or 'm', the center
-        will be located at the maximum of the ('gas', 'density') field. Centering on
-        the max or min of a specific field is supported by providing a tuple such as
-        ("min","temperature") or ("max","dark_matter_density"). Units can be specified
-        by passing in `center` as a tuple containing a coordinate and string unit name
-        or by passing in a YTArray. If a list or unitless array is supplied, code units
-        are assumed.
-      * `width` (optional): The width of the projection. Width can have four different
-        formats to support windows with variable x and y widths. They are:
+# Arguments
 
-        ==================================     =======================
-        format                                 example
-        ==================================     =======================
-        (float, string)                        (10,'kpc')
-        ((float, string), (float, string))     ((10,'kpc'),(15,'kpc'))
-        float                                  0.2
-        (float, float)                         (0.2, 0.3)
-        ==================================     =======================
+* `ds::Dataset`: The dataset to be used.
+* `axis`: The axis to slice perpendicular to. Can be a string ("x", "y", or
+  "z"), or an integer (0, 1, 2).
+* `fields`: A single field, e.g. "density" or ("flash", "dens"), or `Array` of
+  fields.
+* `weight_field=nothing`: The field to weight the projection by. Default is
+  an unweighted projection.
+* `center="c"`: The coordinate of the center of the image. A sequence of
+  floats, a string, or a tuple. If set to "c" or "center", the plot is centered
+  on the middle of the domain. If set to "max" or "m", the center will be
+  located at the maximum of the ("gas", "density") field. Centering on the max
+  or min of a specific field is supported by providing a tuple such as
+  ("min", "temperature") or ("max", "dark_matter_density"). Units can be
+  specified by passing in `center` as a tuple containing a coordinate and
+  string unit name or by passing in a `YTArray`. If a list or unitless array is
+  supplied, code units are assumed.
+* `width=nothing`: The width of the projection. Width can have four different
+  formats to support windows with variable x and y widths. They are:
 
-        For example, (10, 'kpc') requests a plot window that is 10 kiloparsecs wide in the
-        x and y directions, ((10,'kpc'),(15,'kpc')) requests a window that is 10 kiloparsecs
-        wide along the x axis and 15 kiloparsecs wide along the y axis. In the other two
-        examples, code units are assumed, for example (0.2, 0.3) requests a plot that has an
-        x width of 0.2 and a y width of 0.3 in code units.  If units are provided the resulting
-        plot axis labels will use the supplied units.
-      * `data_source::DataContainer` (optional): An optional data source to use when
-        making the projection. Only the elements which have coordinates within the
-        `data_source` will be used in the projection.
-      * `field_parameters::Dict{ASCIIString,Any}` (optional): A dictionary of
-        field parameters than can be accessed by derived fields.
+  ==================================     =======================
+  format                                 example
+  ==================================     =======================
+  (float, string)                        (10, "kpc")
+  ((float, string), (float, string))     ((10, "kpc"), (15, "kpc"))
+  float                                  0.2
+  (float, float)                         (0.2, 0.3)
+  ==================================     =======================
 
-      Other optional arguments are handled by `yt`, consult the `yt` documentation for details.
+  For example, (10, "kpc") requests a plot window that is 10 kiloparsecs wide in
+  the x and y directions, ((10, "kpc"), (15, "kpc")) requests a window that is
+  10 kiloparsecs wide along the x axis and 15 kiloparsecs wide along the y axis.
+  In the other two examples, code units are assumed, for example (0.2, 0.3)
+  requests a plot that has an x width of 0.2 and a y width of 0.3 in code units.
+  If units are provided the resulting plot axis labels will use the supplied
+  units.
+* `data_source::DataContainer=nothing`: An optional data source to use when
+  making the projection. Only the elements which have coordinates within the
+  `data_source` will be used in the projection.
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of
+  field parameters that can be accessed by derived fields.
 
-      Examples:
+Other optional arguments are handled by `yt`, consult the `yt` documentation for
+details.
 
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          julia> sp = YT.Sphere(ds, "max", (0.5,"Mpc"))
-          julia> prj = YT.ProjectionPlot(ds, "z", ["density","temperature"];
-                                         data_source=sp, center="max", width=(2.0,"Mpc"))
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+julia> sp = YT.Sphere(ds, "max", (0.5, "Mpc"))
+julia> prj = YT.ProjectionPlot(ds, "z", ["density", "temperature"];
+                               data_source=sp, center="max", width=(2.0, "Mpc"))
+```
+"""
 function ProjectionPlot(ds::Dataset, axis, fields; weight_field=nothing,
                         center="c", width=nothing, data_source=nothing,
                         field_parameters=nothing, args...)
@@ -143,9 +158,11 @@ end
 
 # Show plot
 
-@doc doc"""
-      Show the `plot` in the IJulia notebook.
-      """ ->
+"""
+    show_plot(plot)
+
+Show the `plot` in the IJulia notebook.
+"""
 function show_plot(plot)
     plot.refresh()
 end

@@ -184,7 +184,7 @@ A ``YTArray`` can be saved to an `HDF5 <http://www.hdfgroup.org>`_ file for re-l
 
 .. code-block:: julia
 
-    function write_hdf5(a::YTArray, filename::ASCIIString; dataset_name=nothing, info=nothing)
+    function write_hdf5(a::YTArray, filename::String; dataset_name=nothing, info=nothing)
 
 where ``dataset_name`` is the name of the dataset to store the array in (defaults to ``"array_data"``), and ``info``
 is an optional dictionary which can be stored as dataset attributes to provide additional information:

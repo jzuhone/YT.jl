@@ -605,11 +605,13 @@ Write a `YTArray` to an HDF5 file.
 
 * `a::YTArray`: The `YTArray` to write to the file.
 * `filename::String`: The file to write to.
-* `dataset_name::String`: The name of the HDF5 dataset to write the data into.
-* `dataset_name::String`: The name of the HDF5 group to write the data into.
-* `info::Dict{String,Any}`: A dictionary of keys and values
-  to write to the file, associated with this array, that will be
-  stored in the dataset attributes.
+* `dataset_name::String=nothing`: The name of the HDF5 dataset to write the data
+  into.
+* `dataset_name::String=nothing`: The name of the HDF5 group to write the data
+  into.
+* `info::Dict{String,Any}=nothing`: A dictionary of keys and values to write to
+  the file, associated with this array, that will be stored in the dataset
+  attributes.
 
 # Examples
 ```julia
@@ -632,8 +634,10 @@ Read a `YTArray` from an HDF5 file.
 # Parameters
 
 * `filename::String`: The file to read from.
-* `dataset_name::String`: The name of the HDF5 dataset to read the data from.
-* `group_name::String`: The name of the HDF5 group to read the data from.
+* `dataset_name::String=nothing`: The name of the HDF5 dataset to read the data
+  from.
+* `group_name::String=nothing`: The name of the HDF5 group to read the data
+  from.
 
 # Examples
 ```julia

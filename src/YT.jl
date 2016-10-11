@@ -149,22 +149,19 @@ particles is set by the `number_of_particles` key in data.
 * `data::Dict`: A dict of Arrays or (Array, unit string) tuples. The keys are
   the field names.
 * `domain_dimensions::Array`: These are the domain dimensions of the grid
-* `length_unit=nothing` (optional): Unit to use for lengths. Defaults to 1 cm.
-* `bbox=nothing` (optional): Size of computational domain in units specified by
+* `length_unit=nothing`: Unit to use for lengths. Defaults to 1 cm.
+* `bbox=nothing`: Size of computational domain in units specified by
   `length_unit`. Defaults to a cubic unit-length domain.
-* `nprocs::Integer=1` (optional): If greater than 1, will create this number of
-  subgrids out of data
-* `sim_time::Real=0.0` (optional): The simulation time.
-* `mass_unit=nothing` (optional): Unit to use for lengths. Defaults to 1 g.
-* `time_unit=nothing` (optional): Unit to use for lengths. Defaults to 1 s.
-* `velocity_unit=nothing` (optional): Unit to use for lengths. Defaults to
-  1 cm/s.
-* `magnetic_unit=nothing` (optional): Unit to use for lengths. Defaults to 1
-  gauss.
-* `periodicity::Tuple{Bool,Bool,Bool}=(true, true, true)` (optional): Determines
-  whether the data will be treated as periodic along each axis.
-* `geometry::String="cartesian"` (optional): "cartesian", "cylindrical" or
-  "polar"
+* `nprocs::Integer=1`: If greater than 1, will create this number of subgrids
+  out of data
+* `sim_time::Real=0.0`: The simulation time.
+* `mass_unit=nothing`: Unit to use for lengths. Defaults to 1 g.
+* `time_unit=nothing`: Unit to use for lengths. Defaults to 1 s.
+* `velocity_unit=nothing`: Unit to use for lengths. Defaults to 1 cm/s.
+* `magnetic_unit=nothing`: Unit to use for lengths. Defaults to 1 gauss.
+* `periodicity::Tuple{Bool,Bool,Bool}=(true, true, true)`: Determines whether
+  the data will be treated as periodic along each axis.
+* `geometry::String="cartesian"``: "cartesian", "cylindrical", or "polar"
 
 # Examples
 ```julia
@@ -193,58 +190,61 @@ function load_uniform_grid(data::Dict{Any,Any}, domain_dimensions::Array;
     return Dataset(ds)
 end
 
-@doc doc"""
-      Load a set of grids of data, of varying resolution. This comes with
-      several caveats:
+"""
+    load_amr_grids(data::Array, domain_dimensions::Array;
+                   bbox=nothing, sim_time=0.0, length_unit=nothing,
+                   mass_unit=nothing, time_unit=nothing,
+                   velocity_unit=nothing, magnetic_unit=nothing,
+                   periodicity=(true, true, true), geometry="cartesian",
+                   refine_by=2)
 
-      * Particles may be difficult to integrate.
-      * No consistency checks are performed on the index
+Load a set of grids of data, of varying resolution. This comes with
+several caveats:
 
-      Arguments:
+* Particles may be difficult to integrate.
+* No consistency checks are performed on the index
 
-      * `grid_data::Array`: This is an Array of Dicts. Each Dict must have entries
-        "left_edge", "right_edge", "dimensions", "level", and then any remaining
-        entries are assumed to be fields. Field entries must map to an Array. The
-        grid_data may also include a particle count. If no particle count is supplied,
-        the dataset is understood to contain no particles. The grid_data will be
-        modified in place and can't be assumed to be static.
-      * `domain_dimensions::Array`: These are the domain dimensions of the grid
-      * `field_units::Dict` (optional): A dictionary mapping string field names
-        to string unit specifications.  The field names must correspond to the
-        fields in grid_data.
-      * `length_unit::String` (optional): Unit to use for lengths. Defaults to 1 cm.
-      * `bbox::Array` (optional): Size of computational domain in units specified by
-        `length_unit`. Defaults to a cubic unit-length domain.
-      * `sim_time::Real` (optional): The simulation time.
-      * `mass_unit` (optional): Unit to use for lengths. Defaults to 1 g.
-      * `time_unit` (optional): Unit to use for lengths. Defaults to 1 s.
-      * `velocity_unit` (optional): Unit to use for lengths. Defaults to 1 cm/s.
-      * `magnetic_unit` (optional): Unit to use for lengths. Defaults to 1 gauss.
-      * `periodicity::Tuple{Bool,Bool,Bool}` (optional): Determines whether the data
-        will be treated as periodic along each axis.
-      * `geometry::String` (optional): "cartesian", "cylindrical" or "polar"
-      * `refine_by::Integer` (optional): Specifies the refinement ratio between
-        levels.  Defaults to 2.
+# Arguments
 
-      Examples:
+* `grid_data::Array`: This is an Array of Dicts. Each Dict must have entries
+  "left_edge", "right_edge", "dimensions", "level", and then any remaining
+  entries are assumed to be fields. Field entries must map to an Array. The
+  grid_data may also include a particle count. If no particle count is supplied,
+  the dataset is understood to contain no particles. The grid_data will be
+  modified in place and can't be assumed to be static.
+* `domain_dimensions::Array`: These are the domain dimensions of the grid
+* `length_unit=nothing`: Unit to use for lengths. Defaults to 1 cm.
+* `bbox=nothing`: Size of computational domain in units specified by
+  `length_unit`. Defaults to a cubic unit-length domain.
+* `sim_time::Real=0.0`: The simulation time.
+* `mass_unit=nothing`: Unit to use for lengths. Defaults to 1 g.
+* `time_unit=nothing`: Unit to use for lengths. Defaults to 1 s.
+* `velocity_unit=nothing`: Unit to use for lengths. Defaults to 1 cm/s.
+* `magnetic_unit=nothing`: Unit to use for lengths. Defaults to 1 gauss.
+* `periodicity::Tuple{Bool,Bool,Bool}=(true, true, true)`: Determines whether
+  the data will be treated as periodic along each axis.
+* `geometry::String="cartesian"`: "cartesian", "cylindrical", or "polar"
+* `refine_by::Integer=2`: Specifies the refinement ratio between levels.
 
-          julia> import YT
-          julia> grid_data = [
-                   Dict("left_edge"=>[0.0, 0.0, 0.0],
-                        "right_edge"=>[1.0, 1.0, 1.0],
-                        "level"=>0,
-                        "dimensions"=>[32, 32, 32]),
-                   Dict("left_edge"=>[0.25, 0.25, 0.25],
-                        "right_edge"=>[0.75, 0.75, 0.75],
-                        "level"=>1,
-                        "dimensions"=>[32, 32, 32])
-                 ]
-          julia> for g in grid_data
-                     g["density"] = (rand(g["dimensions"]...) * 2^g["level"], "g/cm^3")
-                 end
-          julia> ds = YT.load_amr_grids(grid_data, [32, 32, 32];
-                                        field_units=field_units)
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> grid_data = [
+         Dict("left_edge"=>[0.0, 0.0, 0.0],
+              "right_edge"=>[1.0, 1.0, 1.0],
+              "level"=>0,
+              "dimensions"=>[32, 32, 32]),
+         Dict("left_edge"=>[0.25, 0.25, 0.25],
+              "right_edge"=>[0.75, 0.75, 0.75],
+              "level"=>1,
+              "dimensions"=>[32, 32, 32])
+       ]
+julia> for g in grid_data
+           g["density"] = (rand(g["dimensions"]...) * 2^g["level"], "g/cm^3")
+       end
+julia> ds = YT.load_amr_grids(grid_data, [32, 32, 32])
+```
+"""
 function load_amr_grids(data::Array, domain_dimensions::Array;
                         bbox=nothing, sim_time=0.0, length_unit=nothing,
                         mass_unit=nothing, time_unit=nothing,
@@ -257,53 +257,60 @@ function load_amr_grids(data::Array, domain_dimensions::Array;
     return Dataset(ds)
 end
 
-@doc doc"""
-      Load a set of particles into yt.
+"""
+    load_particles(data::Dict{Any,Any}; length_unit=nothing, bbox=nothing,
+                   sim_time=0.0, mass_unit=nothing, time_unit=nothing,
+                   velocity_unit=nothing, magnetic_unit=nothing,
+                   periodicity=(true, true, true), n_ref=64,
+                   over_refine_factor=1, geometry="cartesian")
 
-      This should allow a collection of particle data to be loaded directly into
-      yt and analyzed as would any others.
+Load a set of particles into yt.
 
-      This will initialize an Octree of data. Note that fluid fields will not
-      work yet, or possibly ever.
+This should allow a collection of particle data to be loaded directly into
+yt and analyzed as would any others.
 
-      Arguments:
+This will initialize an Octree of data. Note that fluid fields will not
+work yet, or possibly ever.
 
-      * `data::Dict`: This is a dict of Arrays, where the keys are the field names.
-        Particle positions must be named "particle_position_x",
-        "particle_position_y", "particle_position_z".
-      * `length_unit::String` (optional): Unit to use for lengths. Defaults to 1 cm.
-      * `bbox::Array` (optional): Size of computational domain in units specified by
-        `length_unit`. Defaults to a cubic unit-length domain.
-      * `sim_time::Real` (optional): The simulation time.
-      * `mass_unit` (optional): Unit to use for lengths. Defaults to 1 g.
-      * `time_unit` (optional): Unit to use for lengths. Defaults to 1 s.
-      * `velocity_unit` (optional): Unit to use for lengths. Defaults to 1 cm/s.
-      * `magnetic_unit` (optional): Unit to use for lengths. Defaults to 1 gauss.
-      * `periodicity::Tuple{Bool,Bool,Bool}` (optional): Determines whether the data
-        will be treated as periodic along each axis.
-      * `geometry::String` (optional): "cartesian", "cylindrical" or "polar"
-      * `n_ref::Integer` (optional): The number of particles that result in refining an
-        oct used for indexing the particles.
+# Arguments
 
-      Examples:
+* `data::Dict`: This is a dict of Arrays, where the keys are the field names.
+  Particle positions must be named "particle_position_x", "particle_position_y",
+  "particle_position_z".
+* `length_unit=nothing`: Unit to use for lengths. Defaults to 1 cm.
+* `bbox=nothing`: Size of computational domain in units specified by
+  `length_unit`. Defaults to a cubic unit-length domain.
+* `sim_time::Real=0.0`: The simulation time.
+* `mass_unit=nothing`: Unit to use for lengths. Defaults to 1 g.
+* `time_unit=nothing`: Unit to use for lengths. Defaults to 1 s.
+* `velocity_unit=nothing`: Unit to use for lengths. Defaults to 1 cm/s.
+* `magnetic_unit=nothing`: Unit to use for lengths. Defaults to 1 gauss.
+* `periodicity::Tuple{Bool,Bool,Bool}=(true, true, true)`: Determines whether
+  the data will be treated as periodic along each axis.
+* `geometry::String="cartesian"`: "cartesian", "cylindrical", or "polar"
+* `n_ref::Integer=64` (optional): The number of particles that result in refining an
+oct used for indexing the particles.
 
-          julia> import YT
-          julia> n_particles = 5000000
-          julia> data = Dict()
-          julia> data["particle_position_x"] = 1.0e6*randn(n_particles)
-          julia> data["particle_position_y"] = 1.0e6*randn(n_particles)
-          julia> data["particle_position_z"] = 1.0e6*randn(n_particles)
-          julia> data["particle_mass"] = ones(n_particles)
-          julia> bbox = 1.1*[minimum(data["particle_position_x"])
-                             maximum(data["particle_position_x"]);
-                             minimum(data["particle_position_y"])
-                             maximum(data["particle_position_y"]);
-                             minimum(data["particle_position_z"])
-                             maximum(data["particle_position_z"])]
-          julia> ds = YT.load_particles(data, length_unit="pc",
-                                        mass_unit=(1e8, "Msun"),
-                                        n_ref=256, bbox=bbox)
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> n_particles = 5000000
+julia> data = Dict()
+julia> data["particle_position_x"] = 1.0e6*randn(n_particles)
+julia> data["particle_position_y"] = 1.0e6*randn(n_particles)
+julia> data["particle_position_z"] = 1.0e6*randn(n_particles)
+julia> data["particle_mass"] = ones(n_particles)
+julia> bbox = 1.1*[minimum(data["particle_position_x"])
+                   maximum(data["particle_position_x"]);
+                   minimum(data["particle_position_y"])
+                   maximum(data["particle_position_y"]);
+                   minimum(data["particle_position_z"])
+                   maximum(data["particle_position_z"])]
+julia> ds = YT.load_particles(data, length_unit="pc",
+                              mass_unit=(1e8, "Msun"),
+                              n_ref=256, bbox=bbox)
+```
+"""
 function load_particles(data::Dict{Any,Any}; length_unit=nothing, bbox=nothing,
                         sim_time=0.0, mass_unit=nothing, time_unit=nothing,
                         velocity_unit=nothing, magnetic_unit=nothing,

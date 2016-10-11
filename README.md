@@ -1,5 +1,7 @@
 # YT
 
+[![yt](http://img.shields.io/badge/powered%20by-yt-blue.svg?style=flat)](http://yt-project.org/)   
+
 [![Build Status](https://travis-ci.org/jzuhone/YT.jl.svg?branch=master)](https://travis-ci.org/jzuhone/YT.jl) [![Coverage Status](https://coveralls.io/repos/jzuhone/YT.jl/badge.png)](https://coveralls.io/r/jzuhone/YT.jl)
 
 `YT` is a Julia interface to the Python-based [`yt` analysis toolkit](http://yt-project.org). `YT`
@@ -41,4 +43,3 @@ to use it as an application, loading its methods into the current session's name
 ## Documentation
 
 For more documentation, please visit [http://hea-www.cfa.harvard.edu/~jzuhone/yt_julia](http://hea-www.cfa.harvard.edu/~jzuhone/yt_julia).
-

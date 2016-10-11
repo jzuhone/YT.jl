@@ -803,7 +803,7 @@ julia> ds = YT.load("RedshiftOutput0005")
 julia> sp = YT.Sphere(ds, "max", (1.0, "Mpc"))
 julia> cr = YT.CutRegion(sp, ["obj['temperature'] < 1e3"])
 ```
-""" ->
+"""
 type CutRegion <: DataContainer
     cont::PyObject
     ds::Dataset

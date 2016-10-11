@@ -4,7 +4,7 @@ import YT.array: YTUnitOperationError
 
 ds = load("enzo_tiny_cosmology/DD0046/DD0046")
 
-u = YT.units
+u = YT.unit_symbols
 pc = YT.physical_constants
 
 a = YTArray(rand(10), "cm")

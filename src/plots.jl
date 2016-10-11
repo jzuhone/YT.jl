@@ -51,7 +51,7 @@ A plot of a slice through the simulation domain.
   in code units.  If units are provided the resulting plot axis labels will
   use the supplied units.
 * `field_parameters::Dict{String,Any}=nothing`: A dictionary of field
-  parameters than can be accessed by derived fields.
+  parameters that can be accessed by derived fields.
 
 Other optional arguments are handled by `yt`, consult the `yt` documentation
 for details.
@@ -123,7 +123,7 @@ A plot of an on-axis projection through the simulation domain.
   making the projection. Only the elements which have coordinates within the
   `data_source` will be used in the projection.
 * `field_parameters::Dict{String,Any}=nothing`: A dictionary of
-  field parameters than can be accessed by derived fields.
+  field parameters that can be accessed by derived fields.
 
 Other optional arguments are handled by `yt`, consult the `yt` documentation for
 details.

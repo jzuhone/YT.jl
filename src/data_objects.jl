@@ -44,51 +44,61 @@ type Dataset
     end
 end
 
-@doc doc"""
-      Get the smallest cell size or SPH smoothing length of
-      a `ds::Dataset`.
-      """ ->
+"""
+    get_smallest_dx(ds::Dataset)
+
+Get the smallest cell size or SPH smoothing length of
+a `Dataset`.
+"""
 function get_smallest_dx(ds::Dataset)
     pycall(ds.ds[:index]["get_smallest_dx"], YTArray)[1]
 end
 
-@doc doc"""
-      Print important stats on a `ds::Dataset`.
-      """ ->
+"""
+    print_stats(ds::Dataset)
+
+Print important stats on a `Dataset`.
+"""
 function print_stats(ds::Dataset)
     ds.ds[:print_stats]()
 end
 
-@doc doc"""
-      For a `ds::Dataset`, find the value and the location of the
-      minimum of a `field::Field`.
-      """ ->
+"""
+     find_min(ds::Dataset, field::Field)
+
+For a `Dataset`, find the value and the location of the minimum of a field.
+"""
 function find_min(ds::Dataset, field::Field)
     a = pycall(ds.ds["find_min"], PyObject, field)
     v, c = PyVector{PyObject}(a)
     YTQuantity(v), YTArray(c)
 end
 
-@doc doc"""
-      For a `ds::Dataset`, find the value and the location of the
-      maximum of a `field::Field`.
-      """ ->
+"""
+     find_max(ds::Dataset, field::Field)
+
+For a `Dataset`, find the value and the location of the maximum of a field.
+"""
 function find_max(ds::Dataset, field::Field)
     a = pycall(ds.ds["find_max"], PyObject, field)
     v, c = PyVector{PyObject}(a)
     YTQuantity(v), YTArray(c)
 end
 
-@doc doc"""
-      Get the field list of a `ds::Dataset`.
-      """ ->
+"""
+    get_field_list(ds::Dataset)
+
+Get the field list of a `Dataset`.
+"""
 function get_field_list(ds::Dataset)
     ds.ds[:field_list]
 end
 
-@doc doc"""
-      Get all of the derived fields of a `ds::Dataset`.
-      """ ->
+"""
+    get_derived_field_list(ds::Dataset)
+
+Get all of the derived fields of a `Dataset`.
+"""
 function get_derived_field_list(ds::Dataset)
     ds.ds[:derived_field_list]
 end
@@ -110,23 +120,27 @@ end
 
 # AllData
 
-@doc doc"""
-      An object representing all of the data in the domain.
+"""
+    AllData(ds::Dataset; field_parameters=nothing,
+            data_source=nothing)
 
-      Arguments:
+An object representing all of the data in the domain.
 
-      * `ds::Dataset`: The dataset to be used.
-      * `field_parameters::Dict{String,Any}` (optional): A dictionary of
-        field parameters than can be accessed by derived fields.
-      * `data_source::DataContainer` (optional): Draw the selection from the
-        provided data source rather than all data associated with the dataset
+# Arguments
 
-      Examples:
+* `ds::Dataset`: The dataset to be used.
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of field parameters
+  that can be accessed by derived fields.
+* `data_source::DataContainer=nothing`: Draw the selection from the provided
+  data source rather than all data associated with the dataset
 
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          julia> dd = YT.AllData(ds)
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+julia> dd = YT.AllData(ds)
+```
+"""
 type AllData <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -146,27 +160,31 @@ end
 
 # Point
 
-@doc doc"""
-      A 0-dimensional object defined by a single point
+"""
+    Point(ds::Dataset, coord::Array{Float64,1}; field_parameters=nothing,
+          data_source=nothing)
 
-      Arguments:
+A 0-dimensional object defined by a single point
 
-      * `ds::Dataset`: The dataset to be used.
-      * `p::Array{Float64,1}`: A point defined within the domain. If the domain is periodic
-        its position will be corrected to lie inside the range [DLE,DRE) to ensure
-        one and only one cell may match that point.
-      * `field_parameters::Dict{String,Any}` (optional): A dictionary of
-        field parameters than can be accessed by derived fields.
-      * `data_source::DataContainer` (optional): Draw the selection from the
-        provided data source rather than all data associated with the dataset
+# Arguments
 
-      Examples:
+* `ds::Dataset`: The dataset to be used.
+* `p::Array{Float64,1}`: A point defined within the domain. If the domain is
+  periodic its position will be corrected to lie inside the range [DLE, DRE)
+  to ensure one and only one cell may match that point.
+* `field_parameters::Dict{String,Any}=nothing`: A dictionary of field parameters
+  than can be accessed by derived fields.
+* `data_source::DataContainer=nothing`: Draw the selection from the provided
+  data source rather than all data associated with the dataset
 
-          julia> import YT
-          julia> ds = YT.load("RedshiftOutput0005")
-          julia> c = [0.5,0.5,0.5]
-          julia> point = YT.Point(ds,c)
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("RedshiftOutput0005")
+julia> c = [0.5,0.5,0.5]
+julia> point = YT.Point(ds,c)
+```
+"""
 type Point <: DataContainer
     cont::PyObject
     ds::Dataset
@@ -187,6 +205,7 @@ type Point <: DataContainer
 end
 
 # Region
+
 @doc doc"""
       A 3D region of data with an arbitrary center.
 
@@ -377,6 +396,7 @@ type Ray <: DataContainer
 end
 
 # OrthoRay
+
 @doc doc"""
       This is an orthogonal ray cast through the entire domain, at a specific
       coordinate.
@@ -604,27 +624,31 @@ type Slice <: DataContainer
     end
 end
 
-@doc doc"""
-      Create a FixedResolutionBuffer from a slice or projection.
+"""
+    to_frb(cont::Union{Slice,Proj}, width::Length,
+           nx::Union{Integer,Tuple{Integer,Integer}}; center=nothing,
+           height=nothing, periodic=false)
 
-      Arguments:
+Create a `FixedResolutionBuffer` from a slice or projection.
 
-      * `cont::Union{Slice,Proj}` or `cont::Cutting`: A Slice, Proj, or Cutting DataContainer.
-      * `width::Length`: The width of the FRB.
-      * `nx::Union{Integer,Tuple{Integer,Integer}}`: Either an integer or a 2-tuple of
-        integers, corresponding to the dimensions of the image.
-      * `center::Center` (optional): The center of the FRB. If not specified,
-        defaults to the center of the current object. Not available if `cont` is a
-        `Cutting.`
-      * `height::Length` (optional): The height of the FRB. If not specified,
-        defaults to the `width`.
-      * `periodic::Bool` (optional): Is the FRB periodic? Default `false`.
+# Arguments
 
-      Examples:
+* `cont::Union{Slice,Proj}`: A Slice or Proj DataContainer.
+* `width::Length`: The width of the FRB.
+* `nx::Union{Integer,Tuple{Integer,Integer}}`: Either an integer or a 2-tuple of
+  integers, corresponding to the dimensions of the image.
+* `center::Center=nothing`: The center of the FRB. If not specified, defaults to
+  the center of the current object.
+* `height::Length=nothing`: The height of the FRB. If not specified, defaults to
+  the `width`.
+* `periodic::Bool=false`: Is the FRB periodic?
 
-          julia> slc = Slice(ds, "z", 0.0)
-          julia> frb = to_frb(slc, (500.,"kpc"), 800)
-      """ ->
+# Examples
+```julia
+julia> slc = Slice(ds, "z", 0.0)
+julia> frb = to_frb(slc, (500.,"kpc"), 800)
+```
+"""
 function to_frb(cont::Union{Slice,Proj}, width::Length,
                 nx::Union{Integer,Tuple{Integer,Integer}}; center=nothing,
                 height=nothing, periodic=false)
@@ -639,6 +663,29 @@ function to_frb(cont::Union{Slice,Proj}, width::Length,
                                                       periodic=periodic))
 end
 
+"""
+    to_frb(cont::Cutting, width::Length,
+           nx::Union{Integer,Tuple{Integer,Integer}};
+           height=nothing, periodic=false)
+
+Create a `FixedResolutionBuffer` from a cutting plane.
+
+# Arguments
+
+* `cont::Union{Slice,Proj}`: A Cutting DataContainer.
+* `width::Length`: The width of the FRB.
+* `nx::Union{Integer,Tuple{Integer,Integer}}`: Either an integer or a 2-tuple of
+  integers, corresponding to the dimensions of the image.
+* `height::Length=nothing`: The height of the FRB. If not specified, defaults to
+  the `width`.
+* `periodic::Bool=false`: Is the FRB periodic?
+
+# Examples
+```julia
+julia> cp = YT.Cutting(ds, [0.1, 0.2, -0.9], [0.5, 0.42, 0.6])
+julia> frb = to_frb(cp, (500.,"kpc"), 800)
+```
+"""
 function to_frb(cont::Cutting, width::Length,
                 nx::Union{Integer,Tuple{Integer,Integer}};
                 height=nothing, periodic=false)
@@ -744,9 +791,6 @@ end
 
 # Grids
 
-@doc doc"""
-      Return an `Array` of grids associated with `ds::Dataset`.
-      """ ->
 type Grids <: AbstractArray
     grids::Array
     grid_dict::Dict
@@ -828,66 +872,70 @@ end
 
 # Field parameters
 
-@doc doc"""
-      Set the value of a field parameter in a data container.
+"""
+    set_field_parameter(dc::DataContainer, key::String, value)
 
-      Arguments:
+Set the value of a field parameter in a data container.
 
-      * `dc::DataContainer`: The data container object to set the
-        parameter for.
-      * `key::String`: The name of the parameter to set.
-      * `value::Any`: The value of the parameter.
+# Arguments
 
-      Examples:
+* `dc::DataContainer`: The data container object to set the parameter for.
+* `key::String`: The name of the parameter to set.
+* `value::Any`: The value of the parameter.
 
-          julia> import YT
-          julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
-          julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
-          julia> set_field_parameter(sp, "mu", 0.592)
-
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
+julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
+julia> set_field_parameter(sp, "mu", 0.592)
+```
+"""
 function set_field_parameter(dc::DataContainer, key::String, value)
     v = PyObject(value)
     dc.cont[:set_field_parameter](key, v)
 end
 
-@doc doc"""
-      Check if a field parameter is set in a data container object.
+"""
+    has_field_parameter(dc::DataContainer, key::String)
 
-      Arguments:
+Check if a field parameter is set in a data container object.
 
-      * `dc::DataContainer`: The data container object to check for
-        a parameter.
-      * `key::String`: The name of the parameter to check.
+# Arguments
 
-      Examples:
+* `dc::DataContainer`: The data container object to check for a parameter.
+* `key::String`: The name of the parameter to check.
 
-          julia> import YT
-          julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
-          julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
-          julia> has_field_parameter(sp, "center")
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
+julia> sp = YT.Sphere(ds, "c", (200., "kpc"))
+julia> has_field_parameter(sp, "center")
+```
+"""
 function has_field_parameter(dc::DataContainer, key::String)
     dc.cont[:has_field_parameter](key)
 end
 
-@doc doc"""
-      Get the value of a field parameter.
+"""
+    get_field_parameter(dc::DataContainer, key::String)
 
-      Arguments:
+Get the value of a field parameter.
 
-      * `dc::DataContainer`: The data container object to get the
-        parameter from.
-      * `key::String`: The name of the parameter to get.
+# Arguments
 
-      Examples:
+* `dc::DataContainer`: The data container object to get the parameter from.
+* `key::String`: The name of the parameter to get.
 
-          julia> import YT
-          julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
-          julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
-          julia> ctr = get_field_parameter(sp, "center")
-
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
+julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
+julia> ctr = get_field_parameter(sp, "center")
+```
+"""
 function get_field_parameter(dc::DataContainer, key::String)
     v = pycall(dc.cont["get_field_parameter"], PyObject, key)
     if contains(pystring(v), "YTArray") || contains(pystring(v), "YTQuantity")
@@ -898,22 +946,24 @@ function get_field_parameter(dc::DataContainer, key::String)
     return v
 end
 
-@doc doc"""
-      Get all of the field parameters from a data container. Returns
-      a dictionary of field parameters.
+"""
+    get_field_parameters(dc::DataContainer)
 
-      Arguments:
+Get all of the field parameters from a data container. Returns
+a dictionary of field parameters.
 
-      * `dc::DataContainer`: The data container object to get the
-        parameters from.
+# Arguments
 
-      Examples:
+* `dc::DataContainer`: The data container object to get the parameters from.
 
-          julia> import YT
-          julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
-          julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
-          julia> field_parameters = get_field_parameters(sp)
-      """ ->
+# Examples
+```julia
+julia> import YT
+julia> ds = YT.load("GasSloshing/sloshing_nomag2_hdf5_plt_cnt_0100")
+julia> sp = YT.Sphere(ds, "c", (200.,"kpc"))
+julia> field_parameters = get_field_parameters(sp)
+```
+"""
 function get_field_parameters(dc::DataContainer)
     fp = Dict()
     for k in collect(keys(dc.cont[:field_parameters]))

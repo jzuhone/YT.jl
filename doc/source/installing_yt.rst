@@ -13,10 +13,9 @@ This will also install the following dependencies, if you don't have them instal
 * `PyPlot <http://github.com/stevengj/PyPlot.jl>`_
 * `SymPy <http://github.com/jverzani/SymPy.jl>`_
 
-However, for ``YT`` to work, ``yt`` itself must be installed. ``YT`` version 0.4 requires ``yt`` version 3.3.1
-or higher. The best ways to install ``yt`` are via the
-`install script <http://yt-project.org/#getyt>`_ or via the
-`Anaconda Python Distribution <https://store.continuum.io/cshop/anaconda/>`_.
+However, for ``YT`` to work, ``yt`` itself must be installed. ``YT`` version 0.4
+requires ``yt`` version 3.3.1 or higher. The best ways to install ``yt`` are via
+`pip <https://pip.pypa.io/>`_ or the `Anaconda Python Distribution <https://store.continuum.io/cshop/anaconda/>`_.
 
 Once ``YT`` is installed, either
 

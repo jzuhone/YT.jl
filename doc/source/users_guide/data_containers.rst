@@ -20,14 +20,14 @@ A ``Length``-type argument is for length quantities such as ``radius`` or ``heig
 one of the following:
 
   * A ``Float64`` number. If so, the assumed units are ``"code_length"``.
-  * A ``Tuple{Float64, ASCIIString}``, e.g., ``(1.5, "Mpc")``.
+  * A ``Tuple{Float64, String}``, e.g., ``(1.5, "Mpc")``.
   * A ``YTQuantity``.
 
 A ``Center``-type argument is for the ``center`` of an object and can be one of the following:
 
-  * An ``ASCIIString``, e.g., ``"max"`` (or ``"m"``), ``"center"`` (or ``"c"``),
+  * An ``String``, e.g., ``"max"`` (or ``"m"``), ``"center"`` (or ``"c"``),
     corresponding to the point with maximum density and the center of the domain, respectively.
-  * A ``Tuple{ASCIIString, ASCIIString}``, e.g. ``("min", "temperature")``,
+  * A ``Tuple{String, String}``, e.g. ``("min", "temperature")``,
     or ``("max","velocity_x")``, corresponding to maxima and minima of specific fields.
   * An ``Array`` of ``Float64`` numbers. If so, the assumed units are ``"code_length"``.
   * A ``YTArray``.
@@ -217,7 +217,7 @@ string ("x","y","z") or an integer (0,1,2), centered at some coordinate
 
 .. code-block:: julia
 
-  function Slice(ds::Dataset, axis::Union{Integer,ASCIIString},
+  function Slice(ds::Dataset, axis::Union{Integer,String},
                  coord::Float64;
                  field_parameters=nothing,
                  data_source=nothing)
@@ -237,7 +237,7 @@ A ``Proj`` is an integral of a given ``field`` along a sight line corresponding 
 
 .. code-block:: julia
 
-  function Proj(ds::Dataset, field, axis::Union{Integer,ASCIIString};
+  function Proj(ds::Dataset, field, axis::Union{Integer,String};
                 weight_field=nothing, data_source=nothing,
                 field_parameters=nothing, method=nothing)
 
@@ -307,7 +307,7 @@ which is determined by an array of ``conditionals`` on fields in the container.
 .. code-block:: julia
 
   function CutRegion(dc::DataContainer,
-                     conditionals::Array{ASCIIString,1}
+                     conditionals::Array{String,1}
                      field_parameters=nothing)
 
 ``conditionals`` is a list of conditionals that will be evaluated. In the namespace available,

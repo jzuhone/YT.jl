@@ -183,7 +183,7 @@ Then, call ``load_amr_grids``:
 
 .. code:: jlcon
 
-    ds = YT.load_amr_grids(grid_data, [32, 32, 32]; field_units=field_units)
+    ds = YT.load_amr_grids(grid_data, [32, 32, 32])
 
 ``load_amr_grids`` also takes the same keywords ``bbox`` and
 ``sim_time`` as ``load_uniform_grid``. We could have also specified the

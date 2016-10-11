@@ -25,29 +25,29 @@ Bin data from a data container object into a profile. These can be in
   The number of fields decides whether or not this will be a 1D, 2D, or 3D
   profile. If a single field string is given, it is assumed to be 1D.
 * `fields`: A single field or `Array` of fields to be binned.
-* `n_bins`: A single integer or tuple of 2 or 3 integers, to determine the
+* `n_bins=64`: A single integer or tuple of 2 or 3 integers, to determine the
   number of bins along each dimension.
-* `extrema::Dict{String,Any}`: A dictionary of tuples (with the field names
-  as the keys) that determine the maximum and minimum of the bin ranges,
+* `extrema::Dict{String,Any}=nothing`: A dictionary of tuples (with the field
+  names as the keys) that determine the maximum and minimum of the bin ranges,
   e.g. Dict("density"=>(1.0e-30, 1.0e-25)). If a field's extrema are not
   specified, the extrema of the field in the `data_source` are assumed. The
   extrema are assumed to be in the units of the field in the `units` argument
   unless it is not specified, otherwise they are in the field's default units.
-* `logs::Dict{String,Bool}`: A dictionary (with the field names as the keys)
-  that determines whether the bins are in logspace or linear space, e.g.
+* `logs::Dict{String,Bool}=nothing`: A dictionary (with the field names as the
+  keys) that determines whether the bins are in logspace or linear space, e.g.
   Dict("radius"=>false). If not set, the `take_log` attribute for the field
   determines this.
-* `units`: A dictionary (with the field names as the keys) that determines
-  the units of the field, e.g. Dict("density"=>"Msun/kpc^3"). If not set
-  then the default units for the field are used.
-* `weight_field`: The field to weight the binned fields by when binning. Can
-  be a field name or `nothing`, to produce an unweighted profile. `"cell_mass"`
-  is the default.
-* `accumulation::Bool`: If `true`, the profile values for a bin n are the
+* `units::Dict{String,String}=nothing`: A dictionary (with the field names
+  as the keys) that determines the units of the field, e.g.
+  Dict("density"=>"Msun/kpc^3"). If not set then the default units for the
+  field are used.
+* `weight_field="cell_mass"`: The field to weight the binned fields by when
+  binning. Can be a field name or `nothing`, to produce an unweighted profile.
+* `accumulation::Bool=false`: If `true`, the profile values for a bin n are the
   cumulative sum of all the values from bin 1 to n. If the profile is 2D or
   3D, an `Array{Bool,1}` of values can be given to control the summation in
   each dimension independently.
-* `fractional::Bool`: If `true`, the profile values are divided by the sum
+* `fractional::Bool=false`: If `true`, the profile values are divided by the sum
   of all of the values.
 
 # Examples

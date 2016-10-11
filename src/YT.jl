@@ -11,7 +11,7 @@ export get_derived_field_list
 
 # YTArrays, YTQuantities, units
 
-export YTArray, YTQuantity, YTUnit
+export YTArray, YTQuantity, YTUnit, in_base
 export in_units, in_cgs, in_mks, from_hdf5, write_hdf5
 export to_equivalent, list_equivalencies, has_equivalent
 export convert_to_units, convert_to_cgs, convert_to_mks
@@ -47,7 +47,7 @@ export DatasetSeries
 
 # Other
 
-export enable_plugins, ytcfg, quantities
+export enable_plugins, ytcfg, quantities, unit_system_registry
 
 import PyCall: @pyimport, PyError, pycall, PyObject, set!
 
@@ -74,9 +74,10 @@ include("dataset_series.jl")
 include("plots.jl")
 include("profiles.jl")
 include("unit_symbols.jl")
+include("unit_systems.jl")
 
 import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks, YTUnit,
-    from_hdf5, write_hdf5, to_equivalent, list_equivalencies,
+    from_hdf5, write_hdf5, to_equivalent, list_equivalencies, in_base,
     has_equivalent, convert_to_units, convert_to_mks, convert_to_cgs
 import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray,
@@ -89,6 +90,14 @@ import .fixed_resolution: FixedResolutionBuffer
 import .profiles: YTProfile, set_x_unit, set_y_unit, set_z_unit,
     set_field_unit, variance
 import .dataset_series: DatasetSeries
+import .unit_systems: UnitSystem
+
+unit_system_registry = Dict()
+yt_unit_systems = collect(keys(yt.unit_system_registry))
+
+for us in yt_unit_systems
+    unit_system_registry[us] = UnitSystem(yt.unit_system_registry[us])
+end
 
 """
     enable_plugins()

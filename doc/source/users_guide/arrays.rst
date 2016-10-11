@@ -231,7 +231,7 @@ The data can be read back into a ``YTArray`` using ``from_hdf5``:
 
 which is obviously the same array.
 
-.. _special_arrays:
+.. _special-arrays:
 
 Special Arrays
 --------------
@@ -524,7 +524,100 @@ quantity from a unit conversion of an existing one, use the ``in_units``, ``in_c
 
 where we can see the original array has been unaltered.
 
-.. _array_methods:
+.. _unit-systems:
+
+Unit Systems
+------------
+
+yt and YT.jl come with a number of built-in unit systems. You have already seen two of them,
+"cgs" and "mks". There are others. The full set includes:
+
+* ``"cgs"``: Centimeters-grams-seconds unit system, with base of ``(cm, g, s, K, radian)``.
+  Uses the Gaussian normalization for electromagnetic units.
+* ``"mks"``: Meters-kilograms-seconds unit system, with base of ``(m, kg, s, K, radian, A)``.
+* ``"imperial"``: Imperial unit system, with base of ``(mile, lbm, s, R, radian)``.
+* ``"galactic"``: "Galactic" unit system, with base of ``(kpc, Msun, Myr, K, radian)``.
+* ``"solar"``: "Solar" unit system, with base of ``(AU, Mearth, yr, K, radian)``.
+* ``"planck"``: Planck natural units :math:`\hbar = c = G = k_B = 1`, with base of
+  ``(l_pl, m_pl, t_pl, T_pl, radian)``.
+* ``"geometrized"``: Geometrized natural units :math:`c = G = 1`, with base of
+  ``(l_geom, m_geom, t_geom, K, radian)``.
+
+There is a ``unit_system_registry`` ``Dict`` that can be queried for the different unit
+systems:
+
+.. code-block:: jlcon
+
+    julia> import YT
+
+    julia> collect(keys(YT.unit_system_registry))
+    8-element Array{Any,1}:
+     "mks"
+     "cgs-ampere"
+     "geometrized"
+     "planck"
+     "imperial"
+     "solar"
+     "cgs"
+     "galactic"
+
+A particular registry can also be queried to determine what units it uses for
+a particular dimension:
+
+.. code-block:: jlcon
+
+    julia> mks_system = YT.unit_system_registry["mks"]
+    mks Unit System
+     Base Units:
+      mass: kg
+      current_mks: A
+      time: s
+      length: m
+      temperature: K
+      angle: rad
+     Other Units:
+      energy: J
+      specific_energy: J/kg
+      pressure: Pa
+      force: N
+      magnetic_field_mks: T
+      charge_mks: C
+
+    julia> mks_system["time"]
+    "s"
+
+Any given ``YTArray`` or ``YTQuantity`` can be converted to a different unit system
+using the ``in_base`` method:
+
+.. code-block:: jlcon
+
+    julia> a = YTArray(rand(10), "m")
+    10-element YTArray (m):
+     0.525261
+     0.629592
+     0.577863
+     0.44933
+     0.721017
+     0.603392
+     0.889385
+     0.702017
+     0.287962
+     0.971051
+
+    julia> in_base(a; unit_system="imperial")
+    10-element YTArray (ft):
+     1.7233
+     2.06559
+     1.89588
+     1.47418
+     2.36554
+     1.97963
+     2.91793
+     2.30321
+     0.944759
+     3.18586
+
+.. _array-methods:
 
 Mathematical Functions and Array Methods
 ----------------------------------------

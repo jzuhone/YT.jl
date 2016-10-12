@@ -5,7 +5,7 @@ using PyCall
 @pyimport test_containers
 cont_dict = test_containers.cont_dict
 
-u = YT.units
+u = YT.unit_symbols
 
 ds = YT.load("enzo_tiny_cosmology/DD0046/DD0046")
 

@@ -736,8 +736,7 @@ weight :math:`\mu` and ratio of specific heats :math:`\gamma`:
 * ``"number_density"``: conversions between density and number density (:math:`n = \rho/\mu{m_p}`)
 * ``"sound_speed"``: conversions between temperature and sound speed assuming an ideal gas (:math:`c_s^2 = \gamma{k_BT}/\mu{m_p}`)
 
-A ``YTArray`` or ``YTQuantity`` can be converted to an equivalent using the ``to_equivalent`` method, where the unit
-and the equivalence name are provided as arguments:
+A ``YTArray`` or ``YTQuantity`` can be converted to an equivalent using the ``to_equivalent`` method, where the unit and the equivalence name are provided as arguments:
 
 .. code-block:: jlcon
 
@@ -746,7 +745,7 @@ and the equivalence name are provided as arguments:
     julia> to_equivalent(T, "keV", "thermal")
     8.617332401096501 keV
 
-    julia> ds = load('IsolatedGalaxy/galaxy0030/galaxy0030')
+    julia> ds = load("IsolatedGalaxy/galaxy0030/galaxy0030")
 
     julia> dd = AllData(ds)
 

@@ -168,7 +168,6 @@ end
 function getindex(profile::YTProfile, field::String)
     if !haskey(profile.field_dict, field)
         profile.field_dict[field] = YTArray(get(profile.profile, PyObject, field))
-        profile.profile["field_data"][:__delitem__](fd)
     end
     if !haskey(profile.unit_dict, field)
         profile.unit_dict[field] = profile.field_dict[field].units
@@ -187,7 +186,6 @@ function variance(profile::YTProfile, field::String)
         fd = profile.source.cont[:_determine_fields](field)[1]
         profile.var_dict[field] = YTArray(get(profile.profile["variance"],
                                           PyObject, fd))
-        profile.profile["variance"][:__delitem__](fd)
     end
     if !haskey(profile.unit_dict, field)
         profile.unit_dict[field] = profile.var_dict[field].units

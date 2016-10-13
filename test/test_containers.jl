@@ -63,12 +63,12 @@ grids = YT.Grids(ds)
 num_grids = length(grids)
 @test size(grids)[1] == num_grids
 
-for i in 1:num_grids
+for i in 1:3
     a = grids[i]["density"]
     b = YT.from_hdf5(file_to_read, dataset_name=@sprintf("grid_%04d", i))
     @test all(a.value .== b.value)
     @test all(a[1,2,3].value .== b[1,2,3].value)
-    @test all(a[1:3,4:6,3:7].value .== b[1:3,4:6,3:7].value)
+    @test all(a[1:3,4:6,3:6].value .== b[1:3,4:6,3:6].value)
     @test a.units.unit_symbol == b.units.unit_symbol
 end
 
@@ -92,7 +92,7 @@ vmax, cmax = YT.find_max(ds, "density")
 @test vmin == minimum(dd["density"])
 @test vmax == maximum(dd["density"])
 
-@test get_smallest_dx(ds) == minimum(dd["dx"])
+@test YT.get_smallest_dx(ds) == minimum(dd["dx"])
 
 # Data source check
 
@@ -115,7 +115,7 @@ fp_keys = collect(keys(YT.get_field_parameters(sp2)))
 
 fps = Dict("num_dinosaurs"=>10000,"distance_from_earth"=>3000.)
 
-sp3 = Sphere(ds, cont_dict["sp2"][2]..., field_parameters=fps)
+sp3 = YT.Sphere(ds, cont_dict["sp2"][2]..., field_parameters=fps)
 @test YT.has_field_parameter(sp3, "num_dinosaurs")
 @test YT.has_field_parameter(sp3, "distance_from_earth")
 @test YT.get_field_parameter(sp3, "num_dinosaurs") == 10000

@@ -21,6 +21,7 @@ end
 function getindex(frb::FixedResolutionBuffer, field::Field)
     if !haskey(frb.data, field)
         frb.data[field] = YTArray(get(frb.frb, PyObject, field))
+        frb.frb[:__delitem__](field)
     end
     return frb.data[field]
 end

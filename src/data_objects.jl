@@ -1,6 +1,6 @@
 module data_objects
 
-import PyCall: PyObject, PyDict, pycall, pystring, PyArray, PyVector
+import PyCall: PyObject, PyDict, pycall, pystring, PyVector
 import Base: size, show, showarray, display, showerror, start, next, done,
        getindex
 import ..array: YTArray, YTQuantity, in_units, array_or_quan
@@ -1006,6 +1006,7 @@ end
 function getindex(dc::DataContainer, field::Field)
     if !haskey(dc.field_dict, field)
         dc.field_dict[field] = YTArray(get(dc.cont, PyObject, field))
+        dc.cont[:clear_data]()
     end
     return dc.field_dict[field]
 end

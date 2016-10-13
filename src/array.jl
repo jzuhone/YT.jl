@@ -12,7 +12,7 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              .>=, .<=, .>, .<, .^, ^, getindex, setindex!, isequal, length
 
 import SymPy: Sym
-import PyCall: @pyimport, PyObject, pycall, PyArray, pybuiltin, PyAny
+import PyCall: @pyimport, PyObject, pycall, pybuiltin, PyAny
 @pyimport yt.units as ytunits
 @pyimport yt.units.dimensions as ytdims
 
@@ -118,19 +118,8 @@ type YTArray{T<:Real} <: AbstractArray
 end
 
 YTArray{T<:Real}(value::Array{T}, units::YTUnit) = YTArray{T}(value, units)
-YTArray{T<:Real}(value::PyArray{T}, units::YTUnit) = YTArray{T}(value, units)
 
 function YTArray{T<:Real}(value::Array{T}, units::String; registry=nothing)
-    units = replace(units, "^", "**")
-    unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
-    yt_units = YTUnit(unitary_quan,
-                      unitary_quan[:units],
-                      unitary_quan["units"][:dimensions])
-    YTArray{T}(value, yt_units)
-end
-
-function YTArray{T<:Real}(value::PyArray{T}, units::String;
-                          registry=nothing)
     units = replace(units, "^", "**")
     unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
     yt_units = YTUnit(unitary_quan,
@@ -143,7 +132,7 @@ function YTArray(yt_array::PyObject)
     yt_units = YTUnit(yt_array["unit_quantity"],
                       yt_array[:units],
                       yt_array["units"][:dimensions])
-    value = PyArray(yt_array["d"])
+    value = Array(yt_array[:d])
     YTArray{eltype(value)}(value, yt_units)
 end
 
@@ -151,9 +140,6 @@ function YTArray{T<:Real}(ds, value::Array{T}, units::String)
     YTArray(value, units, registry=ds.ds["unit_registry"])
 end
 function YTArray{T<:Real}(value::Array{T}, units::Sym; registry=nothing)
-    YTArray(value, string(units); registry=registry)
-end
-function YTArray{T<:Real}(value::PyArray{T}, units::Sym; registry=nothing)
     YTArray(value, string(units); registry=registry)
 end
 function YTArray(value::Real, units::String; registry=nothing)
@@ -259,15 +245,7 @@ PyObject(a::YTObject) = convert(PyObject, a)
 
 # Indexing, ranges (slicing)
 
-pyslice(i::Integer) = i-1
-pyslice(i::Colon) = pycall(pybuiltin("slice"), PyObject, nothing)
-pyslice(i::UnitRange) = pycall(pybuiltin("slice"), PyObject, i.start-1, i.stop)
-pyslice(i::StepRange) = pycall(pybuiltin("slice"), PyObject, i.start-1, i.stop,
-                               i.step)
-pyslice(i::Array{Int,1}) = i-1
-
 getindex(a::YTArray, idxs::Indexes) = YTArray(getindex(a.value, idxs), a.units)
-getindex(a::PyArray, idxs::Indexes) = get(a.o, PyArray, pyslice(idxs))
 
 function setindex!(a::YTArray, x::Array, idxs::Indexes)
     setindex!(a.value, convert(typeof(a.value), x), idxs)
@@ -279,11 +257,6 @@ end
 function getindex(a::YTArray, i::Indexes, j::Indexes)
     YTArray(getindex(a.value, i, j), a.units)
 end
-function getindex(a::PyArray, i::Indexes, j::Indexes)
-    ii = pyslice(i)
-    jj = pyslice(j)
-    get(a.o, PyArray, (ii,jj))
-end
 
 function setindex!(a::YTArray, x::Array, i::Indexes, j::Indexes)
     setindex!(a.value, convert(typeof(a.value), x), i, j)
@@ -294,12 +267,6 @@ end
 
 function getindex(a::YTArray, i::Indexes, j::Indexes, k::Indexes)
     YTArray(getindex(a.value, i, j, k), a.units)
-end
-function getindex(a::PyArray, i::Indexes, j::Indexes, k::Indexes)
-    ii = pyslice(i)
-    jj = pyslice(j)
-    kk = pyslice(k)
-    get(a.o, PyArray, (ii,jj,kk))
 end
 
 function setindex!(a::YTArray, x::Array, i::Indexes, j::Indexes, k::Indexes)
@@ -429,27 +396,6 @@ end
 /(a::Array, b::YTQuantity) = *(a, 1.0/b)
 \(a::YTQuantity, b::Array) = /(b,a)
 .\(a::Array, b::YTQuantity) = ./(b,a)
-
-# Sadly this is necessary
-for op = (:+, :-, :*, :.*, :/, :./, :\, :.\, :hypot, :.==, :.!=, :.>=, :.<=, :.<, :.>)
-    @eval ($op)(a::PyArray{Float64},b::Real) = ($op)(convert(Array{Float64}, a.o),b)
-    @eval ($op)(a::Real,b::PyArray{Float64}) = ($op)(a,convert(Array{Float64}, b.o))
-end
-
-for op = (:*, :/, :\)
-    @eval ($op)(a::PyArray{Float64},b::YTQuantity) = ($op)(convert(Array{Float64},
-                                                                   a.o),b)
-    @eval ($op)(a::YTQuantity,b::PyArray{Float64}) = ($op)(a,convert(Array{Float64},
-                                                                     b.o))
-end
-
--(a::PyArray) = -1*a
-
-for (op1, op2) in zip((:+, :-),(:.+,:.-))
-    @eval ($op1)(a::PyArray,b::PyArray) = ($op2)(a,b)
-    @eval ($op1)(a::Array,b::PyArray) = ($op2)(a,b)
-    @eval ($op1)(a::PyArray,b::Array) = ($op2)(a,b)
-end
 
 # YTArray next
 

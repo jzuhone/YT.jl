@@ -259,14 +259,14 @@ type Region <: DataContainer
         end
         if typeof(left_edge) <: YTArray
             le = in_units(YTArray(ds, left_edge.value,
-                          repr(left_edge.units.unit_string)),
+                          left_edge.units.unit_string),
                           "code_length").value
         else
             le = left_edge
         end
         if typeof(right_edge) <: YTArray
             re = in_units(YTArray(ds, right_edge.value,
-                          repr(right_edge.units.unit_string)),
+                          right_edge.units.unit_string),
                           "code_length").value
         else
             re = right_edge

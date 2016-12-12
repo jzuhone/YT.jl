@@ -34,6 +34,10 @@ type YTUnit
     yt_unit::PyObject
     unit_string::String
     dimensions::PyObject
+    function YTUnit(yt_unit::PyObject, unit_string::String, dimensions::PyObject)
+        unit_string = replace(unit_string, "**", "^")
+        new(yt_unit, unit_string, dimensions)
+    end
 end
 
 function *(u::YTUnit, v::YTUnit)

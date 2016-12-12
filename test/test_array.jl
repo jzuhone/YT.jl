@@ -280,7 +280,7 @@ convert_to_units(aa, "ly")
 @test aa.units == in_units(a, "ly").units
 
 @test in_units(x, a.units) == in_units(x, string(a.units))
-@test in_units(x, a.units.unit_symbol) == in_units(x, string(a.units))
+@test in_units(x, a.units.unit_string) == in_units(x, string(a.units))
 @test in_units(x, a) == in_units(x, string(a.units))
 
 xx = copy(x)
@@ -288,7 +288,7 @@ convert_to_units(xx, a.units)
 @test xx == in_units(x, string(a.units))
 
 xx = copy(x)
-convert_to_units(xx, a.units.unit_symbol)
+convert_to_units(xx, a.units.unit_string)
 @test xx == in_units(x, string(a.units))
 
 xx = copy(x)
@@ -351,14 +351,14 @@ b = from_hdf5("test.h5", dataset_name="cluster")
 @test !YTQuantity(false,"cm")
 @test YTQuantity(true,a.units)
 @test !YTQuantity(false,a.units)
-@test YTQuantity(true,a.units.unit_symbol)
-@test !YTQuantity(false,a.units.unit_symbol)
+@test YTQuantity(true,a.units.unit_string)
+@test !YTQuantity(false,a.units.unit_string)
 
 bb = rand(10) .< rand(10)
 
 @test YTArray(bb,"cm") == bb
 @test YTArray(bb,a.units) == bb
-@test YTArray(bb,a.units.unit_symbol) == bb
+@test YTArray(bb,a.units.unit_string) == bb
 
 # Ones, zeros, fill, linspace, eye
 
@@ -492,24 +492,12 @@ dens = YTArray(dd["density"].value, string(dd["density"].units))
 @test dens == dd["density"]
 @test dens.units == dd["density"].units
 
-dens = YTArray(dd["density"].value, dd["density"].units.unit_symbol)
+dens = YTArray(dd["density"].value, dd["density"].units.unit_string)
 @test dens == dd["density"]
 @test dens.units == dd["density"].units
 
 @test -dd["density"].value == (-1*dd["density"]).value
 @test 5.0*dd["density"].value == dd["density"].value*5.0
-
-# SymPy symbols
-
-syma = YTArray(a.value, a.units.unit_symbol)
-@test syma.value == a.value
-@test syma.units == a.units
-
-symx = YTQuantity(x.value, x.units.unit_symbol)
-@test symx.value == x.value
-@test symx.units == x.units
-
-@test YTArray(0.5, a.units.unit_symbol) == YTQuantity(0.5, a.units.unit_symbol)
 
 # Conversions
 

@@ -76,7 +76,7 @@ function !=(u::YTUnit, v::YTUnit)
     pycall(u.yt_unit["units"]["__ne__"], PyAny, v.yt_unit["units"])
 end
 
-show(io::IO, u::YTUnit) = show(io, u.unit_string)
+show(io::IO, u::YTUnit) = print(io, u.unit_string)
 
 # YTQuantity definition
 

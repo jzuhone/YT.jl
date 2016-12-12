@@ -61,11 +61,11 @@ const enable_plugins = PyNULL()
 include("array.jl")
 include("fixed_resolution.jl")
 include("data_objects.jl")
-#include("physical_constants.jl")
+include("physical_constants.jl")
 include("dataset_series.jl")
 include("plots.jl")
 include("profiles.jl")
-#include("unit_symbols.jl")
+include("unit_symbols.jl")
 include("unit_systems.jl")
 
 import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks, YTUnit,

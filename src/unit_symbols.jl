@@ -1,9 +1,13 @@
 module unit_symbols
 
-import PyCall: @pyimport
+import PyCall: pyimport_conda, PyNULL
 import YT.array: YTQuantity
 
-@pyimport yt.units.unit_lookup_table as lut
+const lut = PyNULL()
+
+function __init__()
+    copy!(lut, pyimport_conda("yt.units.unit_lookup_table", "yt"))
+end
 
 base_units = collect(keys(lut.default_unit_symbol_lut))
 prefixes = collect(keys(lut.unit_prefixes))

@@ -12,17 +12,24 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              .>=, .<=, .>, .<, .^, ^, getindex, setindex!, isequal, length
 
 import SymPy: Sym
-import PyCall: @pyimport, PyObject, pycall, pybuiltin, PyAny
-@pyimport yt.units as ytunits
-@pyimport yt.units.dimensions as ytdims
+import PyCall: pyimport_conda, PyObject, pycall, pybuiltin, PyAny, PyNULL
 
 IntOrRange = Union{Integer,Range,Colon}
 Indexes = Union{IntOrRange,Array{Int,1}}
 
 # Grab the classes for creating YTArrays and YTQuantities
 
-bare_array = ytunits.yt_array["YTArray"]
-bare_quan = ytunits.yt_array["YTQuantity"]
+const ytunits = PyNULL()
+const ytdims = PyNULL()
+const bare_array = PyNULL()
+const bare_quan = PyNULL()
+
+function __init__()
+    copy!(ytunits, pyimport_conda("yt.units", "yt"))
+    copy!(ytdims, pyimport_conda("yt.units.dimensions", "yt"))
+    copy!(bare_array, ytunits["yt_array"]["YTArray"])
+    copy!(bare_quan, ytunits["yt_array"]["YTQuantity"])
+end
 
 type YTUnit
     yt_unit::PyObject

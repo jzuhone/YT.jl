@@ -1,3 +1,4 @@
+__precompile__()
 module data_objects
 
 import PyCall: PyObject, PyDict, pycall, pystring, PyVector

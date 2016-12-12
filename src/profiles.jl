@@ -1,10 +1,16 @@
+__precompile__()
 module profiles
 
-import PyCall: @pyimport, PyObject, pystring
+import PyCall: pyimport_conda, PyObject, PyNULL
 import Base: show, getindex
 import ..data_objects: DataContainer
 import ..array: YTArray, convert_to_units
-@pyimport yt.data_objects.profiles as prof
+
+const prof = PyNULL()
+
+function __init__()
+    copy!(prof, pyimport_conda("yt.data_objects.profiles", "yt"))
+end
 
 Field  = Union{String,Tuple{String,String}}
 
@@ -88,12 +94,12 @@ type YTProfile
         if (typeof(fields) <: AbstractString) | (typeof(fields) <: Tuple)
             fields = [fields]
         end
-        profile = prof.create_profile(data_source.cont, bin_fields, fields;
-                                      n_bins=n_bins, extrema=extrema,
-                                      logs=logs, units=units,
-                                      weight_field=weight_field,
-                                      accumulation=accumulation,
-                                      fractional=fractional)
+        profile = prof[:create_profile](data_source.cont, bin_fields, fields;
+                                        n_bins=n_bins, extrema=extrema,
+                                        logs=logs, units=units,
+                                        weight_field=weight_field,
+                                        accumulation=accumulation,
+                                        fractional=fractional)
         ndims = length(bin_fields)
         if typeof(n_bins) <: Integer
             n_bins = fill(n_bins, ndims)

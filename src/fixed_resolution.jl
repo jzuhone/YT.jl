@@ -1,3 +1,4 @@
+__precompile__()
 module fixed_resolution
 
 import PyCall: PyObject

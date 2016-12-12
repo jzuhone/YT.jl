@@ -3,9 +3,13 @@ module dataset_series
 import ..data_objects: Dataset
 import Base: length, start, next, done, getindex
 
-import PyCall: @pyimport, PyObject
+import PyCall: pyimport_conda, PyObject, PyNULL
 
-@pyimport yt.data_objects.time_series as time_series
+const time_series = PyNULL()
+
+function __init__()
+    copy!(time_series, pyimport_conda("yt.data_objects.time_series", "yt"))
+end
 
 """
     DatasetSeries(fns::Array{String,1})
@@ -34,7 +38,7 @@ type DatasetSeries
     ts::PyObject
     num_ds::Int
     function DatasetSeries(fns::Array{String,1})
-        ts = time_series.DatasetSeries(fns)
+        ts = time_series[:DatasetSeries](fns)
         num_ds = length(fns)
         new(ts, num_ds)
     end

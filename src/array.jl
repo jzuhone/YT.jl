@@ -191,23 +191,27 @@ end
 
 macro array_same_units(a,b,op)
     quote
-        if ($a.units.dimensions)==($b.units.dimensions)
-            new_array = ($op)(($a.value),in_units($b,($a.units)).value)
-            return YTArray(new_array, ($a.units))
+        aa = $(esc(a))
+        bb = $(esc(b))
+        if (aa.units.dimensions)==(bb.units.dimensions)
+            new_array = ($op)((aa.value),in_units(bb,(aa.units)).value)
+            return YTArray(new_array, (aa.units))
         else
-            throw(YTUnitOperationError($a,$b,$op))
+            throw(YTUnitOperationError(aa,bb,$op))
         end
     end
 end
 
 macro array_mult_op(a,b,op1,op2)
     quote
-        units = ($op2)(($a.units), ($b.units))
+        aa = $(esc(a))
+        bb = $(esc(b))
+        units = ($op2)((aa.units), (bb.units))
         if units.dimensions == ytdims[:dimensionless]
-            c = ($op1)((in_cgs($a).value), (in_cgs($b).value))
+            c = ($op1)((in_cgs(aa).value), (in_cgs(bb).value))
             return YTArray(c, "dimensionless")
         else
-            c = ($op1)(($a.value), ($b.value))
+            c = ($op1)((aa.value), (bb.value))
             return YTArray(c, units)
         end
     end

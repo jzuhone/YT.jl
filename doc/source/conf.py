@@ -47,7 +47,9 @@ extensions = [
     'sphinx.ext.mathjax',
     'juliadoc.julia',
     'juliadoc.jldoctest',
-    'juliadoc.jlhelp'
+    'juliadoc.jlhelp',
+    'RunNotebook.notebook_sphinxext',
+    'RunNotebook.notebookcell_sphinxext',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

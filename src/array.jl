@@ -10,7 +10,7 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              median, middle, midpoints, quantile, fill, start, next, done,
              +, -, *, /, \, ==, !=, >=, <=, >, <, ./, .\, .*, .==, .!=,
              .>=, .<=, .>, .<, .^, ^, getindex, setindex!, isequal, length,
-             broadcast
+             broadcast, accumulate
 
 import PyCall: pyimport_conda, PyObject, pycall, pybuiltin, PyAny, PyNULL, pystring
 

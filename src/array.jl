@@ -536,11 +536,19 @@ cumsum(a::YTArray, dim::Integer) = YTArray(cumsum(a.value, dim), a.units)
 cumsum_kbn(a::YTArray) = YTArray(cumsum(a.value), a.units)
 cumsum_kbn(a::YTArray, dim::Integer) = YTArray(cumsum(a.value, dim), a.units)
 
-cummin(a::YTArray) = YTArray(cummin(a.value), a.units)
-cummin(a::YTArray, dim::Integer) = YTArray(cummin(a.value, dim), a.units)
+if VERSION < v"0.6.0-dev"
+    cummin(a::YTArray) = YTArray(cummin(a.value), a.units)
+    cummin(a::YTArray, dim::Integer) = YTArray(cummin(a.value, dim), a.units)
 
-cummax(a::YTArray) = YTArray(cummax(a.value), a.units)
-cummax(a::YTArray, dim::Integer) = YTArray(cummax(a.value, dim), a.units)
+    cummax(a::YTArray) = YTArray(cummax(a.value), a.units)
+    cummax(a::YTArray, dim::Integer) = YTArray(cummax(a.value, dim), a.units)
+else
+    cummin(a::YTArray) = YTArray(accumulate(min, a.value), a.units)
+    cummin(a::YTArray, dim::Integer) = YTArray(accumulate(min, a.value, dim), a.units)
+
+    cummax(a::YTArray) = YTArray(accumulate(max, a.value), a.units)
+    cummax(a::YTArray, dim::Integer) = YTArray(accumulate(max, a.value, dim), a.units)
+end
 
 diff(a::YTArray) = YTArray(diff(a.value), a.units)
 diff(a::YTArray, dim::Integer) = YTArray(diff(a.value, dim), a.units)

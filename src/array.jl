@@ -4,13 +4,19 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              show, size, sqrt, exp, log, log10, sin, cos, tan,
              expm1, log2, log1p, sinh, cosh, tanh, csc, sec, cot, csch,
              sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan, sum,
-             cumsum, cummin, cummax, cumsum_kbn, diff, display, print,
+             cumsum, cumsum_kbn, diff, display, print,
              showarray, showerror, ones, zeros, eye, summary,
              sum_kbn, gradient, dims2string, mean, std, stdm, var, varm,
              median, middle, midpoints, quantile, fill, start, next, done,
              +, -, *, /, \, ==, !=, >=, <=, >, <, ./, .\, .*, .==, .!=,
              .>=, .<=, .>, .<, .^, ^, getindex, setindex!, isequal, length,
-             broadcast, accumulate
+             broadcast
+
+if VERSION < v"0.6.0-dev.1298"
+    import Base: cummin, cummax
+else
+    import Base: accumulate
+end
 
 import PyCall: pyimport_conda, PyObject, pycall, pybuiltin, PyAny, PyNULL, pystring
 

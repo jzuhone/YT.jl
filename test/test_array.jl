@@ -120,16 +120,16 @@ c.\a
 
 # sqrt, abs, etc.
 
-@test_approx_eq a.value sqrt(a.*a).value
-@test_approx_eq a.value sqrt(a.^2).value
+@test_approx_eq a.value sqrt.(a.*a).value
+@test_approx_eq a.value sqrt.(a.^2).value
 @test_approx_eq x.value sqrt(x*x).value
 @test_approx_eq x.value sqrt(x^2).value
 @test_approx_eq sqrt(x).value (x^0.5).value
 
 # Various unit tests
 
-@test a.units == sqrt(a.*a).units
-@test a.units == sqrt(a.^2).units
+@test a.units == sqrt.(a.*a).units
+@test a.units == sqrt.(a.^2).units
 @test x.units == sqrt(x*x).units
 @test x.units == sqrt(x^2).units
 @test a.units^2 == a.units*a.units

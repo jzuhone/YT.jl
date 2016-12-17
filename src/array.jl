@@ -552,7 +552,7 @@ else
     accumulate(op, a::YTArray) = YTArray(accumulate(op, a.value), a.units)
     accumulate(op, a::YTArray, axis::Integer) = YTArray(accumulate(op, a.value, axis), a.units)
     accumulate(op, v0::YTQuantity, a::YTArray) = YTArray(accumulate(op, in_units(v0, a.units).value, a.value), a.units)
-    accumulate(op, v0::YTQuantity, a::YTArray, axis::Integer) = YTArray(accumulate(op, n_units(v0, a.units).value, a.value, axis),
+    accumulate(op, v0::YTQuantity, a::YTArray, axis::Integer) = YTArray(accumulate(op, in_units(v0, a.units).value, a.value, axis),
                                                                         a.units)
 end
 

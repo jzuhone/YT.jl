@@ -9,7 +9,8 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              sum_kbn, gradient, dims2string, mean, std, stdm, var, varm,
              median, middle, midpoints, quantile, fill, start, next, done,
              +, -, *, /, \, ==, !=, >=, <=, >, <, ./, .\, .*, .==, .!=,
-             .>=, .<=, .>, .<, .^, ^, getindex, setindex!, isequal, length
+             .>=, .<=, .>, .<, .^, ^, getindex, setindex!, isequal, length,
+             broadcast
 
 import PyCall: pyimport_conda, PyObject, pycall, pybuiltin, PyAny, PyNULL, pystring
 
@@ -79,6 +80,8 @@ end
 function !=(u::YTUnit, v::YTUnit)
     pycall(u.yt_unit["units"]["__ne__"], PyAny, v.yt_unit["units"])
 end
+
+sqrt(u::YTUnit) = u^(1//2)
 
 show(io::IO, u::YTUnit) = print(io, u.unit_string)
 
@@ -245,7 +248,7 @@ PyObject(a::YTObject) = convert(PyObject, a)
 
 # Indexing, ranges (slicing)
 
-getindex(a::YTArray, idxs::Indexes) = YTArray(getindex(a.value, idxs), a.units)
+getindex(a::YTArray, idxs...) = YTArray(getindex(a.value, idxs...), a.units)
 
 function setindex!(a::YTArray, x::Array, idxs::Indexes)
     setindex!(a.value, convert(typeof(a.value), x), idxs)
@@ -254,19 +257,11 @@ function setindex!(a::YTArray, x::Real, idxs::Indexes)
     setindex!(a.value, convert(eltype(a), x), idxs)
 end
 
-function getindex(a::YTArray, i::Indexes, j::Indexes)
-    YTArray(getindex(a.value, i, j), a.units)
-end
-
 function setindex!(a::YTArray, x::Array, i::Indexes, j::Indexes)
     setindex!(a.value, convert(typeof(a.value), x), i, j)
 end
 function setindex!(a::YTArray, x::Real, i::Indexes, j::Indexes)
     setindex!(a.value, convert(eltype(a), x), i, j)
-end
-
-function getindex(a::YTArray, i::Indexes, j::Indexes, k::Indexes)
-    YTArray(getindex(a.value, i, j, k), a.units)
 end
 
 function setindex!(a::YTArray, x::Array, i::Indexes, j::Indexes, k::Indexes)
@@ -357,6 +352,10 @@ convert_to_units(a::YTObject, b::YTObject) = convert_to_units(a, b.units)
 
 in_units(a::YTObject, units::YTUnit) = in_units(a, units.unit_string)
 in_units(a::YTObject, b::YTObject) = in_units(a, b.units)
+
+# Broadcasting
+
+broadcast(f, a::YTArray) = YTArray(broadcast(f, a.value), f(a.units))
 
 # Arithmetic and comparisons
 
@@ -466,7 +465,7 @@ end
 
 # Mathematical functions
 
-sqrt(a::YTObject) = YTArray(sqrt(a.value), (a.units)^(1//2))
+sqrt(a::YTQuantity) = YTQuantity(sqrt(a.value), (a.units)^(1//2))
 
 maximum(a::YTArray) = YTQuantity(maximum(a.value), a.units)
 minimum(a::YTArray) = YTQuantity(minimum(a.value), a.units)
@@ -480,7 +479,8 @@ for op = (:exp, :log, :log2, :log10, :log1p, :expm1,
           :sin, :cos, :tan, :sec, :csc, :cot, :sinh,
           :cosh, :tanh, :coth, :sech, :csch, :sinpi,
           :cospi, :asin, :acos, :atan)
-    @eval ($op)(a::YTObject) = ($op)(a.value)
+    @eval ($op)(a::YTQuantity) = ($op)(a.value)
+    @eval ($op)(a::YTUnit) = "dimensionless"
 end
 
 # Show

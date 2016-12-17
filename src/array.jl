@@ -536,7 +536,7 @@ cumsum(a::YTArray, dim::Integer) = YTArray(cumsum(a.value, dim), a.units)
 cumsum_kbn(a::YTArray) = YTArray(cumsum(a.value), a.units)
 cumsum_kbn(a::YTArray, dim::Integer) = YTArray(cumsum(a.value, dim), a.units)
 
-if VERSION < v"0.6.0-dev"
+if VERSION < v"0.6.0-dev.1298"
     cummin(a::YTArray) = YTArray(cummin(a.value), a.units)
     cummin(a::YTArray, dim::Integer) = YTArray(cummin(a.value, dim), a.units)
 

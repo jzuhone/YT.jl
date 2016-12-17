@@ -543,11 +543,11 @@ if VERSION < v"0.6.0-dev.1298"
     cummax(a::YTArray) = YTArray(cummax(a.value), a.units)
     cummax(a::YTArray, dim::Integer) = YTArray(cummax(a.value, dim), a.units)
 else
-    cummin(a::YTArray) = YTArray(accumulate(min, a.value), a.units)
-    cummin(a::YTArray, dim::Integer) = YTArray(accumulate(min, a.value, dim), a.units)
-
-    cummax(a::YTArray) = YTArray(accumulate(max, a.value), a.units)
-    cummax(a::YTArray, dim::Integer) = YTArray(accumulate(max, a.value, dim), a.units)
+    accumulate(op, a::YTArray) = YTArray(accumulate(op, a.value), a.units)
+    accumulate(op, a::YTArray, axis::Integer) = YTArray(accumulate(op, a.value, axis), a.units)
+    accumulate(op, v0::YTQuantity, a::YTArray) = YTArray(accumulate(op, in_units(v0, a.units).value, a.value), a.units)
+    accumulate(op, v0::YTQuantity, a::YTArray, axis::Integer) = YTArray(accumulate(op, n_units(v0, a.units).value, a.value, axis),
+                                                                        a.units)
 end
 
 diff(a::YTArray) = YTArray(diff(a.value), a.units)

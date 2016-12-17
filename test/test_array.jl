@@ -14,6 +14,8 @@ y = YTQuantity(rand(), "Msun")
 z = rand()
 xy = YTArray(rand(10,10), "km/s")
 
+ab = YTQuantity(rand(), "mile/hr")
+
 c = rand(10)
 
 @test eltype(a) == Float64
@@ -217,17 +219,43 @@ m = hypot(i,j,k)
 @test_approx_eq cumsum(xy, 2).value cumsum(xy.value, 2)
 @test cumsum(xy, 2).units == xy.units
 
-@test cummin(a).value == cummin(a.value)
-@test cummin(a).units == a.units
+if VERSION < v"0.6.0-dev.1298"
+    @test cummin(a).value == cummin(a.value)
+    @test cummin(a).units == a.units
 
-@test cummin(xy, 2).value == cummin(xy.value, 2)
-@test cummin(xy, 2).units == xy.units
+    @test cummin(xy, 2).value == cummin(xy.value, 2)
+    @test cummin(xy, 2).units == xy.units
 
-@test cummax(a).value == cummax(a.value)
-@test cummax(a).units == a.units
+    @test cummax(a).value == cummax(a.value)
+    @test cummax(a).units == a.units
 
-@test cummax(xy, 2).value == cummax(xy.value, 2)
-@test cummax(xy, 2).units == xy.units
+    @test cummax(xy, 2).value == cummax(xy.value, 2)
+    @test cummax(xy, 2).units == xy.units
+else
+    @test accumulate(min, a).value == accumulate(min, a.value)
+    @test accumulate(min, a).units == a.units
+
+    @test accumulate(min, xy, 2).value == accumulate(min, xy.value, 2)
+    @test accumulate(min, xy, 2).units == xy.units
+
+    @test accumulate(min, x, a).value == accumulate(min, in_units(x, a).value, a.value)
+    @test accumulate(min, x, a).units == a.units
+
+    @test accumulate(min, ab, xy, 2).value == accumulate(min, in_units(ab, xy).value, xy.value, 2)
+    @test accumulate(min, ab, xy, 2).units == xy.units
+
+    @test accumulate(max, a).value == accumulate(max, a.value)
+    @test accumulate(max, a).units == a.units
+
+    @test accumulate(max, xy, 2).value == accumulate(max, xy.value, 2)
+    @test accumulate(max, xy, 2).units == xy.units
+
+    @test accumulate(max, x, a).value == accumulate(max, in_units(x, a).value, a.value)
+    @test accumulate(max, x, a).units == a.units
+
+    @test accumulate(max, ab, xy, 2).value == accumulate(max, in_units(ab, xy).value, xy.value, 2)
+    @test accumulate(max, ab, xy, 2).units == xy.units
+end
 
 @test_approx_eq cumsum_kbn(a).value cumsum_kbn(a.value)
 @test cumsum_kbn(a).units == a.units

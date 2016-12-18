@@ -256,25 +256,11 @@ PyObject(a::YTObject) = convert(PyObject, a)
 
 getindex(a::YTArray, idxs...) = YTArray(getindex(a.value, idxs...), a.units)
 
-function setindex!(a::YTArray, x::Array, idxs::Indexes)
-    setindex!(a.value, convert(typeof(a.value), x), idxs)
+function setindex!(a::YTArray, x::Array, idxs...)
+    setindex!(a.value, convert(typeof(a.value), x), idxs...)
 end
-function setindex!(a::YTArray, x::Real, idxs::Indexes)
-    setindex!(a.value, convert(eltype(a), x), idxs)
-end
-
-function setindex!(a::YTArray, x::Array, i::Indexes, j::Indexes)
-    setindex!(a.value, convert(typeof(a.value), x), i, j)
-end
-function setindex!(a::YTArray, x::Real, i::Indexes, j::Indexes)
-    setindex!(a.value, convert(eltype(a), x), i, j)
-end
-
-function setindex!(a::YTArray, x::Array, i::Indexes, j::Indexes, k::Indexes)
-    setindex!(a.value, convert(typeof(a.value), x), i, j, k)
-end
-function setindex!(a::YTArray, x::Real, i::Indexes, j::Indexes, k::Indexes)
-    setindex!(a.value, convert(eltype(a), x), i, j, k)
+function setindex!(a::YTArray, x::Real, idxs...)
+    setindex!(a.value, convert(eltype(a), x), idxs...)
 end
 
 # Unit conversions

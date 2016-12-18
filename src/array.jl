@@ -127,11 +127,9 @@ end
 # YTArray definition
 
 type YTArray{T<:Real} <: AbstractArray
-    value
+    value::Array{T}
     units::YTUnit
 end
-
-YTArray{T<:Real}(value::Array{T}, units::YTUnit) = YTArray{T}(value, units)
 
 function YTArray{T<:Real}(value::Array{T}, units::String; registry=nothing)
     units = replace(units, "^", "**")

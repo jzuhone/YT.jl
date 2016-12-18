@@ -31,7 +31,7 @@ for key in keys(cont_dict)
     a = c["density"]
     b = YT.from_hdf5(file_to_read, dataset_name=key)
     @test all(a.value .== b.value)
-    @test a.units.unit_symbol == b.units.unit_symbol
+    @test a.units.unit_string == b.units.unit_string
 end
 
 # Special handling
@@ -43,7 +43,7 @@ prj = YT.Proj(ds, "density", 1, data_source=sp1)
 a = prj["density"]
 b = YT.from_hdf5(file_to_read, dataset_name="prj3")
 @test all(a.value .== b.value)
-@test a.units.unit_symbol == b.units.unit_symbol
+@test a.units.unit_string == b.units.unit_string
 
 # Cut region
 
@@ -53,7 +53,7 @@ cr = YT.CutRegion(sp2, conditions)
 a = cr["density"]
 b = YT.from_hdf5(file_to_read, dataset_name="cr")
 @test all(a.value .== b.value)
-@test a.units.unit_symbol == b.units.unit_symbol
+@test a.units.unit_string == b.units.unit_string
 kT = YT.YTQuantity(0.5, "keV")
 @test all(cr["kT"] .> kT)
 
@@ -69,7 +69,7 @@ for i in 1:3
     @test all(a.value .== b.value)
     @test all(a[1,2,3].value .== b[1,2,3].value)
     @test all(a[1:3,4:6,3:6].value .== b[1:3,4:6,3:6].value)
-    @test a.units.unit_symbol == b.units.unit_symbol
+    @test a.units.unit_string == b.units.unit_string
 end
 
 grids_subset = grids[5:num_grids-5]

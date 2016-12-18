@@ -1,3 +1,4 @@
+__precompile__()
 module YT
 
 import Base: setindex!, getindex, show
@@ -49,22 +50,13 @@ export DatasetSeries
 
 export enable_plugins, ytcfg, quantities, unit_system_registry
 
-import PyCall: @pyimport, PyError, pycall, PyObject, set!
+import PyCall: pyimport_conda, PyError, pycall, PyObject, set!, PyNULL
 
-@pyimport yt
-
-min_version = v"3.3.1"
-
-yt_version = convert(VersionNumber, yt.__version__)
-if yt_version < min_version
-    err_msg = "Your yt installation (v. $yt_version) is not up to " *
-              "date. Please install a version >= v. $min_version."
-    error(err_msg)
-end
-
-@pyimport yt.convenience as ytconv
-@pyimport yt.frontends.stream.api as ytstream
-@pyimport yt.config as ytconfig
+const yt = PyNULL()
+const ytconv = PyNULL()
+const ytstream = PyNULL()
+const ytconfig = PyNULL()
+const enable_plugins = PyNULL()
 
 include("array.jl")
 include("fixed_resolution.jl")
@@ -93,18 +85,6 @@ import .dataset_series: DatasetSeries
 import .unit_systems: UnitSystem
 
 unit_system_registry = Dict()
-yt_unit_systems = collect(keys(yt.unit_system_registry))
-
-for us in yt_unit_systems
-    unit_system_registry[us] = UnitSystem(yt.unit_system_registry[us])
-end
-
-"""
-    enable_plugins()
-
-Enable the plugins defined in the plugin file.
-"""
-enable_plugins = yt.enable_plugins
 
 type YTConfig
     ytcfg::PyObject
@@ -121,14 +101,42 @@ end
 
 show(ytcfg::YTConfig) = typeof(ytcfg)
 
-ytcfg = YTConfig(ytconfig.ytcfg)
+function __init__()
+    copy!(yt, pyimport_conda("yt", "yt"))
+    min_version = v"3.3.1"
+
+    yt_version = convert(VersionNumber, yt[:__version__])
+    if yt_version < min_version
+        err_msg = "Your yt installation (v. $yt_version) is not up to " *
+                  "date. Please install a version >= v. $min_version."
+        error(err_msg)
+    end
+    copy!(ytconv, pyimport_conda("yt.convenience", "yt"))
+    copy!(ytconfig, pyimport_conda("yt.config", "yt"))
+    copy!(ytstream, pyimport_conda("yt.frontends.stream.api", "yt"))
+
+    yt_unit_systems = collect(keys(yt[:unit_system_registry]))
+
+    for us in yt_unit_systems
+      unit_system_registry[us] = UnitSystem(yt[:unit_system_registry][us])
+    end
+
+    """
+        enable_plugins()
+
+    Enable the plugins defined in the plugin file.
+    """
+    enable_plugins = yt[:enable_plugins]
+
+    global ytcfg = YTConfig(ytconfig["ytcfg"])
+end
 
 """
     load(fn::String; args...)
 
 Load a `Dataset` object from a file.
 """
-load(fn::String; args...) = Dataset(ytconv.load(fn; args...))
+load(fn::String; args...) = Dataset(ytconv[:load](fn; args...))
 
 # Stream datasets
 
@@ -190,12 +198,12 @@ function load_uniform_grid(data::Dict{Any,Any}, domain_dimensions::Array;
                            magnetic_unit=nothing,
                            periodicity=(true, true, true),
                            geometry="cartesian")
-    ds = ytstream.load_uniform_grid(data, domain_dimensions; length_unit=length_unit,
-                                    bbox=bbox, nprocs=nprocs, sim_time=sim_time,
-                                    mass_unit=mass_unit, time_unit=time_unit,
-                                    velocity_unit=velocity_unit,
-                                    magnetic_unit=magnetic_unit,
-                                    periodicity=periodicity, geometry=geometry)
+    ds = ytstream[:load_uniform_grid](data, domain_dimensions; length_unit=length_unit,
+                                      bbox=bbox, nprocs=nprocs, sim_time=sim_time,
+                                      mass_unit=mass_unit, time_unit=time_unit,
+                                      velocity_unit=velocity_unit,
+                                      magnetic_unit=magnetic_unit,
+                                      periodicity=periodicity, geometry=geometry)
     return Dataset(ds)
 end
 
@@ -259,10 +267,10 @@ function load_amr_grids(data::Array, domain_dimensions::Array;
                         mass_unit=nothing, time_unit=nothing,
                         velocity_unit=nothing, magnetic_unit=nothing,
                         periodicity=(true, true, true), geometry="cartesian", refine_by=2)
-    ds = ytstream.load_amr_grids(data, domain_dimensions; bbox=bbox, sim_time=sim_time,
-                                 length_unit=length_unit, mass_unit=mass_unit, time_unit=time_unit,
-                                 velocity_unit=velocity_unit, magnetic_unit=magnetic_unit,
-                                 periodicity=periodicity, geometry=geometry, refine_by=refine_by)
+    ds = ytstream[:load_amr_grids](data, domain_dimensions; bbox=bbox, sim_time=sim_time,
+                                   length_unit=length_unit, mass_unit=mass_unit, time_unit=time_unit,
+                                   velocity_unit=velocity_unit, magnetic_unit=magnetic_unit,
+                                   periodicity=periodicity, geometry=geometry, refine_by=refine_by)
     return Dataset(ds)
 end
 
@@ -325,12 +333,12 @@ function load_particles(data::Dict{Any,Any}; length_unit=nothing, bbox=nothing,
                         velocity_unit=nothing, magnetic_unit=nothing,
                         periodicity=(true, true, true), n_ref=64,
                         over_refine_factor=1, geometry="cartesian")
-    ds = ytstream.load_particles(data; length_unit=length_unit, bbox=bbox,
-                                 sim_time=sim_time, mass_unit=mass_unit,
-                                 time_unit=time_unit, velocity_unit=velocity_unit,
-                                 magnetic_unit=magnetic_unit, periodicity=periodicity,
-                                 n_ref=n_ref, over_refine_factor=over_refine_factor,
-                                 geometry=geometry)
+    ds = ytstream[:load_particles](data; length_unit=length_unit, bbox=bbox,
+                                   sim_time=sim_time, mass_unit=mass_unit,
+                                   time_unit=time_unit, velocity_unit=velocity_unit,
+                                   magnetic_unit=magnetic_unit, periodicity=periodicity,
+                                   n_ref=n_ref, over_refine_factor=over_refine_factor,
+                                   geometry=geometry)
     return Dataset(ds)
 end
 

@@ -120,16 +120,16 @@ c.\a
 
 # sqrt, abs, etc.
 
-@test_approx_eq a.value sqrt(a.*a).value
-@test_approx_eq a.value sqrt(a.^2).value
+@test_approx_eq a.value sqrt.(a.*a).value
+@test_approx_eq a.value sqrt.(a.^2).value
 @test_approx_eq x.value sqrt(x*x).value
 @test_approx_eq x.value sqrt(x^2).value
 @test_approx_eq sqrt(x).value (x^0.5).value
 
 # Various unit tests
 
-@test a.units == sqrt(a.*a).units
-@test a.units == sqrt(a.^2).units
+@test a.units == sqrt.(a.*a).units
+@test a.units == sqrt.(a.^2).units
 @test x.units == sqrt(x*x).units
 @test x.units == sqrt(x^2).units
 @test a.units^2 == a.units*a.units
@@ -217,17 +217,31 @@ m = hypot(i,j,k)
 @test_approx_eq cumsum(xy, 2).value cumsum(xy.value, 2)
 @test cumsum(xy, 2).units == xy.units
 
-@test cummin(a).value == cummin(a.value)
-@test cummin(a).units == a.units
+if VERSION < v"0.6.0-dev.1298"
+    @test cummin(a).value == cummin(a.value)
+    @test cummin(a).units == a.units
 
-@test cummin(xy, 2).value == cummin(xy.value, 2)
-@test cummin(xy, 2).units == xy.units
+    @test cummin(xy, 2).value == cummin(xy.value, 2)
+    @test cummin(xy, 2).units == xy.units
 
-@test cummax(a).value == cummax(a.value)
-@test cummax(a).units == a.units
+    @test cummax(a).value == cummax(a.value)
+    @test cummax(a).units == a.units
 
-@test cummax(xy, 2).value == cummax(xy.value, 2)
-@test cummax(xy, 2).units == xy.units
+    @test cummax(xy, 2).value == cummax(xy.value, 2)
+    @test cummax(xy, 2).units == xy.units
+else
+    @test accumulate(min, a).value == accumulate(min, a.value)
+    @test accumulate(min, a).units == a.units
+
+    @test accumulate(min, xy, 2).value == accumulate(min, xy.value, 2)
+    @test accumulate(min, xy, 2).units == xy.units
+
+    @test accumulate(max, a).value == accumulate(max, a.value)
+    @test accumulate(max, a).units == a.units
+
+    @test accumulate(max, xy, 2).value == accumulate(max, xy.value, 2)
+    @test accumulate(max, xy, 2).units == xy.units
+end
 
 @test_approx_eq cumsum_kbn(a).value cumsum_kbn(a.value)
 @test cumsum_kbn(a).units == a.units
@@ -280,7 +294,7 @@ convert_to_units(aa, "ly")
 @test aa.units == in_units(a, "ly").units
 
 @test in_units(x, a.units) == in_units(x, string(a.units))
-@test in_units(x, a.units.unit_symbol) == in_units(x, string(a.units))
+@test in_units(x, a.units.unit_string) == in_units(x, string(a.units))
 @test in_units(x, a) == in_units(x, string(a.units))
 
 xx = copy(x)
@@ -288,7 +302,7 @@ convert_to_units(xx, a.units)
 @test xx == in_units(x, string(a.units))
 
 xx = copy(x)
-convert_to_units(xx, a.units.unit_symbol)
+convert_to_units(xx, a.units.unit_string)
 @test xx == in_units(x, string(a.units))
 
 xx = copy(x)
@@ -351,14 +365,14 @@ b = from_hdf5("test.h5", dataset_name="cluster")
 @test !YTQuantity(false,"cm")
 @test YTQuantity(true,a.units)
 @test !YTQuantity(false,a.units)
-@test YTQuantity(true,a.units.unit_symbol)
-@test !YTQuantity(false,a.units.unit_symbol)
+@test YTQuantity(true,a.units.unit_string)
+@test !YTQuantity(false,a.units.unit_string)
 
 bb = rand(10) .< rand(10)
 
 @test YTArray(bb,"cm") == bb
 @test YTArray(bb,a.units) == bb
-@test YTArray(bb,a.units.unit_symbol) == bb
+@test YTArray(bb,a.units.unit_string) == bb
 
 # Ones, zeros, fill, linspace, eye
 
@@ -492,24 +506,12 @@ dens = YTArray(dd["density"].value, string(dd["density"].units))
 @test dens == dd["density"]
 @test dens.units == dd["density"].units
 
-dens = YTArray(dd["density"].value, dd["density"].units.unit_symbol)
+dens = YTArray(dd["density"].value, dd["density"].units.unit_string)
 @test dens == dd["density"]
 @test dens.units == dd["density"].units
 
 @test -dd["density"].value == (-1*dd["density"]).value
 @test 5.0*dd["density"].value == dd["density"].value*5.0
-
-# SymPy symbols
-
-syma = YTArray(a.value, a.units.unit_symbol)
-@test syma.value == a.value
-@test syma.units == a.units
-
-symx = YTQuantity(x.value, x.units.unit_symbol)
-@test symx.value == x.value
-@test symx.units == x.units
-
-@test YTArray(0.5, a.units.unit_symbol) == YTQuantity(0.5, a.units.unit_symbol)
 
 # Conversions
 

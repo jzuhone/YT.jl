@@ -4,62 +4,79 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              show, size, sqrt, exp, log, log10, sin, cos, tan,
              expm1, log2, log1p, sinh, cosh, tanh, csc, sec, cot, csch,
              sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan, sum,
-             cumsum, cummin, cummax, cumsum_kbn, diff, display, print,
+             cumsum, cumsum_kbn, diff, display, print,
              showarray, showerror, ones, zeros, eye, summary,
              sum_kbn, gradient, dims2string, mean, std, stdm, var, varm,
              median, middle, midpoints, quantile, fill, start, next, done,
              +, -, *, /, \, ==, !=, >=, <=, >, <, ./, .\, .*, .==, .!=,
-             .>=, .<=, .>, .<, .^, ^, getindex, setindex!, isequal, length
+             .>=, .<=, .>, .<, .^, ^, getindex, setindex!, isequal, length,
+             broadcast
 
-import SymPy: Sym
-import PyCall: @pyimport, PyObject, pycall, pybuiltin, PyAny
-@pyimport yt.units as ytunits
-@pyimport yt.units.dimensions as ytdims
+if VERSION < v"0.6.0-dev.1298"
+    import Base: cummin, cummax
+else
+    import Base: accumulate
+end
+
+import PyCall: pyimport_conda, PyObject, pycall, pybuiltin, PyAny, PyNULL, pystring
 
 IntOrRange = Union{Integer,Range,Colon}
 Indexes = Union{IntOrRange,Array{Int,1}}
 
 # Grab the classes for creating YTArrays and YTQuantities
 
-bare_array = ytunits.yt_array["YTArray"]
-bare_quan = ytunits.yt_array["YTQuantity"]
+const ytunits = PyNULL()
+const ytdims = PyNULL()
+const bare_array = PyNULL()
+const bare_quan = PyNULL()
+
+function __init__()
+    copy!(ytunits, pyimport_conda("yt.units", "yt"))
+    copy!(ytdims, pyimport_conda("yt.units.dimensions", "yt"))
+    copy!(bare_array, ytunits["yt_array"]["YTArray"])
+    copy!(bare_quan, ytunits["yt_array"]["YTQuantity"])
+end
 
 type YTUnit
     yt_unit::PyObject
-    unit_symbol::Sym
-    dimensions::Sym
+    unit_string::String
+    dimensions::PyObject
+    function YTUnit(yt_unit::PyObject, unit_string::String, dimensions::PyObject)
+        unit_string = replace(unit_string, "**", "^")
+        new(yt_unit, unit_string, dimensions)
+    end
 end
 
 function *(u::YTUnit, v::YTUnit)
     yt_unit = pycall(u.yt_unit["__mul__"], PyObject, v.yt_unit)
-    YTUnit(yt_unit, yt_unit[:units], yt_unit["units"][:dimensions])
+    YTUnit(yt_unit, pystring(yt_unit[:units]), yt_unit["units"][:dimensions])
 end
 
 function /(u::YTUnit, v::YTUnit)
     yt_unit = pycall(u.yt_unit["__truediv__"], PyObject, v.yt_unit)
-    YTUnit(yt_unit, yt_unit[:units], yt_unit["units"][:dimensions])
+    YTUnit(yt_unit, pystring(yt_unit[:units]), yt_unit["units"][:dimensions])
 end
 
 \(u::YTUnit, v::YTUnit) = /(v,u)
 
 function /(u::Real, v::YTUnit)
     yt_unit = pycall(v.yt_unit["__rtruediv__"], PyObject, u)
-    YTUnit(yt_unit, yt_unit[:units], yt_unit["units"][:dimensions])
+    YTUnit(yt_unit, pystring(yt_unit[:units]), yt_unit["units"][:dimensions])
 end
 
 function ^(u::YTUnit, v::Integer)
     yt_unit = pycall(u.yt_unit["__pow__"], PyObject, v)
-    YTUnit(yt_unit, yt_unit[:units], yt_unit["units"][:dimensions])
+    YTUnit(yt_unit, pystring(yt_unit[:units]), yt_unit["units"][:dimensions])
 end
 
 function ^(u::YTUnit, v::Rational)
     yt_unit = pycall(u.yt_unit["__pow__"], PyObject, v)
-    YTUnit(yt_unit, yt_unit[:units], yt_unit["units"][:dimensions])
+    YTUnit(yt_unit, pystring(yt_unit[:units]), yt_unit["units"][:dimensions])
 end
 
 function ^(u::YTUnit, v::AbstractFloat)
     yt_unit = pycall(u.yt_unit["__pow__"], PyObject, v)
-    YTUnit(yt_unit, yt_unit[:units], yt_unit["units"][:dimensions])
+    YTUnit(yt_unit, pystring(yt_unit[:units]), yt_unit["units"][:dimensions])
 end
 
 function ==(u::YTUnit, v::YTUnit)
@@ -70,7 +87,9 @@ function !=(u::YTUnit, v::YTUnit)
     pycall(u.yt_unit["units"]["__ne__"], PyAny, v.yt_unit["units"])
 end
 
-show(io::IO, u::YTUnit) = show(io, u.unit_symbol)
+sqrt(u::YTUnit) = u^(1//2)
+
+show(io::IO, u::YTUnit) = print(io, u.unit_string)
 
 # YTQuantity definition
 
@@ -83,7 +102,7 @@ function YTQuantity{T<:Real}(value::T, units::String; registry=nothing)
     units = replace(units, "^", "**")
     unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
     yt_units = YTUnit(unitary_quan,
-                      unitary_quan[:units],
+                      pystring(unitary_quan[:units]),
                       unitary_quan["units"][:dimensions])
     YTQuantity{T}(value, yt_units)
 end
@@ -92,19 +111,14 @@ function YTQuantity{T<:Real}(ds, value::T, units::String)
     YTQuantity(value, units, registry=ds.ds["unit_registry"])
 end
 
-function YTQuantity{T<:Real}(value::T, units::Sym; registry=nothing)
-    YTQuantity(value, string(units); registry=registry)
-end
-
 YTQuantity(value::Bool, units::String) = value
-YTQuantity(value::Bool, units::Sym) = value
 YTQuantity(value::Bool, units::YTUnit) = value
 YTQuantity(value::Bool) = value
 YTQuantity{T<:Real}(value::T) = YTQuantity(value, "dimensionless")
 
 function YTQuantity(yt_quantity::PyObject)
     yt_units = YTUnit(yt_quantity["unit_quantity"],
-                      yt_quantity[:units],
+                      pystring(yt_quantity[:units]),
                       yt_quantity["units"][:dimensions])
     value = yt_quantity[:d][1]
     YTQuantity{typeof(value)}(value, yt_units)
@@ -113,24 +127,22 @@ end
 # YTArray definition
 
 type YTArray{T<:Real} <: AbstractArray
-    value
+    value::Array{T}
     units::YTUnit
 end
-
-YTArray{T<:Real}(value::Array{T}, units::YTUnit) = YTArray{T}(value, units)
 
 function YTArray{T<:Real}(value::Array{T}, units::String; registry=nothing)
     units = replace(units, "^", "**")
     unitary_quan = pycall(bare_quan, PyObject, 1.0, units, registry)
     yt_units = YTUnit(unitary_quan,
-                      unitary_quan[:units],
+                      pystring(unitary_quan[:units]),
                       unitary_quan["units"][:dimensions])
     YTArray{T}(value, yt_units)
 end
 
 function YTArray(yt_array::PyObject)
     yt_units = YTUnit(yt_array["unit_quantity"],
-                      yt_array[:units],
+                      pystring(yt_array[:units]),
                       yt_array["units"][:dimensions])
     value = Array(yt_array[:d])
     YTArray{eltype(value)}(value, yt_units)
@@ -139,22 +151,15 @@ end
 function YTArray{T<:Real}(ds, value::Array{T}, units::String)
     YTArray(value, units, registry=ds.ds["unit_registry"])
 end
-function YTArray{T<:Real}(value::Array{T}, units::Sym; registry=nothing)
-    YTArray(value, string(units); registry=registry)
-end
 function YTArray(value::Real, units::String; registry=nothing)
     YTQuantity(value, units; registry=registry)
 end
 function YTArray(ds, value::Real, units::String)
     YTQuantity(value, units, registry=ds.ds["unit_registry"])
 end
-function YTArray(value::Real, units::Sym; registry=nothing)
-    YTQuantity(value, units; registry=registry)
-end
 YTArray(value::Real, units::YTUnit) = YTQuantity(value, units)
 
 YTArray(value::BitArray, units::String) = value
-YTArray(value::BitArray, units::Sym) = value
 YTArray(value::BitArray, units::YTUnit) = value
 
 YTArray{T<:Real}(value::Array{T}) = YTArray(value, "dimensionless")
@@ -193,23 +198,27 @@ end
 
 macro array_same_units(a,b,op)
     quote
-        if ($a.units.dimensions)==($b.units.dimensions)
-            new_array = ($op)(($a.value),in_units($b,($a.units)).value)
-            return YTArray(new_array, ($a.units))
+        aa = $(esc(a))
+        bb = $(esc(b))
+        if (aa.units.dimensions)==(bb.units.dimensions)
+            new_array = ($op)((aa.value),in_units(bb,(aa.units)).value)
+            return YTArray(new_array, (aa.units))
         else
-            throw(YTUnitOperationError($a,$b,$op))
+            throw(YTUnitOperationError(aa,bb,$op))
         end
     end
 end
 
 macro array_mult_op(a,b,op1,op2)
     quote
-        units = ($op2)(($a.units), ($b.units))
-        if units.dimensions == ytdims.dimensionless
-            c = ($op1)((in_cgs($a).value), (in_cgs($b).value))
+        aa = $(esc(a))
+        bb = $(esc(b))
+        units = ($op2)((aa.units), (bb.units))
+        if units.dimensions == ytdims[:dimensionless]
+            c = ($op1)((in_cgs(aa).value), (in_cgs(bb).value))
             return YTArray(c, "dimensionless")
         else
-            c = ($op1)(($a.value), ($b.value))
+            c = ($op1)((aa.value), (bb.value))
             return YTArray(c, units)
         end
     end
@@ -227,15 +236,13 @@ convert(::Type{YTQuantity}, o::PyObject) = YTQuantity(o)
 convert(::Type{Array}, a::YTArray) = a.value
 convert(::Type{Float64}, q::YTQuantity) = q.value
 function convert(::Type{PyObject}, a::YTArray)
-    units = string(a.units.unit_symbol)
-    units = replace(units, "^", "**")
+    units = replace(a.units.unit_string, "^", "**")
     pycall(bare_array, PyObject, a.value, units,
            a.units.yt_unit["units"]["registry"],
            dtype=lowercase(string(typeof(a[1].value))))
 end
 function convert(::Type{PyObject}, a::YTQuantity)
-    units = string(a.units.unit_symbol)
-    units = replace(units, "^", "**")
+    units = replace(a.units.unit_string, "^", "**")
     pycall(bare_quan, PyObject, a.value, units,
            a.units.yt_unit["units"]["registry"],
            dtype=lowercase(string(typeof(a.value))))
@@ -245,35 +252,13 @@ PyObject(a::YTObject) = convert(PyObject, a)
 
 # Indexing, ranges (slicing)
 
-getindex(a::YTArray, idxs::Indexes) = YTArray(getindex(a.value, idxs), a.units)
+getindex(a::YTArray, idxs...) = YTArray(getindex(a.value, idxs...), a.units)
 
-function setindex!(a::YTArray, x::Array, idxs::Indexes)
-    setindex!(a.value, convert(typeof(a.value), x), idxs)
+function setindex!(a::YTArray, x::Array, idxs...)
+    setindex!(a.value, convert(typeof(a.value), x), idxs...)
 end
-function setindex!(a::YTArray, x::Real, idxs::Indexes)
-    setindex!(a.value, convert(eltype(a), x), idxs)
-end
-
-function getindex(a::YTArray, i::Indexes, j::Indexes)
-    YTArray(getindex(a.value, i, j), a.units)
-end
-
-function setindex!(a::YTArray, x::Array, i::Indexes, j::Indexes)
-    setindex!(a.value, convert(typeof(a.value), x), i, j)
-end
-function setindex!(a::YTArray, x::Real, i::Indexes, j::Indexes)
-    setindex!(a.value, convert(eltype(a), x), i, j)
-end
-
-function getindex(a::YTArray, i::Indexes, j::Indexes, k::Indexes)
-    YTArray(getindex(a.value, i, j, k), a.units)
-end
-
-function setindex!(a::YTArray, x::Array, i::Indexes, j::Indexes, k::Indexes)
-    setindex!(a.value, convert(typeof(a.value), x), i, j, k)
-end
-function setindex!(a::YTArray, x::Real, i::Indexes, j::Indexes, k::Indexes)
-    setindex!(a.value, convert(eltype(a), x), i, j, k)
+function setindex!(a::YTArray, x::Real, idxs...)
+    setindex!(a.value, convert(eltype(a), x), idxs...)
 end
 
 # Unit conversions
@@ -352,13 +337,15 @@ function convert_to_mks(a::YTObject)
     return
 end
 
-convert_to_units(a::YTObject, units::Sym) = convert_to_units(a, string(units))
-convert_to_units(a::YTObject, units::YTUnit) = convert_to_units(a, units.unit_symbol)
+convert_to_units(a::YTObject, units::YTUnit) = convert_to_units(a, units.unit_string)
 convert_to_units(a::YTObject, b::YTObject) = convert_to_units(a, b.units)
 
-in_units(a::YTObject, units::Sym) = in_units(a, string(units))
-in_units(a::YTObject, units::YTUnit) = in_units(a, units.unit_symbol)
+in_units(a::YTObject, units::YTUnit) = in_units(a, units.unit_string)
 in_units(a::YTObject, b::YTObject) = in_units(a, b.units)
+
+# Broadcasting
+
+broadcast(f, a::YTArray) = YTArray(broadcast(f, a.value), f(a.units))
 
 # Arithmetic and comparisons
 
@@ -468,7 +455,7 @@ end
 
 # Mathematical functions
 
-sqrt(a::YTObject) = YTArray(sqrt(a.value), (a.units)^(1//2))
+sqrt(a::YTQuantity) = YTQuantity(sqrt(a.value), (a.units)^(1//2))
 
 maximum(a::YTArray) = YTQuantity(maximum(a.value), a.units)
 minimum(a::YTArray) = YTQuantity(minimum(a.value), a.units)
@@ -482,12 +469,13 @@ for op = (:exp, :log, :log2, :log10, :log1p, :expm1,
           :sin, :cos, :tan, :sec, :csc, :cot, :sinh,
           :cosh, :tanh, :coth, :sech, :csch, :sinpi,
           :cospi, :asin, :acos, :atan)
-    @eval ($op)(a::YTObject) = ($op)(a.value)
+    @eval ($op)(a::YTQuantity) = ($op)(a.value)
+    @eval ($op)(a::YTUnit) = "dimensionless"
 end
 
 # Show
 
-summary(a::YTArray) = string(dims2string(size(a)), " YTArray ($(a.units))")
+summary(a::YTArray) = string(dims2string(size(a)), " YTArray ($(a.units.unit_string))")
 
 function showarray(io::IO, a::YTArray, repr::Bool = true)
     if !repr
@@ -538,11 +526,16 @@ cumsum(a::YTArray, dim::Integer) = YTArray(cumsum(a.value, dim), a.units)
 cumsum_kbn(a::YTArray) = YTArray(cumsum(a.value), a.units)
 cumsum_kbn(a::YTArray, dim::Integer) = YTArray(cumsum(a.value, dim), a.units)
 
-cummin(a::YTArray) = YTArray(cummin(a.value), a.units)
-cummin(a::YTArray, dim::Integer) = YTArray(cummin(a.value, dim), a.units)
+if VERSION < v"0.6.0-dev.1298"
+    cummin(a::YTArray) = YTArray(cummin(a.value), a.units)
+    cummin(a::YTArray, dim::Integer) = YTArray(cummin(a.value, dim), a.units)
 
-cummax(a::YTArray) = YTArray(cummax(a.value), a.units)
-cummax(a::YTArray, dim::Integer) = YTArray(cummax(a.value, dim), a.units)
+    cummax(a::YTArray) = YTArray(cummax(a.value), a.units)
+    cummax(a::YTArray, dim::Integer) = YTArray(cummax(a.value, dim), a.units)
+else
+    accumulate(op, a::YTArray) = YTArray(accumulate(op, a.value), a.units)
+    accumulate(op, a::YTArray, axis::Integer) = YTArray(accumulate(op, a.value, axis), a.units)
+end
 
 diff(a::YTArray) = YTArray(diff(a.value), a.units)
 diff(a::YTArray, dim::Integer) = YTArray(diff(a.value, dim), a.units)

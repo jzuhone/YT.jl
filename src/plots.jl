@@ -1,12 +1,16 @@
+__precompile__()
 module plots
 
 import ..data_objects: Dataset, DataContainer, parse_fps
 import ..dataset_series: DatasetSeries
 import ..array: YTArray
-import PyCall: @pyimport, PyObject, pywrap
+import PyCall: pyimport_conda, PyObject, pywrap, PyNULL
 
-@pyimport yt.visualization.plot_window as pw
-@pyimport yt.visualization.profile_plotter as pp
+const pw = PyNULL()
+
+function __init__()
+    copy!(pw, pyimport_conda("yt.visualization.plot_window", "yt"))
+end
 
 """
     SlicePlot(ds::Dataset, axis, fields; center="c", width=nothing,
@@ -71,8 +75,8 @@ function SlicePlot(ds::Dataset, axis, fields; center="c",
         c = center
     end
     fps = parse_fps(field_parameters)
-    pywrap(pw.SlicePlot(ds.ds, axis, fields; center=c,
-                        width=width, field_parameters=fps, args...))
+    pywrap(pw[:SlicePlot](ds.ds, axis, fields; center=c,
+                          width=width, field_parameters=fps, args...))
 end
 
 """
@@ -151,9 +155,9 @@ function ProjectionPlot(ds::Dataset, axis, fields; weight_field=nothing,
         c = center
     end
     fps = parse_fps(field_parameters)
-    pywrap(pw.ProjectionPlot(ds.ds, axis, fields; weight_field=weight_field,
-                             width=width, center=c, data_source=source,
-                             field_parameters=fps, args...))
+    pywrap(pw[:ProjectionPlot](ds.ds, axis, fields; weight_field=weight_field,
+                               width=width, center=c, data_source=source,
+                               field_parameters=fps, args...))
 end
 
 # Show plot

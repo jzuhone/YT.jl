@@ -1,3 +1,4 @@
+__precompile__()
 module unit_systems
 
 import PyCall: PyObject, pystring

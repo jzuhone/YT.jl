@@ -356,23 +356,20 @@ for op = (:+, :-, :hypot, :(==), :(!=), :(>=), :(<=), :<, :>)
     @eval ($op)(a::YTQuantity,b::YTQuantity) = @array_same_units(a,b,($op))
 end
 
-for op = (:*, :/)
+for op = (:*, :/, :\)
     @eval ($op)(a::YTQuantity,b::YTQuantity) = @array_mult_op(a,b,($op),($op))
 end
 
 *(a::YTQuantity, b::Real) = YTQuantity(b*a.value, a.units)
 *(a::Real, b::YTQuantity) = *(b, a)
+
 /(a::YTQuantity, b::Real) = *(a, 1.0/b)
 \(a::YTQuantity, b::Real) = /(b,a)
-
 /(a::Real, b::YTQuantity) = YTQuantity(a/b.value, 1/b.units)
-
 \(a::Real, b::YTQuantity) = /(b,a)
 
 ^(a::YTQuantity, b::Integer) = YTQuantity(a.value^b, a.units^b)
 ^(a::YTQuantity, b::Real) = YTQuantity(a.value^b, a.units^b)
-
-\(a::YTQuantity, b::YTQuantity) = /(b,a)
 
 # YTQuantities and Arrays
 
@@ -389,7 +386,7 @@ for op = (:+, :-, :hypot, :.==, :.!=, :.>=, :.<=, :.<, :.>)
     @eval ($op)(a::YTArray,b::YTArray) = @array_same_units(a,b,($op))
 end
 
-for (op1, op2) in zip((:.*, :./),(:*,:/))
+for (op1, op2) in zip((:.*, :./, :.\), (:*, :/, :\))
     @eval ($op1)(a::YTArray,b::YTArray) = @array_mult_op(a,b,($op1),($op2))
 end
 
@@ -407,8 +404,6 @@ isequal(a::YTArray, b::YTArray) = ==(a, b)
 ./(a::Real, b::YTArray) = YTArray(a./b.value, 1.0/b.units)
 \(a::Real, b::YTArray) = /(b,a)
 
-.\(a::YTArray, b::YTArray) = ./(b, a)
-
 # YTArrays and Arrays
 
 .*(a::YTArray, b::Array) = YTArray(b.*a.value, a.units)
@@ -423,6 +418,7 @@ isequal(a::YTArray, b::YTArray) = ==(a, b)
 # YTArrays and YTQuantities
 
 for op = (:+, :-, :hypot, :.==, :.!=, :.>=, :.<=, :.<, :.>)
+    @eval ($op)(a::YTQuantity,b::YTArray) = @array_same_units(a,b,($op))
     @eval ($op)(a::YTArray,b::YTQuantity) = @array_same_units(a,b,($op))
 end
 
@@ -430,20 +426,9 @@ for op = (:*, :/)
     @eval ($op)(a::YTArray,b::YTQuantity) = @array_mult_op(a,b,($op),($op))
 end
 
-+(a::YTQuantity, b::YTArray) = +(b,a)
--(a::YTQuantity, b::YTArray) = -(-(b,a))
-
-*(a::YTQuantity, b::YTArray) = *(b,a)
+*(a::YTArray, b::YTQuantity) = *(b,a)
 ./(a::YTQuantity, b::YTArray) = *(a, 1.0./b)
 .\(a::YTArray, b::YTQuantity) = ./(b,a)
-\(a::YTQuantity, b::YTArray) = /(b,a)
-
-.==(a::YTQuantity, b::YTArray) = .==(b,a)
-.!=(a::YTQuantity, b::YTArray) = .!=(b,a)
-.>=(a::YTQuantity, b::YTArray) = .<(b,a)
-.<=(a::YTQuantity, b::YTArray) = .>(b,a)
-.>(a::YTQuantity, b::YTArray) = .<=(b,a)
-.<(a::YTQuantity, b::YTArray) = .>=(b,a)
 
 for op = (:+, :-, :hypot)
     @eval ($op)(a::YTObject,b::Real) = @array_same_units(a,YTQuantity(b,"dimensionless"),($op))

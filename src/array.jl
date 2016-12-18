@@ -252,14 +252,16 @@ PyObject(a::YTObject) = convert(PyObject, a)
 
 # Indexing, ranges (slicing)
 
+getindex(a::YTArray, i::Int) = YTArray(getindex(a.value, i), a.units)
+getindex(a::YTArray, I::Vararg{Int, N}) = YTArray(getindex(a.value, I), a.units)
 getindex(a::YTArray, idxs...) = YTArray(getindex(a.value, idxs...), a.units)
 
-function setindex!(a::YTArray, x::Array, idxs...)
-    setindex!(a.value, convert(typeof(a.value), x), idxs...)
-end
-function setindex!(a::YTArray, x::Real, idxs...)
-    setindex!(a.value, convert(eltype(a), x), idxs...)
-end
+setindex!(a::YTArray, x::Array, I::Vararg{Int, N}) = setindex!(a.value, convert(eltype(a), x), I)
+setindex!(a::YTArray, x::Array, idxs...) = setindex!(a.value, convert(eltype(a), x), idxs...)
+
+setindex!(a::YTArray, x::Real, i::Int) = setindex!(a.value, convert(eltype(a), x), i)
+setindex!(a::YTArray, x::Real, I::Vararg{Int, N}) = setindex!(a.value, convert(eltype(a), x), I)
+setindex!(a::YTArray, x::Real, idxs...) = setindex!(a.value, convert(eltype(a), x), idxs...)
 
 # Unit conversions
 

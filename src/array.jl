@@ -426,6 +426,7 @@ for op = (:*, :/)
     @eval ($op)(a::YTArray,b::YTQuantity) = @array_mult_op(a,b,($op),($op))
 end
 
+\(a::YTQuantity, b::YTArray) = /(b,a)
 *(a::YTQuantity, b::YTArray) = *(b,a)
 ./(a::YTQuantity, b::YTArray) = *(a, 1.0./b)
 .\(a::YTArray, b::YTQuantity) = ./(b,a)

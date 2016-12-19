@@ -309,6 +309,9 @@ xx = copy(x)
 convert_to_units(xx, a)
 @test xx == in_units(x, string(a.units))
 
+@test in_base(x, unit_system="imperial") == in_units(x, "ft")
+@test in_base(b, unit_system="galactic") == in_units(b, "Msun")
+
 # These should fail
 
 @test_throws YTUnitOperationError a+b
@@ -373,6 +376,13 @@ bb = rand(10) .< rand(10)
 @test YTArray(bb,"cm") == bb
 @test YTArray(bb,a.units) == bb
 @test YTArray(bb,a.units.unit_string) == bb
+
+bbb = copy(bb)
+
+@test bbb == bb
+@test isequal(bbb, bb)
+bbb[1] = 0.0
+@test bbb != bb
 
 # Ones, zeros, fill, linspace, eye
 
@@ -499,6 +509,13 @@ dsx = YTQuantity(ds, x.value, string(x.units))
 
 convert_to_units(dsx,"code_length")
 @test string(dsx.units) == "code_length"
+
+dsy = YTArray(ds, x.value, string(x.units))
+@test dsy.value == x.value
+@test dsy.units == x.units
+
+convert_to_units(dsy,"code_length")
+@test string(dsy.units) == "code_length"
 
 dd = Sphere(ds, "max", (0.1,"unitary"))
 

@@ -249,11 +249,11 @@ end
 @test_approx_eq cumsum_kbn(xy, 2).value cumsum_kbn(xy.value, 2)
 @test cumsum_kbn(xy, 2).units == xy.units
 
-@test abs(a).value == abs(a.value)
-@test abs(a).units == a.units
+@test abs.(a).value == abs.(a.value)
+@test abs.(a).units == a.units
 
-@test abs2(a).value == abs2(a.value)
-@test abs2(a).units == a.units*a.units
+@test abs2.(a).value == abs2.(a.value)
+@test abs2.(a).units == a.units*a.units
 
 @test quantile(a, 0.75).value == quantile(a.value, 0.75)
 @test quantile(a, 0.75).units == a.units
@@ -377,12 +377,12 @@ bb = rand(10) .< rand(10)
 @test YTArray(bb,a.units) == bb
 @test YTArray(bb,a.units.unit_string) == bb
 
-bbb = copy(bb)
+aaa = copy(a)
 
-@test bbb == bb
-@test isequal(bbb, bb)
-bbb[1] = 0.0
-@test bbb != bb
+@test aaa == a
+@test isequal(aaa, a)
+aaa[1] = 0.0
+@test aaa != a
 
 # Ones, zeros, fill, linspace, eye
 

@@ -88,6 +88,8 @@ function !=(u::YTUnit, v::YTUnit)
 end
 
 sqrt(u::YTUnit) = u^(1//2)
+abs(u::YTUnit) = u
+abs2(u::YTUnit) = u*u
 
 show(io::IO, u::YTUnit) = print(io, u.unit_string)
 
@@ -447,8 +449,8 @@ minimum(a::YTArray) = YTQuantity(minimum(a.value), a.units)
 
 hypot(a::YTObject, b::YTObject, c::YTObject) = hypot(hypot(a,b), c)
 
-abs(a::YTObject) = YTArray(abs(a.value), a.units)
-abs2(a::YTObject) = YTArray(abs2(a.value), a.units*a.units)
+abs(a::YTQuantity) = YTQuantity(abs(a.value), a.units)
+abs2(a::YTQuantity) = YTQuantity(abs2(a.value), a.units*a.units)
 
 for op = (:exp, :log, :log2, :log10, :log1p, :expm1,
           :sin, :cos, :tan, :sec, :csc, :cot, :sinh,

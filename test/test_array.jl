@@ -249,11 +249,11 @@ end
 @test_approx_eq cumsum_kbn(xy, 2).value cumsum_kbn(xy.value, 2)
 @test cumsum_kbn(xy, 2).units == xy.units
 
-@test abs(a).value == abs(a.value)
-@test abs(a).units == a.units
+@test abs.(a).value == abs.(a.value)
+@test abs.(a).units == a.units
 
-@test abs2(a).value == abs2(a.value)
-@test abs2(a).units == a.units*a.units
+@test abs2.(a).value == abs2.(a.value)
+@test abs2.(a).units == a.units*a.units
 
 @test quantile(a, 0.75).value == quantile(a.value, 0.75)
 @test quantile(a, 0.75).units == a.units
@@ -308,6 +308,9 @@ convert_to_units(xx, a.units.unit_string)
 xx = copy(x)
 convert_to_units(xx, a)
 @test xx == in_units(x, string(a.units))
+
+@test in_base(x, unit_system="imperial") == in_units(x, "ft")
+@test in_base(b, unit_system="galactic") == in_units(b, "Msun")
 
 # These should fail
 
@@ -373,6 +376,13 @@ bb = rand(10) .< rand(10)
 @test YTArray(bb,"cm") == bb
 @test YTArray(bb,a.units) == bb
 @test YTArray(bb,a.units.unit_string) == bb
+
+aaa = copy(a)
+
+@test aaa == a
+@test isequal(aaa, a)
+aaa[1] = 0.0
+@test aaa != a
 
 # Ones, zeros, fill, linspace, eye
 
@@ -499,6 +509,13 @@ dsx = YTQuantity(ds, x.value, string(x.units))
 
 convert_to_units(dsx,"code_length")
 @test string(dsx.units) == "code_length"
+
+dsy = YTArray(ds, x.value, string(x.units))
+@test dsy.value == x.value
+@test dsy.units == x.units
+
+convert_to_units(dsy,"code_length")
+@test string(dsy.units) == "code_length"
 
 dd = Sphere(ds, "max", (0.1,"unitary"))
 

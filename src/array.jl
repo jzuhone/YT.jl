@@ -88,6 +88,8 @@ function !=(u::YTUnit, v::YTUnit)
 end
 
 sqrt(u::YTUnit) = u^(1//2)
+abs(u::YTUnit) = u
+abs2(u::YTUnit) = u*u
 
 show(io::IO, u::YTUnit) = print(io, u.unit_string)
 
@@ -252,14 +254,13 @@ PyObject(a::YTObject) = convert(PyObject, a)
 
 # Indexing, ranges (slicing)
 
+getindex(a::YTArray, i::Int) = YTArray(getindex(a.value, i), a.units)
 getindex(a::YTArray, idxs...) = YTArray(getindex(a.value, idxs...), a.units)
 
-function setindex!(a::YTArray, x::Array, idxs...)
-    setindex!(a.value, convert(typeof(a.value), x), idxs...)
-end
-function setindex!(a::YTArray, x::Real, idxs...)
-    setindex!(a.value, convert(eltype(a), x), idxs...)
-end
+setindex!(a::YTArray, x::Array, idxs...) = setindex!(a.value, convert(typeof(a.value), x), idxs...)
+
+setindex!(a::YTArray, x::Real, i::Int) = setindex!(a.value, convert(eltype(a), x), i)
+setindex!(a::YTArray, x::Real, idxs...) = setindex!(a.value, convert(eltype(a), x), idxs...)
 
 # Unit conversions
 
@@ -357,23 +358,20 @@ for op = (:+, :-, :hypot, :(==), :(!=), :(>=), :(<=), :<, :>)
     @eval ($op)(a::YTQuantity,b::YTQuantity) = @array_same_units(a,b,($op))
 end
 
-for op = (:*, :/)
+for op = (:*, :/, :\)
     @eval ($op)(a::YTQuantity,b::YTQuantity) = @array_mult_op(a,b,($op),($op))
 end
 
 *(a::YTQuantity, b::Real) = YTQuantity(b*a.value, a.units)
 *(a::Real, b::YTQuantity) = *(b, a)
+
 /(a::YTQuantity, b::Real) = *(a, 1.0/b)
 \(a::YTQuantity, b::Real) = /(b,a)
-
 /(a::Real, b::YTQuantity) = YTQuantity(a/b.value, 1/b.units)
-
 \(a::Real, b::YTQuantity) = /(b,a)
 
 ^(a::YTQuantity, b::Integer) = YTQuantity(a.value^b, a.units^b)
 ^(a::YTQuantity, b::Real) = YTQuantity(a.value^b, a.units^b)
-
-\(a::YTQuantity, b::YTQuantity) = /(b,a)
 
 # YTQuantities and Arrays
 
@@ -390,7 +388,7 @@ for op = (:+, :-, :hypot, :.==, :.!=, :.>=, :.<=, :.<, :.>)
     @eval ($op)(a::YTArray,b::YTArray) = @array_same_units(a,b,($op))
 end
 
-for (op1, op2) in zip((:.*, :./),(:*,:/))
+for (op1, op2) in zip((:.*, :./, :.\), (:*, :/, :\))
     @eval ($op1)(a::YTArray,b::YTArray) = @array_mult_op(a,b,($op1),($op2))
 end
 
@@ -408,8 +406,6 @@ isequal(a::YTArray, b::YTArray) = ==(a, b)
 ./(a::Real, b::YTArray) = YTArray(a./b.value, 1.0/b.units)
 \(a::Real, b::YTArray) = /(b,a)
 
-.\(a::YTArray, b::YTArray) = ./(b, a)
-
 # YTArrays and Arrays
 
 .*(a::YTArray, b::Array) = YTArray(b.*a.value, a.units)
@@ -424,6 +420,7 @@ isequal(a::YTArray, b::YTArray) = ==(a, b)
 # YTArrays and YTQuantities
 
 for op = (:+, :-, :hypot, :.==, :.!=, :.>=, :.<=, :.<, :.>)
+    @eval ($op)(a::YTQuantity,b::YTArray) = @array_same_units(a,b,($op))
     @eval ($op)(a::YTArray,b::YTQuantity) = @array_same_units(a,b,($op))
 end
 
@@ -431,20 +428,10 @@ for op = (:*, :/)
     @eval ($op)(a::YTArray,b::YTQuantity) = @array_mult_op(a,b,($op),($op))
 end
 
-+(a::YTQuantity, b::YTArray) = +(b,a)
--(a::YTQuantity, b::YTArray) = -(-(b,a))
-
+\(a::YTQuantity, b::YTArray) = /(b,a)
 *(a::YTQuantity, b::YTArray) = *(b,a)
 ./(a::YTQuantity, b::YTArray) = *(a, 1.0./b)
 .\(a::YTArray, b::YTQuantity) = ./(b,a)
-\(a::YTQuantity, b::YTArray) = /(b,a)
-
-.==(a::YTQuantity, b::YTArray) = .==(b,a)
-.!=(a::YTQuantity, b::YTArray) = .!=(b,a)
-.>=(a::YTQuantity, b::YTArray) = .<(b,a)
-.<=(a::YTQuantity, b::YTArray) = .>(b,a)
-.>(a::YTQuantity, b::YTArray) = .<=(b,a)
-.<(a::YTQuantity, b::YTArray) = .>=(b,a)
 
 for op = (:+, :-, :hypot)
     @eval ($op)(a::YTObject,b::Real) = @array_same_units(a,YTQuantity(b,"dimensionless"),($op))
@@ -462,8 +449,8 @@ minimum(a::YTArray) = YTQuantity(minimum(a.value), a.units)
 
 hypot(a::YTObject, b::YTObject, c::YTObject) = hypot(hypot(a,b), c)
 
-abs(a::YTObject) = YTArray(abs(a.value), a.units)
-abs2(a::YTObject) = YTArray(abs2(a.value), a.units*a.units)
+abs(a::YTQuantity) = YTQuantity(abs(a.value), a.units)
+abs2(a::YTQuantity) = YTQuantity(abs2(a.value), a.units*a.units)
 
 for op = (:exp, :log, :log2, :log10, :log1p, :expm1,
           :sin, :cos, :tan, :sec, :csc, :cot, :sinh,

@@ -1,5 +1,5 @@
-``YT`` Users' Guide
-===================
+YT Users' Guide
+===============
 
 .. toctree::
    :maxdepth: 1

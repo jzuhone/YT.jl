@@ -18,6 +18,9 @@ type RegionExpression
     r::PyObject
 end
 
+function getindex(r::RegionExpression, i, j, k)
+    get(r.r, PyObject, (i, j, k))
+end
 
 # Dataset
 

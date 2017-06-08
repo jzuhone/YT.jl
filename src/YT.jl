@@ -12,7 +12,7 @@ export get_derived_field_list
 
 # YTArrays, YTQuantities, units
 
-export YTArray, YTQuantity, YTUnit, in_base
+export YTArray, YTQuantity, YTUnit, in_base, YTQuantityTuple
 export in_units, in_cgs, in_mks, from_hdf5, write_hdf5
 export to_equivalent, list_equivalencies, has_equivalent
 export convert_to_units, convert_to_cgs, convert_to_mks
@@ -70,7 +70,8 @@ include("unit_systems.jl")
 
 import .array: YTArray, YTQuantity, in_units, in_cgs, in_mks, YTUnit,
     from_hdf5, write_hdf5, to_equivalent, list_equivalencies, in_base,
-    has_equivalent, convert_to_units, convert_to_mks, convert_to_cgs
+    has_equivalent, convert_to_units, convert_to_mks, convert_to_cgs,
+    YTQuantityTuple
 import .data_objects: Dataset, Grids, Sphere, AllData, Proj, Slice,
     CoveringGrid, to_frb, print_stats, get_smallest_dx, Disk, Ray,
     Cutting, CutRegion, DataContainer, Region, has_field_parameter,

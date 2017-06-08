@@ -4,13 +4,13 @@ import Base: convert, copy, eltype, hypot, maximum, minimum, ndims,
              show, size, sqrt, exp, log, log10, sin, cos, tan,
              expm1, log2, log1p, sinh, cosh, tanh, csc, sec, cot, csch,
              sinh, coth, sinpi, cospi, abs, abs2, asin, acos, atan, sum,
-             cumsum, cumsum_kbn, diff, display, print,
+             cumsum, cumsum_kbn, diff, display, print, zero, rem,
              showarray, showerror, ones, zeros, eye, summary,
              sum_kbn, gradient, dims2string, mean, std, stdm, var, varm,
              median, middle, midpoints, quantile, fill, start, next, done,
              +, -, *, /, \, ==, !=, >=, <=, >, <, ./, .\, .*, .==, .!=,
              .>=, .<=, .>, .<, .^, ^, getindex, setindex!, isequal, length,
-             broadcast
+             broadcast, one, colon
 
 if VERSION < v"0.6.0-dev.1298"
     import Base: cummin, cummax
@@ -373,6 +373,12 @@ end
 ^(a::YTQuantity, b::Integer) = YTQuantity(a.value^b, a.units^b)
 ^(a::YTQuantity, b::Real) = YTQuantity(a.value^b, a.units^b)
 
+one(a::YTQuantity) = YTQuantity(1.0, a.units)
+zero(a::YTQuantity) = YTQuantity(0.0, a.units)
+
+rem(a::YTQuantity, b::YTQuantity) = YTQuantity(rem(a.value, 
+                                                   in_units(b, a.units).value), 
+                                               a.units)
 # YTQuantities and Arrays
 
 *(a::YTQuantity, b::Array) = YTArray(b*a.value, a.units)
@@ -675,9 +681,15 @@ fill(a::YTQuantity, dims::Tuple{Vararg{Int64}}) = YTArray(fill(a.value,dims), a.
 fill(a::YTQuantity, dims::Integer...) = YTArray(fill(a.value,dims), a.units)
 
 start(a::YTArray) = 1
-next(a::YTArray,i) = (a[i],i+1)
+next(a::YTArray,i) = (a[i], i+1)
 done(a::YTArray,i) = (i > length(a))
 
 length(a::YTQuantity) = length(a.value)
+
+# YTQuantityTuple
+
+typealias YTQuantityTuple Tuple{Real,String}
+
+YTQuantity(q::YTQuantityTuple) = YTQuantity(q[1], q[2])
 
 end

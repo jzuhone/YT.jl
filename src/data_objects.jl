@@ -12,6 +12,13 @@ Center = Union{String,Array{Float64,1},YTArray,
 Length = Union{Float64,Tuple{Float64,String},YTQuantity}
 Field  = Union{String,Tuple{String,String}}
 
+# RegionExpression
+
+type RegionExpression
+    r::PyObject
+end
+
+
 # Dataset
 
 type Dataset
@@ -26,6 +33,7 @@ type Dataset
     current_time::YTQuantity
     current_redshift::Float64
     max_level::Integer
+    r::RegionExpression
     function Dataset(ds::PyObject)
         parameters = Dict()
         for (k,v) in PyDict(ds["parameters"])
@@ -41,7 +49,8 @@ type Dataset
             ds[:dimensionality][1],
             YTQuantity(ds["current_time"]),
             ds[:current_redshift],
-            ds[:max_level][1])
+            ds[:max_level][1],
+            RegionExpression(ds[:r]))
     end
 end
 

@@ -1,7 +1,7 @@
 __precompile__()
 module data_objects
 
-import PyCall: PyObject, PyDict, pycall, pystring, PyVector
+import PyCall: PyObject, PyDict, pycall, pystring, PyVector, pybuiltin
 import Base: size, show, showarray, display, showerror, start, next, done,
        getindex
 import ..array: YTArray, YTQuantity, in_units, array_or_quan
@@ -14,12 +14,16 @@ Field  = Union{String,Tuple{String,String}}
 
 # RegionExpression
 
+pyslice(i::Real) = i
+pyslice(i::Colon) = pycall(pybuiltin("slice"), PyObject, nothing)
+pyslice(i::UnitRange) = pycall(pybuiltin("slice"), PyObject, PyObject(i.start), 
+                               PyObject(i.stop))
+pyslice(i::StepRange) = pycall(pybuiltin("slice"), PyObject, PyObject(i.start), 
+                               PyObject(i.stop), i.step)
+
 type RegionExpression
     r::PyObject
-end
-
-function getindex(r::RegionExpression, i, j, k)
-    get(r.r, PyObject, (i, j, k))
+    ds::PyObject
 end
 
 # Dataset
@@ -53,8 +57,23 @@ type Dataset
             YTQuantity(ds["current_time"]),
             ds[:current_redshift],
             ds[:max_level][1],
-            RegionExpression(ds[:r]))
+            RegionExpression(ds[:r], ds))
     end
+end
+
+function getindex(r::RegionExpression, i, j, k)
+    ii = pyslice(i)
+    jj = pyslice(j)
+    kk = pyslice(k)
+    obj = get(r.r, PyObject, (ii, jj, kk))
+    dims = obj[:_dimensionality]
+    if dims == 3
+        obj = Region(obj, Dataset(r.ds), YTArray(obj["center"]), YTArray(obj["left_edge"]),
+                     YTArray(obj["right_edge"]), Dict())
+    elseif dims == 2
+        obj = Slice(obj, Dataset(r.ds), obj["axis"], obj["coord"], Dict())
+    end
+    return obj
 end
 
 """
@@ -260,40 +279,41 @@ type Region <: DataContainer
     left_edge::YTArray
     right_edge::YTArray
     field_dict::Dict
-    function Region(ds::Dataset, center::Center,
-                    left_edge::Union{Array{Float64,1},YTArray},
-                    right_edge::Union{Array{Float64,1},YTArray};
-                    field_parameters=nothing, data_source=nothing)
-        if typeof(center) <: YTArray
-            c = PyObject(center)
-        else
-            c = center
-        end
-        if typeof(left_edge) <: YTArray
-            le = in_units(YTArray(ds, left_edge.value,
-                          left_edge.units.unit_string),
-                          "code_length").value
-        else
-            le = left_edge
-        end
-        if typeof(right_edge) <: YTArray
-            re = in_units(YTArray(ds, right_edge.value,
-                          right_edge.units.unit_string),
-                          "code_length").value
-        else
-            re = right_edge
-        end
-        if data_source != nothing
-            source = data_source.cont
-        else
-            source = nothing
-        end
-        field_parameters = parse_fps(field_parameters)
-        reg = ds.ds[:region](c, le, re; field_parameters=field_parameters,
-                             data_source=source)
-        new(reg, ds, YTArray(reg["center"]), YTArray(reg["left_edge"]),
-            YTArray(reg["right_edge"]), Dict())
+end
+
+function Region(ds::Dataset, center::Center,
+                left_edge::Union{Array{Float64,1},YTArray},
+                right_edge::Union{Array{Float64,1},YTArray};
+                field_parameters=nothing, data_source=nothing)
+    if typeof(center) <: YTArray
+        c = PyObject(center)
+    else
+        c = center
     end
+    if typeof(left_edge) <: YTArray
+        le = in_units(YTArray(ds, left_edge.value,
+                        left_edge.units.unit_string),
+                        "code_length").value
+    else
+        le = left_edge
+    end
+    if typeof(right_edge) <: YTArray
+        re = in_units(YTArray(ds, right_edge.value,
+                        right_edge.units.unit_string),
+                        "code_length").value
+    else
+        re = right_edge
+    end
+    if data_source != nothing
+        source = data_source.cont
+    else
+        source = nothing
+    end
+    field_parameters = parse_fps(field_parameters)
+    reg = ds.ds[:region](c, le, re; field_parameters=field_parameters,
+                            data_source=source)
+    Region(reg, ds, YTArray(reg["center"]), YTArray(reg["left_edge"]),
+           YTArray(reg["right_edge"]), Dict())
 end
 
 # Disk
@@ -641,21 +661,22 @@ type Slice <: DataContainer
     axis::Integer
     coord::Float64
     field_dict::Dict
-    function Slice(ds::Dataset, axis::Union{Integer,String},
-                   coord::Float64; center=nothing,
-                   field_parameters=nothing,
-                   data_source=nothing)
-        if data_source != nothing
-            source = data_source.cont
-        else
-            source = nothing
-        end
-        field_parameters = parse_fps(field_parameters)
-        slc = ds.ds[:slice](axis, coord; center=center,
-                            field_parameters=field_parameters,
-                            data_source=source)
-        new(slc, ds, slc["axis"], slc["coord"], Dict())
+end
+
+function Slice(ds::Dataset, axis::Union{Integer,String},
+               coord::Float64; center=nothing,
+               field_parameters=nothing,
+               data_source=nothing)
+    if data_source != nothing
+        source = data_source.cont
+    else
+        source = nothing
     end
+    field_parameters = parse_fps(field_parameters)
+    slc = ds.ds[:slice](axis, coord; center=center,
+                        field_parameters=field_parameters,
+                        data_source=source)
+    Slice(slc, ds, slc["axis"], slc["coord"], Dict())
 end
 
 """

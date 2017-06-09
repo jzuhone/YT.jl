@@ -692,4 +692,8 @@ typealias YTQuantityTuple Tuple{Real,String}
 
 YTQuantity(q::YTQuantityTuple) = YTQuantity(q[1], q[2])
 
+function colon(a::YTQuantityTuple, b::YTQuantityTuple)
+    colon(YTQuantity(a), YTQuantity(b))
+end
+
 end

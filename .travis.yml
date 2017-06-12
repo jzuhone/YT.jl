@@ -9,7 +9,7 @@ before_install:
   - sudo rm -rf /dev/shm
   - sudo ln -s /run/shm /dev/shm
   - julia -e 'Pkg.clone("git://github.com/JuliaPy/PyCall.jl.git")'
-  - julia -e 'Pkg.add("Conda"); using Conda; Conda.add("yt")'
+  - julia -e 'Pkg.add("Conda"); using Conda; Conda.add("yt"); Conda.add("h5py")'
   - export CONDA_PYTHON=`julia -e 'import Conda; print(Conda.PREFIX)'`
   - export PATH=$CONDA_PYTHON/bin:$PATH
   - export LD_LIBRARY_PATH=$CONDA_PYTHON/lib

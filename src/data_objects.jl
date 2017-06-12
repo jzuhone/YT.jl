@@ -4,7 +4,7 @@ module data_objects
 import PyCall: PyObject, PyDict, pycall, pystring, PyVector, pybuiltin
 import Base: size, show, showarray, display, showerror, start, next, done,
        getindex
-import ..array: YTArray, YTQuantity, in_units, array_or_quan
+import ..array: YTArray, YTQuantity, in_units, array_or_quan, YTQuantityTuple
 import ..fixed_resolution: FixedResolutionBuffer
 
 Center = Union{String,Array{Float64,1},YTArray,
@@ -20,6 +20,8 @@ pyslice(i::UnitRange) = pycall(pybuiltin("slice"), PyObject, PyObject(i.start),
                                PyObject(i.stop))
 pyslice(i::StepRange) = pycall(pybuiltin("slice"), PyObject, PyObject(i.start), 
                                PyObject(i.stop), i.step)
+pyslice(i::YTQuantity) = PyObject(i)
+pyslice(i::YTQuantityTuple) = PyObject(i)
 
 type RegionExpression
     r::PyObject
@@ -67,11 +69,12 @@ function getindex(r::RegionExpression, i, j, k)
     kk = pyslice(k)
     obj = get(r.r, PyObject, (ii, jj, kk))
     dims = obj[:_dimensionality]
-    if dims == 3
-        obj = Region(obj, Dataset(r.ds), YTArray(obj["center"]), YTArray(obj["left_edge"]),
-                     YTArray(obj["right_edge"]), Dict())
-    elseif dims == 2
+    if dims == 2
         obj = Slice(obj, Dataset(r.ds), obj["axis"], obj["coord"], Dict())
+    else
+        obj = Region(obj, Dataset(r.ds), YTArray(obj["center"]), 
+                     YTArray(obj["left_edge"]), YTArray(obj["right_edge"]), 
+                     Dict())
     end
     return obj
 end
